@@ -1,0 +1,32 @@
+{
+  "name": "workout-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd server && npm start",
+    "build": "cd client && npm run build",
+    "install": "cd client && npm i",
+    "dev": "concurrently \"cd server && npm run watch\" \"cd client && npm start\"",
+    "watch": "cd server && npm run watch",
+    "seed": "cd server && npm run seed"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JaredMabus/workout-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JaredMabus/workout-app/issues"
+  },
+  "homepage": "https://github.com/JaredMabus/workout-app#readme",
+  "dependencies": {
+    "concurrently": "^7.5.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.3"
+  }
+}
