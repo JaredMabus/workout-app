@@ -1,18 +1,20 @@
 import { Schema, model, Types } from "mongoose";
 import bcrypt from "bcrypt";
+import S3 from "../libs/S3";
 
 export interface AccountType {
-  _id: string | Types.ObjectId;
-  workoutId: Types.ObjectId[] | [];
-  workoutPlanWeek: WorkoutPlanDays;
-  email: string;
-  password: string;
-  fname: string;
-  lname: string;
-  role: string;
-  gender: string;
-  weight: number;
-  height: number;
+  _id: string | Types.ObjectId | null;
+  workoutId: Types.ObjectId[] | [] | null;
+  workoutPlanWeek: WorkoutPlanDays | null;
+  email: string | null;
+  password: string | null;
+  fname: string | null;
+  lname: string | null;
+  role: string | null;
+  gender: string | null;
+  weight: number | null;
+  height: number | null;
+  avatar: string | null;
 }
 
 export type WorkoutPlanWeek = WorkoutPlanDays[];
@@ -93,6 +95,7 @@ const AccountSchema = new Schema(
     avatar: {
       type: String,
       required: false,
+      default: "",
     },
     gender: {
       type: String,
@@ -116,6 +119,16 @@ const AccountSchema = new Schema(
 AccountSchema.pre("validate", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   next();
+});
+
+AccountSchema.post(new RegExp("delete", "i"), async function (doc) {
+  try {
+    const s3 = new S3(doc.avatar, undefined, doc._id);
+    const deleteFile = await s3.deleteFile(doc.avatar);
+    console.log("Account and S3 avatar deleted");
+  } catch (err) {
+    throw new Error("Could not delete RoundId to account");
+  }
 });
 
 const Account = model("Account", AccountSchema);

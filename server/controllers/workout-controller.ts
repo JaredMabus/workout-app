@@ -49,7 +49,10 @@ export const getWorkoutById = async (req: Request, res: Response) => {
 export const getLoggedInWorkoutData = async (req: Request, res: Response) => {
   try {
     const getByIdQuery = await Workout.find({
-      accountId: res.locals.cookie._id,
+      accountId: res.locals.cookie.accountData._id,
+    }).populate({
+      path: "roundId",
+      model: "Round",
     });
 
     if (!getByIdQuery)
