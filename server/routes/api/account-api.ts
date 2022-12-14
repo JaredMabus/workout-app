@@ -9,10 +9,11 @@ import {
   getLoggedInAccountData,
 } from "../../controllers/account-controller";
 import cookieAuth from "../middleware/cookieAuth";
+import s3ServiceMW from "../middleware/s3-service";
+
 const router = Router();
 
 // Account CRUD routes
-// router.route("/new")
 router.route("/data").get(cookieAuth, getLoggedInAccountData);
 router
   .route("/:id")
@@ -21,7 +22,7 @@ router
 router
   .route("/")
   .get(cookieAuth, getAllAccounts)
-  .put(cookieAuth, updateAccount)
+  .put([cookieAuth], updateAccount)
   .post(createAccount);
 
 // Auth routes

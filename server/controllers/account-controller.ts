@@ -1,21 +1,75 @@
 import { Account } from "../models";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
+import signToken, {
+  accountPayload,
+  accountFields,
+} from "../utils/accountPayload";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const createAccount = async (req: Request, res: Response) => {
+export const authenticateLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const createQuery = await Account.create(req.body);
-    if (!createQuery)
+    const foundAccount = await Account.findOne(
+      {
+        email: req.body.email,
+      },
+      accountFields
+    );
+
+    if (!foundAccount)
       return res
-        .status(500)
-        .json({ error: true, msg: "Could not create account" });
-    return res.status(200).json({ msg: "success" });
+        .status(401)
+        .json({ error: true, msg: "No account with that email." });
+
+    const isValid = await bcrypt.compare(
+      req.body.password,
+      foundAccount.password
+    );
+
+    if (!isValid)
+      return res
+        .status(401)
+        .json({ error: true, msg: "Incorrect email or password" });
+
+    const token = signToken(foundAccount);
+    if (process.env.NODE_ENV === "production") {
+      res.cookie("token", token, {
+        secure: true,
+      });
+    } else {
+      res.cookie("token", token, { secure: false });
+    }
+    let data = accountPayload(foundAccount);
+    res.status(200).json({ msg: "successful login", payload: data });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ error: true, msg: "Counld to create account" });
+    next(err);
+  }
+};
+
+export const createAccount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const query = await Account.create(req.body);
+    const token = signToken(query);
+    if (process.env.NODE_ENV === "production") {
+      res.cookie("token", token, {
+        secure: true,
+      });
+    } else {
+      res.cookie("token", token, { secure: false });
+    }
+    let data = accountPayload(query);
+    res.status(200).json({ msg: "success", payload: data });
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -50,9 +104,12 @@ export const getAccountById = async (req: Request, res: Response) => {
 
 export const getLoggedInAccountData = async (req: Request, res: Response) => {
   try {
-    const getByIdQuery = await Account.findById(res.locals.cookie._id, {
-      password: 0,
-    }).populate({
+    const getByIdQuery = await Account.findById(
+      res.locals.cookie.accountData._id,
+      {
+        password: 0,
+      }
+    ).populate({
       path: "workoutId",
       model: "Workout",
       populate: {
@@ -73,16 +130,30 @@ export const getLoggedInAccountData = async (req: Request, res: Response) => {
   }
 };
 
-export const updateAccount = async (req: Request, res: Response) => {
+export const updateAccount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const updatedAccount = await Account.findByIdAndUpdate(
-      req.body._id,
+      res.locals.cookie.accountData._id,
       req.body,
-      { fields: { password: 0 }, new: true }
+      accountFields
     );
     if (!updatedAccount)
       return res.status(404).json({ error: true, msg: "No Account found" });
-    res.status(200).json({ payload: updatedAccount });
+
+    const token = signToken(updatedAccount);
+    if (process.env.NODE_ENV === "production") {
+      res.cookie("token", token, {
+        secure: true,
+      });
+    } else {
+      res.cookie("token", token, { secure: false });
+    }
+    let data = accountPayload(updatedAccount);
+    res.status(200).json({ payload: data });
   } catch (err) {
     console.log(err);
     res.status(400).json({ error: true, msg: "Account could not be updated" });
@@ -100,41 +171,4 @@ export const deleteAccount = async (req: Request, res: Response) => {
     console.log(err);
     res.status(400).json({ error: true, msg: "Account could not be deleted" });
   }
-};
-
-export const authenticateLogin = async (req: Request, res: Response) => {
-  const foundAccount = await Account.findOne({ email: req.body.email });
-
-  if (!foundAccount)
-    return res.status(401).json({ error: true, msg: "Login failed." });
-
-  const isValid = await bcrypt.compare(
-    req.body.password,
-    foundAccount.password
-  );
-
-  if (!isValid)
-    return res.status(401).json({ error: true, msg: "Login failed." });
-
-  const token = jwt.sign(
-    {
-      _id: foundAccount._id,
-      email: foundAccount.email,
-      role: foundAccount.role,
-    },
-    process.env.SECRET_KEY!
-  );
-
-  if (process.env.NODE_ENV === "production") {
-    res.cookie("token", token, {
-      secure: true,
-    });
-  } else {
-    res.cookie("token", token, { secure: false });
-  }
-
-  // Extract password key from the foundAccount object
-  const { password, ...accountData } = foundAccount;
-
-  res.status(200).json({ msg: "successful login" });
 };

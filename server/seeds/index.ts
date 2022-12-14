@@ -9,10 +9,10 @@ db.once("open", async () => {
     // Start timer. Displayed after seeding is complete
     console.time("seeding time:");
     console.log("test");
-    // Delete account data from databases
-    await model.Account.deleteMany({});
-    await model.Workout.deleteMany({});
-    await model.Round.deleteMany({});
+    // Delete data from databases
+    // await model.Account.deleteMany({});
+    // await model.Workout.deleteMany({});
+    // await model.Round.deleteMany({});
 
     // Run seed functions
     await seedAccount();

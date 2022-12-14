@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export default function cookieAuth(
-  req: any,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
