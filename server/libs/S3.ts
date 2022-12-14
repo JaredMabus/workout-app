@@ -1,12 +1,12 @@
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import path from "path";
-import s3Client from "./s3Client"; // Helper function that creates an Amazon S3 service client module.
+import s3Client from "./s3Client";
 import { v4 } from "uuid";
 
 export default class S3 {
-  Bucket?: string; // Name of the bucket
-  Key: string; // Name of the object. For example, 'sample_upload.txt'.
-  Body: Buffer | undefined; // The content of the object. For example, 'Hello world!".
+  Bucket: string;
+  Key: string;
+  Body: Buffer | undefined;
   client: any;
   accountId: string;
   url: string;
@@ -21,17 +21,6 @@ export default class S3 {
     this.Key = this.validFileName(Key);
   }
 
-  // validFileName(string: string) {
-  //   try {
-  //     string = string.replace(/\s/g, "");
-  //     let fileExt = path.parse(string).ext;
-  //     string = `${this.accountId}-avatar${fileExt}`;
-  //     this.url = `https://${this.Bucket}.s3.us-east-2.amazonaws.com/${string}`;
-  //     return string;
-  //   } catch (err) {
-  //     throw new Error("Could not create valid file name");
-  //   }
-  // }
   validFileName(string: string) {
     try {
       string = string.replace(/\s/g, "");

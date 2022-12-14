@@ -1,10 +1,9 @@
-// Import required AWS SDK clients and commands for Node.js.
 import {
   ListBucketsCommand,
   CreateBucketCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
-import s3Client from "./s3Client"; // Helper function that creates an Amazon S3 service client module.
+import s3Client from "./s3Client";
 import { v4 as uuidv4 } from "uuid";
 
 export const list = async () => {
