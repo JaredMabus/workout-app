@@ -84,19 +84,19 @@ WorkoutSchema.post("save", async function (doc) {
   }
 });
 
-WorkoutSchema.post(new RegExp("delete", "i"), async function (doc) {
-  try {
-    await Account.findByIdAndUpdate(
-      doc.accountId,
-      {
-        $pull: { workoutId: doc._id },
-      },
-      { new: true }
-    );
-  } catch (err) {
-    throw new Error("Could not delete workoutId to account");
-  }
-});
+// WorkoutSchema.post(new RegExp("delete", "i"), async function (doc) {
+//   try {
+//     await Account.findByIdAndUpdate(
+//       doc.accountId,
+//       {
+//         $pull: { workoutId: doc._id },
+//       },
+//       { new: true }
+//     );
+//   } catch (err) {
+//     throw new Error("Could not delete workoutId to account");
+//   }
+// });
 
 const Workout = model("Workout", WorkoutSchema);
 

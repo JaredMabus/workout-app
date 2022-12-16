@@ -13,7 +13,25 @@ const data: Partial<WorkoutType>[] = [
     name: "Bench Press",
     muscleCategory: "Upper Body",
     muscleGroup: "Chest",
+    methodSelection: ["Barbell", "Cable", "Dumbbell", "Machine"],
+  },
+  {
+    _id: new Types.ObjectId("639a8040083fbf7cecfd6b2a"),
+    accountId: new Types.ObjectId("63813132dc1a66e9faa840f3"),
+    roundId: [],
+    name: "Bicep Curl",
+    muscleCategory: "Upper Body",
+    muscleGroup: "Front Arm",
     methodSelection: ["Barbell", "Cable"],
+  },
+  {
+    _id: new Types.ObjectId("639a804787b821790d9ad1f0"),
+    accountId: new Types.ObjectId("63813132dc1a66e9faa840f3"),
+    roundId: [],
+    name: "Leg Press",
+    muscleCategory: "Lower Body",
+    muscleGroup: "Legs",
+    methodSelection: ["Barbell", "Machine"],
   },
 ];
 

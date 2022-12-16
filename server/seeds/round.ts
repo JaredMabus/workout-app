@@ -25,6 +25,17 @@ const data: Partial<RoundType>[] = [
     reps: 8,
     successSetsReps: false,
   },
+  {
+    _id: new Types.ObjectId("639cc2eb585b878f06473c53"),
+    accountId: new Types.ObjectId("63813132dc1a66e9faa840f3"),
+    workoutId: new Types.ObjectId("638fa91fbd7c62d1aae60464"),
+    date: new Date("12/7/2022"),
+    method: "Machine",
+    weight: 30,
+    sets: 3,
+    reps: 8,
+    successSetsReps: false,
+  },
 ];
 
 export default async function seed() {

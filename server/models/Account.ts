@@ -121,15 +121,15 @@ AccountSchema.pre("validate", async function (next) {
   next();
 });
 
-AccountSchema.post(new RegExp("delete", "i"), async function (doc) {
-  try {
-    const s3 = new S3(doc.avatar, undefined, doc._id);
-    const deleteFile = await s3.deleteFile(doc.avatar);
-    console.log("Account and S3 avatar deleted");
-  } catch (err) {
-    throw new Error("Could not delete RoundId to account");
-  }
-});
+// AccountSchema.post(new RegExp("delete", "i"), async function (doc) {
+//   try {
+//     const s3 = new S3(doc.avatar, undefined, doc._id);
+//     const deleteFile = await s3.deleteFile(doc.avatar);
+//     console.log("Account and S3 avatar deleted");
+//   } catch (err) {
+//     throw new Error("Could not delete RoundId to account");
+//   }
+// });
 
 const Account = model("Account", AccountSchema);
 
