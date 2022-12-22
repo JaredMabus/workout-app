@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Snackbar, Typography } from "@mui/material";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import { AlertTitle } from "@mui/material";
 
 // REDUX
 import { useSelector, useDispatch } from "react-redux";
@@ -15,19 +16,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
   ref
 ) {
-  return <MuiAlert elevation={6} ref={ref} variant="outlined" {...props} />;
+  return <MuiAlert elevation={3} ref={ref} {...props} />;
 });
 
 export default function CustomizedSnackbars() {
-  const account = useSelector(selectAccount);
   const ui = useSelector(selectUi);
   const dispatch = useDispatch();
-
-  // const [open, setOpen] = React.useState(false);
-
-  // const handleClick = () => {
-  //   setOpen(true);
-  // };
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,
@@ -41,7 +35,7 @@ export default function CustomizedSnackbars() {
 
   return (
     <Snackbar
-      sx={{ mb: "50px", indexZ: 1, backgroundColor: "white", borderRadius: 1 }}
+      sx={{ mb: "50px", indexZ: 1, borderRadius: 1 }}
       open={ui.snackBarStatus.open}
       autoHideDuration={ui.snackBarStatus.duration}
       onClose={handleClose}
@@ -55,14 +49,22 @@ export default function CustomizedSnackbars() {
         severity={ui.snackBarStatus.severity}
         sx={{ width: "100%" }}
       >
-        <Typography
-          sx={{
-            fontSize: "1em",
-          }}
-          variant="body1"
-        >
-          {ui.snackBarStatus.message}
-        </Typography>
+        {ui.snackBarStatus.severity === "success" && (
+          <AlertTitle>
+            <Typography sx={{ fontWeight: "bold" }} variant="body2">
+              Success
+            </Typography>
+          </AlertTitle>
+        )}
+        {ui.snackBarStatus.severity === "error" && (
+          <AlertTitle>
+            <Typography sx={{ fontWeight: "bold" }} variant="body2">
+              Error
+            </Typography>
+          </AlertTitle>
+        )}
+
+        <Typography variant="body2">{ui.snackBarStatus.message}</Typography>
       </Alert>
     </Snackbar>
   );

@@ -17,5 +17,9 @@ axios.defaults.headers.get = {
   Accept: "application/json",
   "Content-Type": "application/json",
 };
+axios.defaults.headers.delete = {
+  Accept: "application/json",
+  "Content-Type": "application/json",
+};
 
 export default axios;

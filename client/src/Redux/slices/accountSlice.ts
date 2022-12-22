@@ -2,6 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import Cookie from "js-cookie";
 import { AccountType } from "../../../../server/models/Account";
+import { reset as uiReset } from "./uiSlice";
+import { reset as workoutReset } from "./workoutSlice";
+import useDispatch from "react-redux";
 
 export interface AccountStateType {
   loginStatus: boolean;
@@ -54,18 +57,9 @@ const accountSlice = createSlice({
       state.err = action.payload.err;
       state.api.loading = false;
     },
-    logOut: (state) => {
-      state.loginStatus = false;
-      state.accountData = {
-        _id: "",
-        email: "",
-        fname: "",
-        lname: "",
-        avatar: "",
-        height: 0,
-        weight: 0,
-      };
+    logOut: () => {
       Cookie.remove("token");
+      return initialState;
     },
     setAvatarUrl: (state, action: PayloadAction<string>) => {
       state.accountData.avatar = action.payload;
@@ -79,6 +73,7 @@ const accountSlice = createSlice({
     ) => {
       state.err = action.payload;
     },
+    reset: () => initialState,
   },
 });
 
@@ -89,6 +84,7 @@ export const {
   setApiStatus,
   setApiError,
   logOut,
+  reset,
 } = accountSlice.actions;
 
 // Export Selectors

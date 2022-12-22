@@ -11,7 +11,12 @@ const router = Router();
 
 // Workout CRUD routes
 router.route("/data").get(getLoggedInWorkoutData);
-router.route("/:id").get(getWorkoutById).delete(deleteWorkout);
-router.route("/").get(getAllWorkouts).put(updateWorkout).post(createWorkout);
+router.route("/:id").get(getWorkoutById);
+router
+  .route("/")
+  .get(getAllWorkouts)
+  .put(updateWorkout)
+  .post(createWorkout)
+  .delete(deleteWorkout);
 
 export default router;

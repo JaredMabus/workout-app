@@ -82,7 +82,7 @@ export const getLoggedInWorkoutData = async (req: Request, res: Response) => {
                 count: { $count: {} },
               },
             },
-            { $sort: { _id: 1 } },
+            { $sort: { updatedAt: 1 } },
           ],
         },
       },
@@ -107,9 +107,50 @@ export const updateWorkout = async (req: Request, res: Response) => {
       req.body,
       { new: true }
     );
+
     if (!updatedWorkout)
       return res.status(404).json({ error: true, msg: "No Workout found" });
-    res.status(200).json({ payload: updatedWorkout });
+
+    const data = await Workout.aggregate([
+      {
+        $match: {
+          _id: updatedWorkout._id,
+          accountId: new Types.ObjectId(res.locals.cookie.accountData._id),
+        },
+      },
+      {
+        $lookup: {
+          from: "rounds",
+          localField: "_id",
+          foreignField: "workoutId",
+          as: "roundId",
+        },
+      },
+      {
+        $lookup: {
+          from: "rounds",
+          localField: "_id",
+          foreignField: "workoutId",
+          as: "lastRounds",
+          pipeline: [
+            {
+              $group: {
+                _id: "$method",
+                lastWeight: { $last: "$weight" },
+                lastSets: { $last: "$sets" },
+                lastReps: { $last: "$reps" },
+                successSetsReps: { $last: "$successSetsReps" },
+                startDate: { $min: "$date" },
+                mostRecent: { $max: "$date" },
+                count: { $count: {} },
+              },
+            },
+            { $sort: { _id: 1 } },
+          ],
+        },
+      },
+    ]);
+    res.status(200).json({ payload: data[0] });
   } catch (err) {
     console.log(err);
     res.status(400).json({ error: true, msg: "Workout could not be updated" });
@@ -118,13 +159,19 @@ export const updateWorkout = async (req: Request, res: Response) => {
 
 export const deleteWorkout = async (req: Request, res: Response) => {
   try {
-    const deleteQuery = await Workout.findByIdAndDelete(req.params.id);
+    const deleteQuery = await Workout.findOneAndDelete({
+      _id: req.body._id,
+      accountId: res.locals.cookie.accountData._id,
+    });
     if (!deleteQuery)
-      return res.status(404).json({ error: true, msg: "No Workout found" });
+      return res.status(403).json({ error: true, msg: "No Workout found" });
 
-    res.status(200).json({ msg: "Workout successfully deleted" });
+    res
+      .status(200)
+      .json({ msg: "Workout successfully deleted", payload: deleteQuery });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ error: true, msg: "Workout could not be deleted" });
+    return res
+      .status(400)
+      .json({ error: true, msg: "Workout could not be deleted" });
   }
 };

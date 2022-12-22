@@ -30,6 +30,7 @@ const RoundSchema = new Schema(
       type: Date,
       default: () => Date.now() + 7 * 24 * 60 * 60 * 1000,
       required: true,
+      get: (date: Date) => `${date.toLocaleDateString("en-US")}`,
     },
     weight: {
       type: Number,
@@ -71,19 +72,19 @@ RoundSchema.post("save", async function (doc) {
   }
 });
 
-// RoundSchema.post(new RegExp("delete", "i"), async function (doc) {
-//   try {
-//     await Workout.findByIdAndUpdate(
-//       doc.workoutId,
-//       {
-//         $pull: { roundId: doc._id },
-//       },
-//       { new: true }
-//     );
-//   } catch (err) {
-//     throw new Error("Could not delete RoundId to account");
-//   }
-// });
+RoundSchema.post(new RegExp("delete", "i"), async function (doc) {
+  try {
+    await Workout.findByIdAndUpdate(
+      doc.workoutId,
+      {
+        $pull: { roundId: doc._id },
+      },
+      { new: true }
+    );
+  } catch (err) {
+    throw new Error("Could not delete RoundId to account");
+  }
+});
 
 const Round = model("Round", RoundSchema);
 

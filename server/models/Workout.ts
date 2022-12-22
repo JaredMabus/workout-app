@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import { Account } from "./index";
+import { Account, Round } from "./index";
 
 // -- Workout Types -- //
 export interface WorkoutType {
@@ -72,6 +72,7 @@ const WorkoutSchema = new Schema(
 
 WorkoutSchema.post("save", async function (doc) {
   try {
+    doc.methodSelection.sort();
     await Account.findByIdAndUpdate(
       this.accountId,
       {
@@ -84,19 +85,20 @@ WorkoutSchema.post("save", async function (doc) {
   }
 });
 
-// WorkoutSchema.post(new RegExp("delete", "i"), async function (doc) {
-//   try {
-//     await Account.findByIdAndUpdate(
-//       doc.accountId,
-//       {
-//         $pull: { workoutId: doc._id },
-//       },
-//       { new: true }
-//     );
-//   } catch (err) {
-//     throw new Error("Could not delete workoutId to account");
-//   }
-// });
+WorkoutSchema.post(new RegExp("delete", "i"), async function (doc) {
+  try {
+    await Account.findByIdAndUpdate(
+      doc.accountId,
+      {
+        $pull: { workoutId: doc._id },
+      },
+      { new: true }
+    );
+    await Round.deleteMany({ workoutId: doc._id }, { new: true });
+  } catch (err) {
+    throw new Error("Could not delete workoutId to account");
+  }
+});
 
 const Workout = model("Workout", WorkoutSchema);
 

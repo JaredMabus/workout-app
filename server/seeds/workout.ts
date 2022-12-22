@@ -9,6 +9,7 @@ const data: Partial<WorkoutType>[] = [
     roundId: [
       new Types.ObjectId("6390ee5a265387621e381f64"),
       new Types.ObjectId("6390eecd5dc8f56fa0d58fd4"),
+      new Types.ObjectId("639cc2eb585b878f06473c53"),
     ],
     name: "Bench Press",
     muscleCategory: "Upper Body",

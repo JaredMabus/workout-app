@@ -3,7 +3,7 @@ import Account from "./Account";
 import Login from "./Login";
 import SignUp from "./SignUp";
 import Dashboard from "./Dashboard";
-// import Workouts from "./Workouts/Workouts";
+import Workout from "./Workout";
 // import Plan from "./Plan/Plan";
 
 export {
@@ -12,6 +12,6 @@ export {
   Login,
   SignUp,
   Dashboard,
-  // Workouts,
+  Workout,
   // Plan
 };

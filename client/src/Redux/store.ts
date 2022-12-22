@@ -5,7 +5,7 @@ const store = configureStore({
   reducer: {
     account: slice.accountSlice,
     ui: slice.uiSlice,
-    // workout: slice.workoutSlice,
+    workout: slice.workoutSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -16,7 +16,7 @@ const store = configureStore({
 // Selectors
 export const selectAccount = (state: RootState) => state.account;
 export const selectUi = (state: RootState) => state.ui;
-// export const selectWorkout = (state: RootState) => state.workout;
+export const selectWorkout = (state: RootState) => state.workout;
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
