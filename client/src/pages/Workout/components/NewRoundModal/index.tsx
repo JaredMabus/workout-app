@@ -310,7 +310,6 @@ export default function FormDialog() {
                   variant="outlined"
                   value={values?.sets || 0}
                   onChange={handleChange}
-                  autoFocus
                   error={errors.sets ? true : false}
                   helperText={
                     errors.sets
@@ -375,7 +374,6 @@ export default function FormDialog() {
                   size="small"
                   value={values?.reps || 0}
                   onChange={handleChange}
-                  autoFocus
                   error={errors.reps ? true : false}
                   helperText={
                     errors.reps

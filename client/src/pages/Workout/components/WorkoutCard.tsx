@@ -16,6 +16,7 @@ import {
   MenuItem,
   alpha,
   Divider,
+  Chip,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { grey } from "@mui/material/colors";
@@ -33,6 +34,8 @@ import {
   setNewRoundDefaultValues,
   setActiveWorkout,
   setSnackBar,
+  setNewGoalModalState,
+  setActiveTabMethodFilter,
 } from "../../../Redux/slices/uiSlice";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -43,17 +46,37 @@ import {
   removeWorkout,
 } from "../../../Redux/slices/workoutSlice";
 // ICONS
-import { AddCircle, MoreHoriz, Edit, Delete } from "@mui/icons-material";
+import {
+  AddCircle,
+  MoreHoriz,
+  Edit,
+  Delete,
+  TrackChanges,
+} from "@mui/icons-material";
 // COMPONENTS
 import { DeleteWorkoutDialog } from "./Dialogs";
+import CardDataTabs from "./CardDataTabs";
+
+const CardMenuItemStyle = {
+  textTransform: "none",
+  p: 0,
+  justifyContent: "start",
+  backgroundColor: alpha("#fff", 0),
+  ":hover": {
+    backgroundColor: alpha("#fff", 0),
+  },
+  ".MuiButton-startIcon": {
+    m: 0,
+  },
+};
+
 export default function WorkoutCard({ workout }: any) {
   const dispatch = useDispatch();
   const ui = useSelector(selectUi);
   const theme = useTheme();
   const account = useSelector(selectAccount);
-  const [filterLastRound, setFilterLastRound] = useState(
-    workout.methodSelection[0]
-  );
+  const [filterLastRound, setFilterLastRound] =
+    useState<Partial<RecentRound> | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Tab state and logic
@@ -126,7 +149,11 @@ export default function WorkoutCard({ workout }: any) {
   };
 
   useEffect(() => {
-    if (workout.lastRounds && workout.lastRounds.length === 0) {
+    if (
+      workout.lastRounds &&
+      workout.lastRounds.length === 0 &&
+      filterLastRound !== null
+    ) {
       setFilterLastRound({
         _id: workout.methodSelection[0],
         lastWeight: 0,
@@ -147,20 +174,43 @@ export default function WorkoutCard({ workout }: any) {
     }
   }, []);
 
-  const numberFormatSX = {
-    fontFamily: "Saira Semi Condensed",
-    // fontFamily: "Open Sans",
-    // fontFamily: "Titillium Web",
-    fontSize: "1.3rem",
-    fontWeight: 500,
-  };
-
-  const metricTitlesSx = {
-    // fontFamily: "Saira Semi Condensed",
-    fontFamily: "Titillium Web",
-    fontSize: ".9rem",
-    fontWeight: 600,
-    color: grey[600],
+  const openAddRound = () => {
+    dispatch(setActiveWorkout(workout));
+    if (
+      !workout.lastRounds ||
+      workout.lastRounds.length === 0 ||
+      !tabHasRecentRound
+    ) {
+      dispatch(
+        setNewRoundDefaultValues({
+          accountId: account.accountData._id,
+          workoutId: workout._id,
+          method: value,
+          date: new Date(Date.now()),
+          weight: 100,
+          sets: 3,
+          reps: 8,
+          successSetsReps: true,
+        })
+      );
+      dispatch(setNewRoundModalState());
+      return;
+    }
+    if (filterLastRound !== null) {
+      dispatch(
+        setNewRoundDefaultValues({
+          accountId: account.accountData._id,
+          workoutId: workout._id,
+          method: filterLastRound._id,
+          date: new Date(Date.now()),
+          weight: filterLastRound.lastWeight,
+          sets: filterLastRound.lastSets,
+          reps: filterLastRound.lastReps,
+          successSetsReps: filterLastRound.successSetsReps,
+        })
+      );
+      dispatch(setNewRoundModalState());
+    }
   };
 
   return (
@@ -180,8 +230,8 @@ export default function WorkoutCard({ workout }: any) {
           border: `1px solid ${grey[300]}`,
           boxShadow: "rgb(0 0 0 / 8%) 1px 2px 3px 1px",
           borderRadius: 2,
-          maxHeight: 224,
-          minHeight: 224,
+          minHeight: 250,
+          maxHeight: 250,
         }}
       >
         <Grid container>
@@ -274,18 +324,7 @@ export default function WorkoutCard({ workout }: any) {
                       startIcon={<Edit sx={{ m: 0 }} />}
                       variant="text"
                       disableRipple
-                      sx={{
-                        textTransform: "none",
-                        p: 0,
-                        justifyContent: "start",
-                        backgroundColor: alpha("#fff", 0),
-                        ":hover": {
-                          backgroundColor: alpha("#fff", 0),
-                        },
-                        ".MuiButton-startIcon": {
-                          m: 0,
-                        },
-                      }}
+                      sx={CardMenuItemStyle}
                     >
                       <Typography
                         variant="body2"
@@ -293,6 +332,29 @@ export default function WorkoutCard({ workout }: any) {
                         sx={{ fontWeight: 700, mt: 0.4 }}
                       >
                         Edit
+                      </Typography>
+                    </Button>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={async () => {
+                      await dispatch(setActiveWorkout(workout));
+                      await dispatch(setActiveTabMethodFilter(value));
+                      await dispatch(setNewGoalModalState());
+                      handleCloseMenu();
+                    }}
+                  >
+                    <Button
+                      startIcon={<TrackChanges sx={{ m: 0 }} />}
+                      variant="text"
+                      disableRipple
+                      sx={CardMenuItemStyle}
+                    >
+                      <Typography
+                        variant="body2"
+                        align="center"
+                        sx={{ fontWeight: 700, mt: 0.4 }}
+                      >
+                        New Goal
                       </Typography>
                     </Button>
                   </MenuItem>
@@ -338,42 +400,7 @@ export default function WorkoutCard({ workout }: any) {
                   size="medium"
                   color="secondary"
                   title="New Round"
-                  onClick={() => {
-                    dispatch(setActiveWorkout(workout));
-                    if (
-                      !workout.lastRounds ||
-                      workout.lastRounds.length === 0 ||
-                      !tabHasRecentRound
-                    ) {
-                      dispatch(
-                        setNewRoundDefaultValues({
-                          accountId: account.accountData._id,
-                          workoutId: workout._id,
-                          method: value,
-                          date: new Date(Date.now()),
-                          weight: 100,
-                          sets: 3,
-                          reps: 8,
-                          successSetsReps: true,
-                        })
-                      );
-                      dispatch(setNewRoundModalState());
-                      return;
-                    }
-                    dispatch(
-                      setNewRoundDefaultValues({
-                        accountId: account.accountData._id,
-                        workoutId: workout._id,
-                        method: filterLastRound._id,
-                        date: new Date(Date.now()),
-                        weight: filterLastRound.lastWeight,
-                        sets: filterLastRound.lastSets,
-                        reps: filterLastRound.lastReps,
-                        successSetsReps: filterLastRound.successSetsReps,
-                      })
-                    );
-                    dispatch(setNewRoundModalState());
-                  }}
+                  onClick={openAddRound}
                 >
                   <AddCircle sx={{ height: 30, width: 30 }} />
                 </IconButton>
@@ -426,149 +453,72 @@ export default function WorkoutCard({ workout }: any) {
                       fontWeight: 700,
                       color: grey[700],
                       opacity: 1,
+                      backgroundColor: alpha(grey[200], 0.3),
                     },
                     "&.Mui-selected": {
-                      backgroundColor: alpha(grey[200], 0.3),
+                      // backgroundColor: alpha(grey[200], 0.2),
+                      fontWeight: 700,
                     },
                   }}
                 />
               ))}
             </Tabs>
           </Grid>
-          <Grid item xs={8}>
-            <Stack
-              justifyContent={"center"}
-              alignItems={"start"}
-              // sx={{ border: "1px solid blue" }}
-            >
-              {workout.roundId.length > 0 &&
-                tabHasRecentRound &&
-                filterLastRound !== null &&
-                filterLastRound !== undefined && (
-                  <Stack
-                    // alignItems={"center"}
-                    spacing={1}
-                    sx={{
-                      // width: "100%",
-                      maxWidth: 175,
-                      minWidth: 175,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: "8px",
-                      border: `1px solid ${grey[200]}`,
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{
-                        width: "100%",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor: grey[200],
-                        borderBottom: `1px solid ${grey[200]}`,
-                        borderRadius: "8px 8px 0 0",
-                        px: 2,
-                        pt: 0.5,
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontFamily: "Titillium Web",
-                          fontWeight: 500,
-                          fontSize: ".9rem",
-                        }}
-                      >
-                        Last Round:
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontFamily: "Titillium Web",
-                          fontWeight: 700,
-                          fontSize: ".9rem",
-                          backgroundColor: grey[200],
-                        }}
-                      >
-                        {date.dateDiff(
-                          filterLastRound?.mostRecent,
-                          new Date().toString()
-                        ) || ""}
-                      </Typography>
-                    </Stack>
-                    <Stack
-                      direction="row"
-                      spacing={0.5}
-                      sx={{ alignItems: "center", pb: 0.5 }}
-                    >
-                      <Stack direction="row" spacing={1} divider={<Divider />}>
-                        <Stack sx={{ alignItems: "center" }}>
-                          <Typography sx={metricTitlesSx}>Weight</Typography>
-                          <Typography sx={numberFormatSX}>
-                            {filterLastRound.lastWeight}
-                          </Typography>
-                        </Stack>
-                        <Stack sx={{ alignItems: "center" }}>
-                          <Typography sx={metricTitlesSx}>Sets</Typography>{" "}
-                          <Typography sx={numberFormatSX}>
-                            {filterLastRound.lastSets}
-                          </Typography>
-                        </Stack>
-                        <Stack sx={{ alignItems: "center" }}>
-                          <Typography sx={metricTitlesSx}>Reps</Typography>
-                          <Typography sx={numberFormatSX}>
-                            {filterLastRound.lastReps}
-                          </Typography>
-                        </Stack>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                )}
-              {!tabHasRecentRound && workout.roundId.length > 0 && (
-                <Typography>No Rounds</Typography>
-              )}
-              {workout.roundId.length === 0 && (
-                <Typography>New Workout</Typography>
-              )}
-            </Stack>
-          </Grid>
-          <Grid item xs={4}>
-            {/* <Stack
-              sx={{
-                // width: "100%",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: "8px",
-                border: `1px solid ${grey[200]}`,
-              }}
-            >
+          <Grid item xs={12}>
+            {!tabHasRecentRound && workout.roundId.length > 0 && (
               <Stack
-                direction="row"
                 spacing={1}
                 sx={{
-                  width: "100%",
+                  pt: 1,
+                  height: "100%",
+                  justifyContent: "start",
                   alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: grey[200],
-                  borderBottom: `1px solid ${grey[200]}`,
-                  borderRadius: "8px 8px 0 0",
-                  px: 2,
-                  pt: 0.5,
                 }}
               >
-                <Typography
+                <Typography variant="body2">No rounds using {value}</Typography>
+                <Button
+                  onClick={openAddRound}
                   sx={{
-                    fontFamily: "Titillium Web",
-                    fontWeight: 600,
-                    fontSize: ".9rem",
+                    width: 150,
+                    borderRadius: 2,
                   }}
+                  variant="outlined"
                 >
-                  Progress:
-                </Typography>
+                  Add Round
+                </Button>
               </Stack>
-              <Box>
-                <RoundProgressChart />
-              </Box>
-            </Stack> */}
+            )}
+            {workout.roundId.length === 0 && (
+              <Stack
+                spacing={1}
+                sx={{
+                  pt: 1,
+                  height: "100%",
+                  justifyContent: "start",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body2">New Workout</Typography>
+                <Button
+                  onClick={openAddRound}
+                  sx={{
+                    width: 150,
+                    borderRadius: 2,
+                  }}
+                  variant="outlined"
+                >
+                  Add Round
+                </Button>
+              </Stack>
+            )}
+            {tabHasRecentRound && workout.roundId.length > 0 && (
+              <CardDataTabs
+                workout={workout}
+                lastRound={filterLastRound}
+                tabHasRecentRound={tabHasRecentRound}
+                tabValue={value}
+              />
+            )}
           </Grid>
         </Grid>
       </Paper>

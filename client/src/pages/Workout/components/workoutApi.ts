@@ -1,5 +1,6 @@
 import axios from "../../../lib/axios";
 import { WorkoutType } from "../../../Redux/slices/workoutSlice";
+
 export const workoutApi = async () => {
   let res = await axios.get("workout/data");
   if (res.status === 200) {

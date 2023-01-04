@@ -5,12 +5,39 @@ import type { RootState } from "../store";
 export interface WorkoutType {
   _id: string;
   accountId: string;
-  roundId: RoundType[];
+  goalId: GoalByMethod[];
+  roundId: Partial<RoundType>[] | string[];
+  targetGoal: TargetGoalType;
   name: string;
   muscleCategory: MuscleCategoryType;
   muscleGroup: MuscleGroupType | MuscleGroupType[] | "";
   methodSelection: WorkoutMethodType[] | string[];
   lastRounds?: RecentRound[];
+}
+
+export interface TargetGoalType {
+  weightIncrease: number;
+  setIncrease: number;
+  repIncrease: number;
+  roundGoal: number;
+}
+
+export interface GoalType {
+  _id: string;
+  accountId: string;
+  workoutId: string;
+  method: WorkoutMethodType;
+  achieved: boolean;
+  dateAchieved: Date;
+  targetWeight: number;
+  targetSets: number;
+  targetReps: number;
+}
+
+export interface GoalByMethod {
+  _id: WorkoutMethodType;
+  createdAt: Date;
+  values: Partial<GoalType>[];
 }
 
 export interface RoundType {
@@ -34,6 +61,13 @@ export interface RecentRound {
   startDate: Date | string | any;
   mostRecent: Date | string | any;
   count?: number;
+  totalRounds?: number;
+  rounds?: RoundType[];
+  goalByMethod?: {
+    targetWeight: number;
+    targetSet: number;
+    targetRep: number;
+  };
 }
 
 export type MuscleCategoryType = "Upper Body" | "Lower Body" | "Core" | "";
@@ -105,7 +139,8 @@ const workoutSlice = createSlice({
       state.workouts.splice(removeWorkoutIndex, 1);
     },
     addRound: (state, action: PayloadAction<RoundType>) => {
-      state.workouts.forEach((item: WorkoutType) => {
+      state.workouts.forEach((workout: WorkoutType) => {
+        // Create recentRound object based on Round document
         const newLastRound: RecentRound = {
           _id: action.payload.method,
           lastWeight: action.payload.weight,
@@ -115,21 +150,47 @@ const workoutSlice = createSlice({
           startDate: action.payload.date,
           mostRecent: action.payload.date,
         };
-        if (item._id === action.payload.workoutId) {
-          if (Array.isArray(item.roundId)) item.roundId.unshift(action.payload);
+        // Find workout id
+        if (workout._id === action.payload.workoutId) {
+          if (workout.roundId && Array.isArray(workout.roundId)) {
+            workout.roundId.unshift(action.payload._id);
+          }
 
-          if (item.lastRounds && item.lastRounds.length > 0) {
-            var indexOfRound = item.lastRounds.findIndex(
+          // Add to lastRounds
+          if (workout.lastRounds && workout.lastRounds.length > 0) {
+            var indexOfRound = workout.lastRounds.findIndex(
               (i) => i._id === action.payload.method
             );
             if (indexOfRound >= 0) {
-              item.lastRounds.splice(indexOfRound, 1, newLastRound);
+              workout.lastRounds[indexOfRound]._id = action.payload.method;
+              workout.lastRounds[indexOfRound].lastWeight =
+                action.payload.weight;
+              workout.lastRounds[indexOfRound].lastSets = action.payload.sets;
+              workout.lastRounds[indexOfRound].lastReps = action.payload.reps;
+              workout.lastRounds[indexOfRound].successSetsReps =
+                action.payload.successSetsReps;
+              workout.lastRounds[indexOfRound].startDate = action.payload.date;
+              workout.lastRounds[indexOfRound].mostRecent = action.payload.date;
+              if (
+                workout != null &&
+                workout.lastRounds != null &&
+                workout.lastRounds[indexOfRound] != null &&
+                workout.lastRounds[indexOfRound].rounds != null &&
+                Array.isArray(workout.lastRounds[indexOfRound].rounds)
+              ) {
+                workout.lastRounds[indexOfRound].rounds?.unshift(
+                  action.payload
+                );
+              }
             } else {
-              item.lastRounds.push(newLastRound);
+              // add method and recent round metrics
+              newLastRound.rounds = [action.payload];
+              workout.lastRounds.unshift(newLastRound);
             }
           } else {
-            if (Array.isArray(item.lastRounds)) {
-              item.lastRounds.push(newLastRound);
+            if (Array.isArray(workout.lastRounds)) {
+              newLastRound.rounds = [action.payload];
+              workout.lastRounds.unshift(newLastRound);
             }
           }
         }

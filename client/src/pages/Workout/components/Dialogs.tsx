@@ -1,15 +1,18 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { grey } from "@mui/material/colors";
 import * as api from "./workoutApi";
 import { useSelector, useDispatch } from "react-redux";
 import { selectUi, setSnackBar } from "../../../Redux/slices/uiSlice";
 import { WorkoutType, removeWorkout } from "../../../Redux/slices/workoutSlice";
-
+import { Warning } from "@mui/icons-material";
 export interface Props {
   openDialog: boolean;
   setDialogStatus: React.Dispatch<boolean>;
@@ -83,11 +86,25 @@ export function DeleteWorkoutDialog({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Delete Workout</DialogTitle>
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{ borderBottom: `1px solid ${grey[200]}`, pb: 1, mb: 1 }}
+        >
+          <Stack direction="row" spacing={1} alignItems={"center"}>
+            <Warning color="error" sx={{ height: 25, width: 25 }} />
+            <Typography variant="h6">Delete Workout</Typography>
+          </Stack>
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this workout? All the data will be
-            permanently lost.
+            <Stack spacing={2}>
+              <Typography variant="body1">
+                Are you sure you want to delete this workout?
+              </Typography>
+              <Typography variant="body1">
+                All its rounds will be permanently lost.
+              </Typography>
+            </Stack>
           </DialogContentText>
         </DialogContent>
         <DialogActions>

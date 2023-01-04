@@ -16,6 +16,7 @@ interface UiInitialState {
   roundHydrated: boolean;
   modal: ModalStateType;
   activeWorkout: Partial<WorkoutType> | null;
+  activeTabMethodFilter: WorkoutMethodType | null;
   form: FormDataType;
 }
 
@@ -43,6 +44,9 @@ interface FormDataType {
     newRoundModalState: boolean;
     defaultValues: Partial<RoundType>;
   };
+  goal: {
+    newGoalModalState: boolean;
+  };
 }
 
 type SnackBarSeverityTypes = "error" | "warning" | "info" | "success";
@@ -61,6 +65,7 @@ export const initialState: UiInitialState = {
     open: true,
   },
   activeWorkout: null,
+  activeTabMethodFilter: null,
   form: {
     workout: {
       muscleCategory: ["Upper Body", "Lower Body", "Core"],
@@ -97,6 +102,9 @@ export const initialState: UiInitialState = {
         reps: 8,
         successSetsReps: true,
       },
+    },
+    goal: {
+      newGoalModalState: false,
     },
   },
 };
@@ -138,8 +146,17 @@ const uiSlice = createSlice({
       state.form.round.newRoundModalState =
         !state.form.round.newRoundModalState;
     },
+    setNewGoalModalState: (state) => {
+      state.form.goal.newGoalModalState = !state.form.goal.newGoalModalState;
+    },
     setActiveWorkout: (state, action: PayloadAction<Partial<WorkoutType>>) => {
       state.activeWorkout = action.payload;
+    },
+    setActiveTabMethodFilter: (
+      state,
+      action: PayloadAction<Partial<WorkoutMethodType | null>>
+    ) => {
+      state.activeTabMethodFilter = action.payload;
     },
     setNewRoundDefaultValues: (
       state,
@@ -147,7 +164,6 @@ const uiSlice = createSlice({
     ) => {
       state.form.round.defaultValues = action.payload;
     },
-
     reset: () => initialState,
   },
 });
@@ -164,6 +180,8 @@ export const {
   setUpdateWorkoutDefaultValues,
   setNewRoundModalState,
   setNewRoundDefaultValues,
+  setNewGoalModalState,
+  setActiveTabMethodFilter,
   reset,
 } = uiSlice.actions;
 

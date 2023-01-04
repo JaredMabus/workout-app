@@ -32,6 +32,7 @@ import {
 import WorkoutModal from "./NewWorkoutModal";
 import UpdateWorkoutModal from "./UpdateWorkoutForm";
 import NewRoundModal from "./NewRoundModal";
+import NewGoalModal from "./NewGoalModal";
 import WorkoutCard from "./WorkoutCard";
 import FilterChips, {
   FilterState,
@@ -48,7 +49,6 @@ export default function WorkoutContainer() {
     workoutState.workouts
   );
   const [loading, setLoading] = useState<boolean>(false);
-
   // Filter workouts logic
   const [filters, setFilterState] = useState<FilterState>({
     muscleCategory: [],
@@ -150,6 +150,7 @@ export default function WorkoutContainer() {
       <WorkoutModal />
       <UpdateWorkoutModal />
       <NewRoundModal />
+      <NewGoalModal />
       {/* Workout menu */}
       <Stack
         sx={{
