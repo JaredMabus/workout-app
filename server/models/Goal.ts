@@ -1,21 +1,23 @@
 import { Schema, model, Types } from "mongoose";
 import { Workout } from "./index";
+import { WorkoutMethodArray } from "./Workout";
 import { WorkoutMethodType } from "../../client/src/Redux/slices/workoutSlice";
 
-// -- Round Types -- //
-export interface RoundType {
+// -- Goal Types -- //
+export interface GoalType {
   _id: Types.ObjectId;
   accountId: Types.ObjectId;
   workoutId: Types.ObjectId;
-  date: Date;
   method: WorkoutMethodType;
-  weight: number;
-  sets: number;
-  reps: number;
+  achieved: Boolean;
+  achievedDate: Date | null;
+  targetWeight: number;
+  targetSets: number;
+  targetReps: number;
   successSetsReps: boolean;
 }
 
-const RoundSchema = new Schema(
+const GoalSchema = new Schema(
   {
     accountId: {
       type: Schema.Types.ObjectId,
@@ -26,31 +28,37 @@ const RoundSchema = new Schema(
     method: {
       type: String,
       required: true,
+      enum: WorkoutMethodArray,
     },
-    date: {
-      type: Date,
-      default: () => Date.now() + 7 * 24 * 60 * 60 * 1000,
-      required: true,
-      get: (date: Date) => `${date.toLocaleDateString("en-US")}`,
-    },
-    weight: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
-    sets: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
-    reps: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
-    successSetsReps: {
+    achieved: {
       type: Boolean,
-      default: true,
+      default: false,
+      required: true,
+    },
+    dateAchieved: {
+      type: Date,
+      default: Date.now(),
+      required: true,
+      get: (date: Date) => {
+        if (typeof date === null) {
+          return;
+        }
+        return `${date.toLocaleDateString("en-US")}`;
+      },
+    },
+    targetWeight: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    targetSets: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    targetReps: {
+      type: Number,
+      default: 0,
       required: true,
     },
   },
@@ -59,34 +67,34 @@ const RoundSchema = new Schema(
   }
 );
 
-RoundSchema.post("save", async function (doc) {
+GoalSchema.post("save", async function (doc) {
   try {
     await Workout.findByIdAndUpdate(
       this.workoutId,
       {
-        $addToSet: { roundId: this._id },
+        $addToSet: { goalId: this._id },
       },
       { new: true }
     );
   } catch (err) {
-    throw new Error("Could not add RoundId to account");
+    throw new Error("Could not add GoalId to account");
   }
 });
 
-RoundSchema.post(new RegExp("delete", "i"), async function (doc) {
+GoalSchema.post(new RegExp("delete", "i"), async function (doc) {
   try {
     await Workout.findByIdAndUpdate(
       doc.workoutId,
       {
-        $pull: { roundId: doc._id },
+        $pull: { goalId: doc._id },
       },
       { new: true }
     );
   } catch (err) {
-    throw new Error("Could not delete RoundId to account");
+    throw new Error("Could not delete GoalId to account");
   }
 });
 
-const Round = model("Round", RoundSchema);
+const Goal = model("Goal", GoalSchema);
 
-export default Round;
+export default Goal;

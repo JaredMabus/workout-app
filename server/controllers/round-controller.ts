@@ -68,7 +68,6 @@ export const getLoggedInRoundData = async (req: Request, res: Response) => {
 export const updateRound = async (req: Request, res: Response) => {
   try {
     const updatedRound = await Round.findByIdAndUpdate(req.body._id, req.body, {
-      fields: { password: 0 },
       new: true,
     });
     if (!updatedRound)
