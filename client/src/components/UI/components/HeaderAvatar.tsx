@@ -26,12 +26,14 @@ import {
   selectUi,
   setNavBar,
   setSnackBar,
+  reset as uiReset,
 } from "../../../Redux/slices/uiSlice";
 import {
   selectAccount,
   logOut,
   setApiStatus,
 } from "../../../Redux/slices/accountSlice";
+import { reset as workoutReset } from "../../../Redux/slices/workoutSlice";
 import { useSelector, useDispatch } from "react-redux";
 
 export default function HeaderAvatar() {
@@ -73,6 +75,8 @@ export default function HeaderAvatar() {
       event: () => {
         if (!ui.navBarOpen) {
           dispatch(logOut());
+          dispatch(uiReset());
+          dispatch(workoutReset());
           return;
         }
         dispatch(setNavBar(!ui.navBarOpen));

@@ -141,6 +141,7 @@ const Login = () => {
                 <CustomTextField
                   name="email"
                   id="email"
+                  type="email"
                   value={values.email}
                   onChange={handleChange}
                   label="Email"

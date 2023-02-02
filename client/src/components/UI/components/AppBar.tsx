@@ -97,6 +97,8 @@ const OverlayNav = ({ overlayHeight, handleNavMenu }: OverlayNavProps) => {
   const account = useSelector(selectAccount);
   const ui = useSelector(selectUi);
 
+  const logOutClearState = () => {};
+
   return (
     <>
       {/* Overlay Container */}

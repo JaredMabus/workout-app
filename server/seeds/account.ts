@@ -5,7 +5,11 @@ import { AccountType } from "../models/Account";
 const data: Partial<AccountType>[] = [
   {
     _id: new Types.ObjectId("63813132dc1a66e9faa840f3"),
-    workoutId: [new Types.ObjectId("638fa91fbd7c62d1aae60464")],
+    workoutId: [
+      new Types.ObjectId("638fa91fbd7c62d1aae60464"),
+      new Types.ObjectId("639a8040083fbf7cecfd6b2a"),
+      new Types.ObjectId("639a804787b821790d9ad1f0"),
+    ],
     email: "test@123.com",
     password: "password",
     fname: "Sarah",

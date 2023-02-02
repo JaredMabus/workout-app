@@ -81,8 +81,9 @@ const Home = () => {
                 variant="h3"
                 align="center"
                 sx={{
+                  fontFamily: "Comfortaa",
+                  fontWeight: 300,
                   width: "100%",
-                  fontWeight: "300",
                 }}
               >
                 Weight <br />
@@ -154,10 +155,11 @@ const Home = () => {
               variant="h4"
               align="right"
               sx={{
+                fontFamily: "Comfortaa",
                 display: "flex",
                 justifySelf: "end",
                 alignSelf: "end",
-                fontWeight: 500,
+                fontWeight: 600,
                 color: "#fff",
               }}
             >
@@ -212,6 +214,7 @@ const Home = () => {
             <Typography
               variant="h4"
               sx={{
+                fontFamily: "Comfortaa",
                 fontWeight: 500,
               }}
             >
@@ -248,6 +251,7 @@ const Home = () => {
             <Typography
               variant="h4"
               sx={{
+                fontFamily: "Comfortaa",
                 fontWeight: 500,
               }}
             >

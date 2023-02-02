@@ -38,19 +38,6 @@ const App: FC = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (account.loginStatus === true) {
-  //     (async () => {
-  //       console.log("Workout api");
-  //       let res = await axios.get("workout/data");
-  //       if (res.status === 200) {
-  //         let data = res.data.payload;
-  //         console.log(data);
-  //       }
-  //     })();
-  //   }
-  // }, [account]);
-
   return (
     <>
       <MuiThemeProvider theme={themeLight}>
@@ -87,6 +74,7 @@ const App: FC = () => {
               }
             />
             <Route path="/dashboard" element={<page.Dashboard />} />
+            <Route path="/workouts" element={<page.Workout />} />
             <Route path="/*" element={<page.Home />} />
           </Routes>
         </BrowserRouter>

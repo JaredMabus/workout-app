@@ -2,28 +2,43 @@ import { createTheme } from "@mui/material/styles";
 
 const otherThemes = {
   typography: {
-    h1: {
-      fontWeight: 500,
+    // h1: {
+    //   fontWeight: 500,
+    // },
+    // h2: {
+    //   fontWeight: 500,
+    // },
+    // h3: {
+    //   fontWeight: 500,
+    // },
+    // h4: {
+    //   fontWeight: 600,
+    // },
+    // h5: {
+    //   fontWeight: 600,
+    // },
+    subtitle1: {
+      fontFamily: "Comfortaa",
+      // fontWeight: 600,
     },
-    h2: {
-      fontWeight: 500,
-    },
-    h3: {
-      fontWeight: 500,
-    },
-    h4: {
+    body1: {
       fontWeight: 600,
+      fontFamily: "Comfortaa",
     },
-    h5: {
+    body2: {
       fontWeight: 600,
+      fontFamily: "Comfortaa",
     },
-    body: {
-      fontSize: 18,
-    },
-    fontFamily: ["Comfortaa", "sans-serif"].join(","),
+    fontFamily: [
+      "Titillium Web",
+      // "Comfortaa",
+      // "Saira Semi Condensed",
+      "sans-serif",
+    ].join(","),
     button: {
-      textTransform: "none" as const,
-      fontWeight: 700,
+      // fontFamily: "Comfortaa",
+      // textTransform: "none" as const,
+      fontWeight: 600,
     },
   },
   breakpoints: {

@@ -1,6 +1,9 @@
 import { Workout } from "../models";
 import { Request, Response } from "express";
 import dotenv from "dotenv";
+import mongoose, { Types } from "mongoose";
+import { workoutAgg } from "./aggregations/workout";
+import { format, formatDistance, formatRelative, subDays } from "date-fns";
 dotenv.config();
 
 export const createWorkout = async (req: Request, res: Response) => {
@@ -48,22 +51,19 @@ export const getWorkoutById = async (req: Request, res: Response) => {
 
 export const getLoggedInWorkoutData = async (req: Request, res: Response) => {
   try {
-    const getByIdQuery = await Workout.find({
-      accountId: res.locals.cookie.accountData._id,
-    }).populate({
-      path: "roundId",
-      model: "Round",
-    });
+    const query = await Workout.aggregate(workoutAgg(res));
 
-    if (!getByIdQuery)
+    if (!query)
       return res
         .status(404)
-        .json({ error: true, msg: "No workout found by that id" });
+        .json({ error: true, msg: "Could not find workout data" });
 
-    res.status(200).json({ payload: getByIdQuery });
+    res.status(200).json({ payload: query });
   } catch (err) {
     console.log(err);
-    res.status(400).json({ error: true, msg: "No Workout found by that id" });
+    res
+      .status(400)
+      .json({ error: true, msg: "Oops, could not retrieve workout data" });
   }
 };
 
@@ -72,11 +72,105 @@ export const updateWorkout = async (req: Request, res: Response) => {
     const updatedWorkout = await Workout.findByIdAndUpdate(
       req.body._id,
       req.body,
-      { fields: { password: 0 }, new: true }
+      { new: true }
     );
+
     if (!updatedWorkout)
       return res.status(404).json({ error: true, msg: "No Workout found" });
-    res.status(200).json({ payload: updatedWorkout });
+
+    const data = await Workout.aggregate([
+      {
+        $match: {
+          _id: updatedWorkout._id,
+          accountId: new Types.ObjectId(res.locals.cookie.accountData._id),
+        },
+      },
+      {
+        $lookup: {
+          from: "goals",
+          localField: "goalId",
+          foreignField: "_id",
+          as: "goalId",
+          pipeline: [
+            {
+              $group: {
+                _id: "$method",
+                createAt: { $max: "$createdAt" },
+                values: {
+                  $topN: {
+                    output: {
+                      _id: "$_id",
+                      achieved: "$achieved",
+                      dateAchieved: "$dateAchieved",
+                      targetWeight: "$targetWeight",
+                      targetSets: "$targetSets",
+                      targetReps: "$targetReps",
+                    },
+                    sortBy: { createdBy: -1 },
+                    n: 1,
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "rounds",
+          localField: "_id",
+          foreignField: "workoutId",
+          let: {
+            weightIncrease: "$targetGoal.weightIncrease",
+            setIncrease: "$targetGoal.setIncrease",
+            repIncrease: "$targetGoal.repIncrease",
+          },
+          as: "lastRounds",
+          pipeline: [
+            {
+              $group: {
+                _id: "$method",
+                lastSets: { $last: { $size: "$sets" } },
+                lastWeightRep: {
+                  $last: { $first: "$sets" },
+                },
+                successSetsReps: { $last: "$successSetsReps" },
+                startDate: { $min: "$date" },
+                mostRecent: { $max: "$date" },
+                totalRounds: { $count: {} },
+                rounds: {
+                  $topN: {
+                    output: {
+                      _id: "$_id",
+                      date: "$date",
+                      sets: "$sets",
+                      successSetsReps: "$successSetsReps",
+                    },
+                    sortBy: { date: -1 },
+                    n: 9,
+                  },
+                },
+              },
+            },
+            {
+              $project: {
+                _id: "$_id",
+                lastSets: "$lastSets",
+                lastWeight: "$lastWeightRep.weight",
+                lastReps: "$lastWeightRep.reps",
+                successSetsReps: "$successSetsReps",
+                startDate: "$startDate",
+                mostRecent: "$mostRecent",
+                totalRounds: "$totalRounds",
+                rounds: "$rounds",
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    res.status(200).json({ payload: data[0] });
   } catch (err) {
     console.log(err);
     res.status(400).json({ error: true, msg: "Workout could not be updated" });
@@ -85,13 +179,19 @@ export const updateWorkout = async (req: Request, res: Response) => {
 
 export const deleteWorkout = async (req: Request, res: Response) => {
   try {
-    const deleteQuery = await Workout.findByIdAndDelete(req.params.id);
+    const deleteQuery = await Workout.findOneAndDelete({
+      _id: req.body._id,
+      accountId: res.locals.cookie.accountData._id,
+    });
     if (!deleteQuery)
-      return res.status(404).json({ error: true, msg: "No Workout found" });
+      return res.status(403).json({ error: true, msg: "No Workout found" });
 
-    res.status(200).json({ msg: "Workout successfully deleted" });
+    res
+      .status(200)
+      .json({ msg: "Workout successfully deleted", payload: deleteQuery });
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ error: true, msg: "Workout could not be deleted" });
+    return res
+      .status(400)
+      .json({ error: true, msg: "Workout could not be deleted" });
   }
 };

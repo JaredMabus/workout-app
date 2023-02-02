@@ -1,6 +1,7 @@
 import { Schema, model, Types } from "mongoose";
 import { Workout } from "./index";
-import { WorkoutMethodType } from "./Workout";
+import { WorkoutMethodType } from "../../client/src/Redux/slices/workoutSlice";
+
 // -- Round Types -- //
 export interface RoundType {
   _id: Types.ObjectId;
@@ -8,31 +9,21 @@ export interface RoundType {
   workoutId: Types.ObjectId;
   date: Date;
   method: WorkoutMethodType;
-  weight: number;
-  sets: number;
-  reps: number;
+  sets: SetType[];
+  weight?: number;
+  reps?: number;
   successSetsReps: boolean;
 }
 
-const RoundSchema = new Schema(
+export interface SetType {
+  weight: number;
+  reps: number;
+  datetime: Date | null;
+}
+
+const SetSchema = new Schema(
   {
-    accountId: {
-      type: Schema.Types.ObjectId,
-      ref: "Account",
-      required: true,
-    },
-    workoutId: { type: Schema.Types.ObjectId, ref: "Workout", required: true },
-    date: {
-      type: Date,
-      default: () => Date.now() + 7 * 24 * 60 * 60 * 1000,
-      required: true,
-    },
     weight: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
-    sets: {
       type: Number,
       default: 0,
       required: true,
@@ -42,6 +33,34 @@ const RoundSchema = new Schema(
       default: 0,
       required: true,
     },
+    datetime: {
+      type: Date,
+      required: true,
+      default: null,
+    },
+  },
+  { _id: false }
+);
+
+const RoundSchema = new Schema(
+  {
+    accountId: {
+      type: Schema.Types.ObjectId,
+      ref: "Account",
+      required: true,
+    },
+    workoutId: { type: Schema.Types.ObjectId, ref: "Workout", required: true },
+    method: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      default: () => Date.now() + 7 * 24 * 60 * 60 * 1000,
+      required: true,
+      get: (date: Date) => `${date.toLocaleDateString("en-US")}`,
+    },
+    sets: [SetSchema],
     successSetsReps: {
       type: Boolean,
       default: true,
