@@ -32,14 +32,19 @@ import {
   RoundType,
   RecentRound,
   WorkoutMethodType,
+  GoalType,
 } from "../../../Redux/slices/workoutSlice";
 // COMPONENTS
 import ProgressChart from "./ProgressChart";
+import GoalCard from "../components/NewGoalModal/GoalCard";
+
 interface Props {
   workout: WorkoutType;
   lastRound: Partial<RecentRound> | null;
   tabHasRecentRound: boolean;
   tabValue: WorkoutMethodType;
+  activeGoal: GoalType | null;
+  setActiveGoal: React.Dispatch<React.SetStateAction<GoalType | null>>;
 }
 
 const numberFormatSX = {
@@ -62,6 +67,8 @@ export default function CardDataTabs({
   lastRound,
   tabHasRecentRound,
   tabValue,
+  activeGoal,
+  setActiveGoal,
 }: Props) {
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -78,12 +85,6 @@ export default function CardDataTabs({
   const handleStepChange = (step: number) => {
     setActiveStep(step);
   };
-
-  useEffect(() => {
-    // console.log(workout);
-    // console.log(lastRound);
-    // workoutGoalAchieved(workout);
-  }, []);
 
   return (
     <div>
@@ -214,17 +215,22 @@ export default function CardDataTabs({
                     workout={workout}
                     lastRound={lastRound}
                     tabValue={tabValue}
+                    activeGoal={activeGoal}
+                    setActiveGoal={setActiveGoal}
                   />
                 </Stack>
               </Stack>
             )}
         </Stack>
-        {/* </div> */}
-        {/* <div> */}
+        {/* Goals Tab */}
         <Stack>
-          {/* <ProgressChart workout={workout} lastRound={lastRound} /> */}
+          <GoalCard
+            workout={workout}
+            activeGoal={activeGoal}
+            progressObj={null}
+            type="current"
+          />
         </Stack>
-        {/* </div> */}
       </SwipeableViews>
       {lastRound && Object.keys(lastRound).length > 0 && tabHasRecentRound && (
         <MobileStepper

@@ -5,22 +5,9 @@ import {
   Button,
   Stack,
   Divider,
-  Select,
-  OutlinedInput,
-  InputLabel,
-  MenuItem,
-  FormControl,
-  Chip,
-  Box,
-  Checkbox,
-  ListItemText,
-  FormHelperText,
   IconButton,
   TextField,
   Typography,
-  Slider,
-  FormGroup,
-  FormControlLabel,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import Dialog from "@mui/material/Dialog";
@@ -29,17 +16,28 @@ import DialogContent from "@mui/material/DialogContent";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { PlaylistAdd, Tune, Lock, LockOpen } from "@mui/icons-material";
+import {
+  PlaylistAdd,
+  Tune,
+  Lock,
+  LockOpen,
+  Add,
+  Remove,
+} from "@mui/icons-material";
 // REDUX
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectUi,
   setNewRoundModalState,
+  setCompletedSetsIndices,
 } from "../../../../Redux/slices/uiSlice";
 import {
   selectWorkout,
   RoundType,
 } from "../../../../Redux/slices/workoutSlice";
+// COMPONENTS
+import SetStepper from "./SetStepper";
+import CompletedSetTable from "./CompletedSetTable";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -52,30 +50,79 @@ const MenuProps = {
   },
 };
 
+const maxSets = 20;
+const minSets = 1;
+
 export default function FormDialog() {
   const dispatch = useDispatch();
   const ui = useSelector(selectUi);
-  const { values, errors, handleChange, handleSubmit, handleDateChange } =
-    useForm();
+  const {
+    values,
+    setValue,
+    errors,
+    handleChange,
+    handleSubmit,
+    handleDateChange,
+  } = useForm();
   const theme = useTheme();
-
+  const [completedSetIndex, setCompletedSetIndex] = useState<
+    { [k: number]: boolean }[] | null
+  >(null);
   const handleClose = () => {
     dispatch(setNewRoundModalState());
+    dispatch(setCompletedSetsIndices({}));
+  };
+
+  const setInputRef = React.useRef<HTMLInputElement>();
+  const incrementSets = () => {
+    try {
+      if (setInputRef.current != null && setInputRef.current.value != null) {
+        if (Number(setInputRef.current.value) >= maxSets) {
+          return;
+        }
+        setInputRef.current.stepUp();
+        handleChange(setInputRef.current);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const decrementSets = () => {
+    try {
+      if (setInputRef.current != null && setInputRef.current.value != null) {
+        if (Number(setInputRef.current.value) <= minSets) {
+          return;
+        }
+        setInputRef.current.stepDown();
+        handleChange(setInputRef.current);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const [dateValue, setDateValue] = React.useState<Date | null>(new Date());
+
   const handleDate = (newValue: Date | null) => {
     setDateValue(newValue);
     handleDateChange(newValue);
   };
 
   useEffect(() => {
-    setDateValue(ui.form.round?.defaultValues?.date || new Date());
-  }, [ui.form.round.defaultValues.date]);
+    if (
+      Array.isArray(ui.form.round.defaultValues) &&
+      ui.form.round.defaultValues.length > 0 &&
+      ui.form.round.defaultValues.date
+    ) {
+      setDateValue(ui.form.round?.defaultValues?.date || new Date());
+    }
+  }, [ui.form.round.defaultValues]);
 
-  const [sliderStatusWeight, setSliderStatusWeight] = useState<boolean>(false);
-  const [sliderStatusSets, setSliderStatusSets] = useState<boolean>(false);
-  const [sliderStatusReps, setSliderStatusReps] = useState<boolean>(false);
+  // SLIDERS
+  // const [sliderStatusWeight, setSliderStatusWeight] = useState<boolean>(false);
+  // const [sliderStatusSets, setSliderStatusSets] = useState<boolean>(false);
+  // const [sliderStatusReps, setSliderStatusReps] = useState<boolean>(false);
   // const [marks, setMarks] = useState([
   //   {
   //     value: ui.form.round.defaultValues.weight,
@@ -83,10 +130,10 @@ export default function FormDialog() {
   //   },
   // ]);
 
-  function valuetext(value: number) {
-    return `${value}`;
-  }
-  const [lockedMax, setLockedMax] = useState<boolean>(true);
+  // function valuetext(value: number) {
+  //   return `${value}`;
+  // }
+  // const [lockedMax, setLockedMax] = useState<boolean>(true);
 
   return (
     <Dialog
@@ -114,13 +161,6 @@ export default function FormDialog() {
           }}
         >
           <Stack direction="row">
-            <PlaylistAdd
-              sx={{
-                height: { xs: 35, sm: 45 },
-                width: { xs: 35, sm: 45 },
-                mr: 0.8,
-              }}
-            />
             <Stack>
               <Typography
                 align="left"
@@ -143,7 +183,7 @@ export default function FormDialog() {
               </Typography>
             </Stack>
           </Stack>
-          <Stack>
+          {/* <Stack>
             {lockedMax ? (
               <IconButton
                 onClick={() => {
@@ -185,11 +225,11 @@ export default function FormDialog() {
                 </Stack>
               </IconButton>
             )}
-          </Stack>
+          </Stack> */}
         </Stack>
         <DialogContent sx={{ p: 2, pt: 2 }}>
           <Stack spacing={3} divider={<Divider />}>
-            <Stack spacing={3} sx={{ pt: 1 }}>
+            <Stack direction="row" spacing={3} sx={{ pt: 1 }}>
               <TextField
                 id="muscle-category-input"
                 name="method"
@@ -235,209 +275,51 @@ export default function FormDialog() {
                 />
               </LocalizationProvider>
             </Stack>
+
             <Stack spacing={3} sx={{ pt: 1, pb: 3 }}>
+              {/* <Typography variant={"h6"}>Sets</Typography> */}
               <Stack
-                direction="row"
-                sx={{ alignItems: "baseline", justifyContent: "start" }}
+                spacing={2}
+                direction="column"
+                sx={{ alignItems: "baseline" }}
               >
-                <TextField
-                  id="weight"
-                  name="weight"
-                  label="Weight (lbs)"
-                  sx={{ maxWidth: 145 }}
-                  type="number"
-                  variant="outlined"
-                  size="small"
-                  value={values?.weight || 0}
-                  onChange={handleChange}
-                  autoFocus
-                  error={errors.weight ? true : false}
-                  helperText={
-                    errors.weight
-                      ? errors.weight
-                      : ui.form.round.defaultValues.weight &&
-                        ui.form.round.defaultValues.weight > 0
-                      ? `Last round: ${ui.form.round.defaultValues.weight} lbs`
-                      : ""
-                  }
-                />
-                <IconButton
-                  onClick={() => {
-                    setSliderStatusWeight(!sliderStatusWeight);
-                  }}
-                  sx={{ borderRadius: 2, p: 0.5, mx: 1 }}
-                >
-                  <Tune />
-                </IconButton>
-              </Stack>
-              {sliderStatusWeight && (
-                <Slider
-                  name="weight"
-                  track={false}
-                  value={values?.weight || 0}
-                  onChange={handleChange}
-                  aria-label="Always visible"
-                  getAriaValueText={valuetext}
-                  valueLabelDisplay="on"
-                  marks={[
-                    {
-                      value:
-                        typeof ui.form.round.defaultValues.weight === "number"
-                          ? ui.form.round.defaultValues.weight
-                          : 0,
-                      label: "Last round",
-                    },
-                  ]}
-                  step={1}
-                  min={1}
-                  max={
-                    typeof ui.form.round.defaultValues.weight === "number" &&
-                    ui.form.round.defaultValues.weight !== 0 &&
-                    lockedMax
-                      ? ui.form.round.defaultValues.weight * 2
-                      : 1000
-                  }
-                />
-              )}
-              <Stack direction="row" sx={{ alignItems: "baseline" }}>
-                <TextField
-                  id="sets"
-                  name="sets"
-                  label="Sets"
-                  sx={{ maxWidth: 120 }}
-                  type="number"
-                  size="small"
-                  variant="outlined"
-                  value={values?.sets || 0}
-                  onChange={handleChange}
-                  error={errors.sets ? true : false}
-                  helperText={
-                    errors.sets
-                      ? errors.sets
-                      : ui.form.round.defaultValues.sets &&
-                        ui.form.round.defaultValues.sets > 0
-                      ? `Last round: ${ui.form.round.defaultValues.sets}`
-                      : ""
-                  }
-                />
-                <IconButton
-                  onClick={() => {
-                    setSliderStatusSets(!sliderStatusSets);
-                  }}
-                  sx={{ borderRadius: 2, p: 0.5, mx: 1 }}
-                >
-                  <Tune />
-                </IconButton>
-              </Stack>
-              {sliderStatusSets && (
-                <Stack>
-                  <Slider
+                <Stack direction="row">
+                  <TextField
+                    id="sets"
+                    inputRef={setInputRef}
                     name="sets"
-                    track={false}
-                    value={values?.sets || 0}
+                    label="Sets"
+                    type="number"
+                    size="small"
+                    variant="outlined"
+                    value={values?.sets?.length || 0}
                     onChange={handleChange}
-                    aria-label="Always visible"
-                    getAriaValueText={valuetext}
-                    valueLabelDisplay="on"
-                    marks={[
-                      {
-                        value:
-                          typeof ui.form.round.defaultValues.sets === "number"
-                            ? ui.form.round.defaultValues.sets
-                            : 0,
-                        label: "Last round",
-                      },
-                    ]}
-                    step={1}
-                    min={1}
-                    max={
-                      typeof ui.form.round.defaultValues.sets === "number" &&
-                      ui.form.round.defaultValues.sets !== 0 &&
-                      lockedMax
-                        ? ui.form.round.defaultValues.sets * 2
-                        : 100
-                    }
+                    error={errors.sets ? true : false}
+                    helperText={errors.sets ? errors.sets : ``}
+                    sx={{
+                      maxWidth: 75,
+                      "& input[type=number]::-webkit-inner-spin-button,& input[type=number]::-webkit-outer-spin-button ":
+                        {
+                          WebkitAppearance: "none",
+                          margin: 0,
+                        },
+                    }}
                   />
+                  <Button id="weight-decrement-btn" onClick={decrementSets}>
+                    <Remove />
+                  </Button>
+                  <Button id="weight-increment-btn" onClick={incrementSets}>
+                    <Add />
+                  </Button>
                 </Stack>
-              )}
-              <Stack
-                direction="row"
-                sx={{ alignItems: "baseline", justifyContent: "start" }}
-              >
-                <TextField
-                  id="reps"
-                  name="reps"
-                  label="Reps"
-                  sx={{ maxWidth: 120 }}
-                  type="number"
-                  variant="outlined"
-                  size="small"
-                  value={values?.reps || 0}
-                  onChange={handleChange}
-                  error={errors.reps ? true : false}
-                  helperText={
-                    errors.reps
-                      ? errors.reps
-                      : ui.form.round.defaultValues.reps &&
-                        ui.form.round.defaultValues.reps > 0
-                      ? `Last round: ${ui.form.round.defaultValues.reps}`
-                      : ""
-                  }
+                <SetStepper
+                  values={values}
+                  setValue={setValue}
+                  errors={errors}
+                  handleChange={handleChange}
                 />
-                <IconButton
-                  onClick={() => {
-                    setSliderStatusReps(!sliderStatusReps);
-                  }}
-                  sx={{ borderRadius: 2, p: 0.5, mx: 1 }}
-                >
-                  <Tune />
-                </IconButton>
               </Stack>
-              {sliderStatusReps && (
-                <Stack>
-                  <Slider
-                    name="reps"
-                    track={false}
-                    value={values?.reps || 0}
-                    onChange={handleChange}
-                    aria-label="Always visible"
-                    getAriaValueText={valuetext}
-                    valueLabelDisplay="on"
-                    marks={[
-                      {
-                        value:
-                          typeof ui.form.round.defaultValues.reps === "number"
-                            ? ui.form.round.defaultValues.reps
-                            : 0,
-                        label: "Last round",
-                      },
-                    ]}
-                    step={1}
-                    min={1}
-                    max={
-                      typeof ui.form.round.defaultValues.reps === "number" &&
-                      ui.form.round.defaultValues.reps !== 0 &&
-                      lockedMax
-                        ? ui.form.round.defaultValues.reps * 2
-                        : 100
-                    }
-                  />
-                </Stack>
-              )}
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="successSetsReps"
-                      checked={values.successSetsReps}
-                      value={values.successSetsReps}
-                      onChange={handleChange}
-                      size="medium"
-                    />
-                  }
-                  label="All successful sets and reps?"
-                />
-              </FormGroup>
+              <CompletedSetTable values={values} />
             </Stack>
           </Stack>
         </DialogContent>
@@ -455,7 +337,7 @@ export default function FormDialog() {
             onClick={handleSubmit}
             sx={{ minWidth: 120 }}
           >
-            Add
+            Submit Workout
           </Button>
         </DialogActions>
       </Stack>

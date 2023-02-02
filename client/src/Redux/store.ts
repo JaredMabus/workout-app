@@ -1,17 +1,20 @@
 import { configureStore } from "@reduxjs/toolkit";
 import * as slice from "./slices";
 
-const store = configureStore({
-  reducer: {
-    account: slice.accountSlice,
-    ui: slice.uiSlice,
-    workout: slice.workoutSlice,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
-});
+export const createStore = () =>
+  configureStore({
+    reducer: {
+      account: slice.accountSlice,
+      ui: slice.uiSlice,
+      workout: slice.workoutSlice,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }),
+  });
+
+export const store = createStore();
 
 // Selectors
 export const selectAccount = (state: RootState) => state.account;

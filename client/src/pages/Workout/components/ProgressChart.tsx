@@ -5,15 +5,81 @@ import CircularProgress, {
 import { Box, Typography, Stack, alpha } from "@mui/material";
 import { grey, green } from "@mui/material/colors";
 import { workoutGoalAchieved } from "../../../utils/math";
+import axios from "../../../lib/axios";
+import { useDispatch, useSelector } from "react-redux";
 import {
   WorkoutType,
   RecentRound,
   WorkoutMethodType,
-  GoalByMethod,
+  GoalType,
+  addWorkoutGoal,
 } from "../../../Redux/slices/workoutSlice";
+import * as ui from "../../../Redux/slices/uiSlice";
+import { CompletedGoal } from "./Dialogs";
+
+const updateGoalApi = async (id: string | undefined) => {
+  try {
+    if (id == null) return;
+
+    let data: Partial<GoalType> = {
+      _id: id,
+      achieved: true,
+      dateAchieved: new Date(),
+    };
+    let res = await axios.put("goal", data);
+    // console.log(res.status);
+    return res.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+type GoalTypeOptional = Optional<GoalType, "_id" | "createdAt" | "updatedAt">;
+
+export const addNewGoalApi = async (
+  workout: WorkoutType,
+  activeGoal: GoalType
+) => {
+  try {
+    if (activeGoal != null && workout.targetGoal != null) {
+      const { setIncrease, weightIncrease, repIncrease } = workout.targetGoal;
+      const { targetSets, targetWeight, targetReps } = activeGoal;
+      if (targetSets != null && targetWeight != null && targetReps != null) {
+        let newGoal: GoalTypeOptional = {
+          workoutId: workout._id,
+          accountId: workout.accountId,
+          method: activeGoal.method,
+          achieved: false,
+          dateAchieved: new Date(),
+          targetRounds: activeGoal.targetRounds,
+          targetSets: targetSets + setIncrease,
+          targetWeight: targetWeight + weightIncrease,
+          targetReps: targetReps + repIncrease,
+        };
+
+        if (newGoal != null) {
+          let res = await axios.post("goal", newGoal);
+          if (res.status) {
+            let data = res.data;
+            return data.payload;
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export interface ProgressObjType {
+  totalRounds: number;
+  totalSucessRounds: number;
+  targetRounds: number;
+  progressPercent: number;
+}
 
 function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number }
+  props: CircularProgressProps & { value: number; progressobj: ProgressObjType }
 ) {
   return (
     <Box
@@ -21,13 +87,12 @@ function CircularProgressWithLabel(
         position: "relative",
         justifySelf: "center",
         alignSelf: "center",
-        // border: "1px solid orange",
       }}
     >
       <CircularProgress
         variant="determinate"
-        size={65}
-        thickness={4}
+        size={55}
+        thickness={3}
         color="success"
         sx={{
           color: "#6AB73D",
@@ -46,7 +111,6 @@ function CircularProgressWithLabel(
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          // border: "1px solid purple",
         }}
       >
         <Typography
@@ -56,62 +120,82 @@ function CircularProgressWithLabel(
             fontFamily: "Saira Semi Condensed",
           }}
           variant="body2"
-          // component="div"
           color="text.secondary"
-          // >{`${Math.round(props.value)}%`}</Typography>
-        >{`4/6`}</Typography>
+        >
+          {props.progressobj.totalSucessRounds}/{props.progressobj.targetRounds}
+        </Typography>
       </Box>
     </Box>
   );
 }
 
-interface Props {
+export interface Props {
   workout: WorkoutType;
   lastRound: Partial<RecentRound>;
   tabValue: WorkoutMethodType;
+  activeGoal: GoalType | null;
+  setActiveGoal: React.Dispatch<React.SetStateAction<GoalType | null>>;
 }
 
-export default function ProgressChart({ workout, lastRound, tabValue }: Props) {
-  const [progress, setProgress] = React.useState(0);
-  const [activeGoal, setActiveGoal] = useState<GoalByMethod | null>(null);
+export default function ProgressChart({
+  workout,
+  lastRound,
+  tabValue,
+  activeGoal,
+  setActiveGoal,
+}: Props) {
+  const dispatch = useDispatch();
+  const uiState = useSelector(ui.selectUi);
+  const [progressObj, setProgress] = React.useState<ProgressObjType>({
+    targetRounds: 0,
+    totalRounds: 0,
+    totalSucessRounds: 0,
+    progressPercent: 0,
+  });
 
-  const setFilterGoals = () => {
-    try {
-      console.log(tabValue);
-      if (
-        workout != null &&
-        workout.goalId != null &&
-        Array.isArray(workout.goalId)
-      ) {
-        let filteredGoal = workout.goalId.find((item) => item._id === tabValue);
-        if (filteredGoal != null) {
-          setActiveGoal(filteredGoal);
-        } else {
-          setActiveGoal(null);
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    setFilterGoals();
-  }, [tabValue]);
+  // useEffect(() => {
+  // console.log(workout);
+  // console.log(lastRound);
+  // console.log(tabValue);
+  // console.log(activeGoal);
+  // }, [tabValue]);
 
   useEffect(() => {
     if (activeGoal != null && lastRound != null) {
-      let progressObj = workoutGoalAchieved(workout, lastRound, activeGoal);
-      setProgress(progressObj.progressPercent);
+      setProgress(workoutGoalAchieved(workout, lastRound, activeGoal));
     }
-    console.log(activeGoal);
   }, [activeGoal]);
+
+  useEffect(() => {
+    if (
+      activeGoal != null &&
+      activeGoal.achieved === false &&
+      progressObj.progressPercent >= 100
+    ) {
+      dispatch(ui.setGoalDialogStatus(true));
+      (async () => {
+        await updateGoalApi(activeGoal._id);
+        let newGoal = await addNewGoalApi(workout, activeGoal);
+        if (newGoal != null) {
+          dispatch(addWorkoutGoal(newGoal));
+        }
+      })();
+    }
+  }, [progressObj]);
 
   return (
     <>
+      <CompletedGoal
+        workout={workout}
+        activeGoal={activeGoal}
+        progressObj={progressObj}
+      />
       {activeGoal != null ? (
         <Stack>
-          <CircularProgressWithLabel value={progress} />
+          <CircularProgressWithLabel
+            value={progressObj.progressPercent}
+            progressobj={progressObj}
+          />
         </Stack>
       ) : (
         <div>

@@ -58,24 +58,6 @@ export default function NewGoalModal() {
     dispatch(setNewGoalModalState());
   };
 
-  // useEffect(() => {
-  //   console.log("Active workout run");
-  //   console.log(ui.activeWorkout != null && ui.activeWorkout._id != null);
-
-  //   if (ui.activeWorkout != null && ui.activeWorkout._id != null) {
-  //     console.log(ui?.activeWorkout?._id);
-  //     setValue({ ...values, workoutId: ui?.activeWorkout?._id });
-  //     console.log("Active workout changed");
-  //   }
-  // }, [ui.activeWorkout]);
-
-  // useEffect(() => {
-  //   console.log("Log tab change");
-  //   if (ui.activeTabMethodFilter != null) {
-  //     setValue({ ...values, method: ui.activeTabMethodFilter });
-  //   }
-  // }, [ui.activeTabMethodFilter]);
-
   return (
     <Dialog
       fullWidth={true}
@@ -117,6 +99,7 @@ export default function NewGoalModal() {
                 {ui?.activeWorkout?.name || "New Goal"}
               </Typography>
               <Typography
+                data-testid="set-active-goal"
                 align="left"
                 variant="h5"
                 sx={{

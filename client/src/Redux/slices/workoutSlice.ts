@@ -5,7 +5,7 @@ import type { RootState } from "../store";
 export interface WorkoutType {
   _id: string;
   accountId: string;
-  goalId: GoalByMethod[];
+  goalId: GoalType[];
   roundId: Partial<RoundType>[] | string[];
   targetGoal: TargetGoalType;
   name: string;
@@ -29,15 +29,12 @@ export interface GoalType {
   method: WorkoutMethodType;
   achieved: boolean;
   dateAchieved: Date;
-  targetWeight: number;
+  targetRounds: number;
   targetSets: number;
+  targetWeight: number;
   targetReps: number;
-}
-
-export interface GoalByMethod {
-  _id: WorkoutMethodType;
   createdAt: Date;
-  values: Partial<GoalType>[];
+  updatedAt: Date;
 }
 
 export interface RoundType {
@@ -46,28 +43,35 @@ export interface RoundType {
   workoutId: string;
   method: WorkoutMethodType;
   date: Date | null;
-  weight: number;
-  sets: number;
-  reps: number;
+  sets: SetType[];
   successSetsReps: boolean;
 }
 
 export interface RecentRound {
   _id: WorkoutMethodType; // aggregation grouped on workout's method value
-  lastWeight: number;
   lastSets: number;
+  lastWeight: number;
   lastReps: number;
   successSetsReps: boolean;
-  startDate: Date | string | any;
-  mostRecent: Date | string | any;
-  count?: number;
+  startDate?: Date | string | any;
+  mostRecent?: Date | string | any;
   totalRounds?: number;
-  rounds?: RoundType[];
-  goalByMethod?: {
-    targetWeight: number;
-    targetSet: number;
-    targetRep: number;
-  };
+  rounds?: RecentRoundsRoundsType[];
+  // sets?: SetType[]; // optional when using Round and RecentRound together
+}
+
+export interface RecentRoundsRoundsType {
+  _id: string;
+  date: Date | string | null;
+  sets: SetType[];
+  successSetsReps: boolean;
+}
+
+export interface SetType {
+  weight: number;
+  reps: number;
+  datetime: Date | string | null;
+  isComplete?: boolean;
 }
 
 export type MuscleCategoryType = "Upper Body" | "Lower Body" | "Core" | "";
@@ -123,6 +127,7 @@ const workoutSlice = createSlice({
   name: "WORKOUT",
   initialState,
   reducers: {
+    reset: () => initialState,
     setWorkouts: (state, action: PayloadAction<WorkoutType[] | []>) => {
       state.workouts = action.payload;
     },
@@ -143,77 +148,99 @@ const workoutSlice = createSlice({
         // Create recentRound object based on Round document
         const newLastRound: RecentRound = {
           _id: action.payload.method,
-          lastWeight: action.payload.weight,
-          lastSets: action.payload.sets,
-          lastReps: action.payload.reps,
+          lastSets: action.payload.sets.length,
+          lastWeight: action.payload.sets[0].weight,
+          lastReps: action.payload.sets[0].reps,
           successSetsReps: action.payload.successSetsReps,
           startDate: action.payload.date,
           mostRecent: action.payload.date,
         };
+
+        const roundObj: RecentRoundsRoundsType = {
+          _id: action.payload._id,
+          date: action.payload.date,
+          sets: action.payload.sets,
+          successSetsReps: action.payload.successSetsReps,
+        };
+
         // Find workout id
         if (workout._id === action.payload.workoutId) {
           if (workout.roundId && Array.isArray(workout.roundId)) {
             workout.roundId.unshift(action.payload._id);
           }
 
-          // Add to lastRounds
+          // Add and update lastRounds by using the round object returned from new round api
           if (workout.lastRounds && workout.lastRounds.length > 0) {
-            var indexOfRound = workout.lastRounds.findIndex(
+            var i = workout.lastRounds.findIndex(
               (i) => i._id === action.payload.method
             );
-            if (indexOfRound >= 0) {
-              workout.lastRounds[indexOfRound]._id = action.payload.method;
-              workout.lastRounds[indexOfRound].lastWeight =
-                action.payload.weight;
-              workout.lastRounds[indexOfRound].lastSets = action.payload.sets;
-              workout.lastRounds[indexOfRound].lastReps = action.payload.reps;
-              workout.lastRounds[indexOfRound].successSetsReps =
+            if (i >= 0) {
+              workout.lastRounds[i]._id = action.payload.method;
+              workout.lastRounds[i].lastSets = action.payload.sets.length;
+              workout.lastRounds[i].lastWeight = action.payload.sets[0].weight;
+              workout.lastRounds[i].lastReps = action.payload.sets[0].reps;
+              workout.lastRounds[i].successSetsReps =
                 action.payload.successSetsReps;
-              workout.lastRounds[indexOfRound].startDate = action.payload.date;
-              workout.lastRounds[indexOfRound].mostRecent = action.payload.date;
+              workout.lastRounds[i].startDate = action.payload.date;
+              workout.lastRounds[i].mostRecent = action.payload.date;
+              // Add new round to lastRounds.rounds array
               if (
                 workout != null &&
                 workout.lastRounds != null &&
-                workout.lastRounds[indexOfRound] != null &&
-                workout.lastRounds[indexOfRound].rounds != null &&
-                Array.isArray(workout.lastRounds[indexOfRound].rounds)
+                workout.lastRounds[i] != null &&
+                workout.lastRounds[i].rounds != null &&
+                Array.isArray(workout.lastRounds[i].rounds)
               ) {
-                workout.lastRounds[indexOfRound].rounds?.unshift(
-                  action.payload
-                );
+                workout.lastRounds[i].rounds?.unshift(roundObj);
               }
             } else {
-              // add method and recent round metrics
-              newLastRound.rounds = [action.payload];
+              // lastRounds does NOT contain method
+              newLastRound.rounds = [roundObj];
               workout.lastRounds.unshift(newLastRound);
             }
           } else {
-            if (Array.isArray(workout.lastRounds)) {
-              newLastRound.rounds = [action.payload];
-              workout.lastRounds.unshift(newLastRound);
-            }
+            // add lastRounds array if doesn't exist
+            workout.lastRounds = [];
+            newLastRound.rounds = [roundObj];
+            workout.lastRounds.unshift(newLastRound);
           }
         }
       });
     },
     updateWorkout: (state, action: PayloadAction<any>) => {
+      console.log(action.payload);
       let i = state.workouts.findIndex(
         (item) => item._id === action.payload._id
       );
       state.workouts.splice(i, 1, action.payload);
     },
-    reset: () => initialState,
+    addWorkoutGoal: (state, action: PayloadAction<GoalType>) => {
+      let workoutIndex = state.workouts.findIndex(
+        (workout) => workout._id === action.payload.workoutId
+      );
+
+      let goalIdIndex = state.workouts[workoutIndex].goalId.findIndex(
+        (goal) => goal.method === action.payload.method
+      );
+
+      state.workouts[workoutIndex].goalId.splice(
+        goalIdIndex,
+        1,
+        action.payload
+      );
+    },
   },
 });
 
 export const {
+  reset,
   setWorkouts,
   setApiStatus,
   addWorkout,
   removeWorkout,
   updateWorkout,
   addRound,
-  reset,
+  addWorkoutGoal,
 } = workoutSlice.actions;
 
 export const selectWorkout = (state: RootState) => state.workout;

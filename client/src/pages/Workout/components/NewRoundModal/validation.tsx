@@ -3,7 +3,7 @@ import { FormErrors } from "./useForm";
 const validateFormData = (values: any) => {
   var errors: any = {};
 
-  const requiredFields: any = [];
+  const requiredFields: string[] = [];
   var RequiredFields = Object.keys(values).filter((key) => {
     return requiredFields.includes(key);
   });

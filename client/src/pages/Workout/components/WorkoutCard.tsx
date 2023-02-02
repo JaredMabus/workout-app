@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTheme, styled } from "@mui/material/styles";
 import * as date from "../../../utils/date";
+import { format, formatISO } from "date-fns";
 // import { toTitleCase } from "../../../utils/textFormat";
 import {
   Grid,
@@ -44,6 +45,8 @@ import {
   RoundType,
   WorkoutType,
   removeWorkout,
+  SetType,
+  GoalType,
 } from "../../../Redux/slices/workoutSlice";
 // ICONS
 import {
@@ -75,9 +78,15 @@ export default function WorkoutCard({ workout }: any) {
   const ui = useSelector(selectUi);
   const theme = useTheme();
   const account = useSelector(selectAccount);
-  const [filterLastRound, setFilterLastRound] =
-    useState<Partial<RecentRound> | null>(null);
+  const [filterLastRound, setFilterLastRound] = useState<RecentRound | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
+
+  // useEffect(() => {
+  // console.log(workout);
+  // console.log(filterLastRound);
+  // }, [filterLastRound]);
 
   // Tab state and logic
   const [value, setTabValue] = React.useState<WorkoutMethodType>(
@@ -85,39 +94,19 @@ export default function WorkoutCard({ workout }: any) {
   );
   const [tabHasRecentRound, setTabHasRecentRound] = useState<boolean>(true);
   const handleChange = (
-    event: React.SyntheticEvent,
+    event: React.SyntheticEvent | null = null,
     newValue: WorkoutMethodType
   ) => {
-    setTabValue(newValue);
-    if (workout.lastRounds) {
-      const tabInLastRound = workout.lastRounds.findIndex(
-        (item: Partial<RoundType>) => item._id === newValue
-      );
-
-      if (workout.lastRounds && tabInLastRound >= 0) {
-        setFilterLastRound(
-          workout.lastRounds.find((round: RecentRound) =>
-            round._id === newValue ? round : null
-          )
-        );
-        setTabHasRecentRound(true);
-      } else {
-        setTabHasRecentRound(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    try {
+    if (event == null) {
+      setTabValue(newValue);
       if (workout.lastRounds) {
         const tabInLastRound = workout.lastRounds.findIndex(
-          (item: Partial<RoundType>) => item._id === workout.methodSelection[0]
+          (item: Partial<RoundType>) => item._id === newValue
         );
-
         if (workout.lastRounds && tabInLastRound >= 0) {
           setFilterLastRound(
             workout.lastRounds.find((round: RecentRound) =>
-              round._id === workout.methodSelection[0] ? round : null
+              round._id === newValue ? round : null
             )
           );
           setTabHasRecentRound(true);
@@ -125,10 +114,82 @@ export default function WorkoutCard({ workout }: any) {
           setTabHasRecentRound(false);
         }
       }
+    } else {
+      setTabValue(newValue);
+      if (workout.lastRounds) {
+        const tabInLastRound = workout.lastRounds.findIndex(
+          (item: Partial<RoundType>) => item._id === newValue
+        );
+        if (workout.lastRounds && tabInLastRound >= 0) {
+          setFilterLastRound(
+            workout.lastRounds.find((round: RecentRound) =>
+              round._id === newValue ? round : null
+            )
+          );
+          setTabHasRecentRound(true);
+        } else {
+          setTabHasRecentRound(false);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (workout.lastRounds) {
+      const tabInLastRound = workout.lastRounds.findIndex(
+        (item: Partial<RoundType>) => item._id === value
+      );
+      if (workout.lastRounds && tabInLastRound >= 0) {
+        setFilterLastRound(
+          workout.lastRounds.find((round: RecentRound) => {
+            return round._id === value ? round : null;
+          })
+        );
+        setTabHasRecentRound(true);
+      } else {
+        setTabHasRecentRound(false);
+      }
+    }
+  }, [value]);
+
+  useEffect(() => {
+    try {
+      if (
+        workout.lastRounds &&
+        workout.lastRounds.length > 0 &&
+        tabHasRecentRound &&
+        ui.activeWorkout != null &&
+        ui.activeTabMethodFilter != null &&
+        workout.lastRounds.findIndex(
+          (round: RecentRound) => round._id === ui.activeTabMethodFilter
+        ) >= 0
+      ) {
+        handleChange(null, ui.activeTabMethodFilter);
+      } else {
+        handleChange(null, workout.methodSelection[0]);
+      }
     } catch (err) {
-      throw err;
+      console.log(err);
     }
   }, []);
+
+  const [activeGoal, setActiveGoal] = useState<GoalType | null>(null);
+
+  useEffect(() => {
+    if (workout.goalId != null) {
+      const activeGoalNew = workout.goalId.find(
+        (goal: GoalType) => goal.method === value
+      );
+      if (activeGoalNew != null) {
+        setActiveGoal(activeGoalNew);
+      }
+    }
+  }, [value, workout]);
+
+  // useEffect(() => {
+  //   console.log(workout);
+  //   console.log(activeGoal);
+  // }, [activeGoal]);
 
   // Card Menu state and logic
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -148,6 +209,7 @@ export default function WorkoutCard({ workout }: any) {
     setDialogStatus(true);
   };
 
+  // Initial render, load first method if no rounds
   useEffect(() => {
     if (
       workout.lastRounds &&
@@ -156,14 +218,15 @@ export default function WorkoutCard({ workout }: any) {
     ) {
       setFilterLastRound({
         _id: workout.methodSelection[0],
-        lastWeight: 0,
-        lastSets: 0,
-        lastReps: 0,
+        lastSets: 3,
+        lastWeight: 100,
+        lastReps: 8,
         successSetsReps: true,
       });
     }
   }, []);
 
+  // Initial render, load last rounds for a given method
   useEffect(() => {
     if (workout.lastRounds && workout.lastRounds.length > 0) {
       setFilterLastRound(
@@ -176,6 +239,7 @@ export default function WorkoutCard({ workout }: any) {
 
   const openAddRound = () => {
     dispatch(setActiveWorkout(workout));
+    dispatch(setActiveTabMethodFilter(value));
     if (
       !workout.lastRounds ||
       workout.lastRounds.length === 0 ||
@@ -187,9 +251,7 @@ export default function WorkoutCard({ workout }: any) {
           workoutId: workout._id,
           method: value,
           date: new Date(Date.now()),
-          weight: 100,
-          sets: 3,
-          reps: 8,
+          sets: createSetObj(3, 100, 8),
           successSetsReps: true,
         })
       );
@@ -203,14 +265,54 @@ export default function WorkoutCard({ workout }: any) {
           workoutId: workout._id,
           method: filterLastRound._id,
           date: new Date(Date.now()),
-          weight: filterLastRound.lastWeight,
-          sets: filterLastRound.lastSets,
-          reps: filterLastRound.lastReps,
           successSetsReps: filterLastRound.successSetsReps,
+          sets:
+            filterLastRound != null &&
+            filterLastRound.rounds != null &&
+            filterLastRound.rounds[0] != null &&
+            filterLastRound.rounds.length > 0
+              ? resetSetsDate(filterLastRound.rounds[0].sets)
+              : createSetObj(
+                  filterLastRound.lastSets,
+                  filterLastRound.lastWeight,
+                  filterLastRound.lastReps
+                ),
         })
       );
       dispatch(setNewRoundModalState());
     }
+  };
+
+  const resetSetsDate = (sets: SetType[]) => {
+    if (sets != null && Array.isArray(sets)) {
+      let newSets = sets.map((set) => {
+        return {
+          ...set,
+          datetime: formatISO(new Date(), {
+            format: "extended",
+          }),
+        };
+      });
+      return newSets;
+    }
+    return sets;
+  };
+
+  const createSetObj = (
+    setLength: number,
+    weight: number,
+    reps: number
+  ): SetType[] => {
+    var setsArray: SetType[] = [];
+    for (let i = 0; i < setLength; i++) {
+      let obj: SetType = {
+        weight: weight,
+        reps: reps,
+        datetime: new Date(Date.now()),
+      };
+      setsArray.push(obj);
+    }
+    return setsArray;
   };
 
   return (
@@ -226,12 +328,13 @@ export default function WorkoutCard({ workout }: any) {
       <Paper
         elevation={1}
         sx={{
-          p: 2,
+          py: 1,
+          px: 2,
           border: `1px solid ${grey[300]}`,
           boxShadow: "rgb(0 0 0 / 8%) 1px 2px 3px 1px",
           borderRadius: 2,
-          minHeight: 250,
-          maxHeight: 250,
+          minHeight: 260,
+          maxHeight: 260,
         }}
       >
         <Grid container>
@@ -517,6 +620,8 @@ export default function WorkoutCard({ workout }: any) {
                 lastRound={filterLastRound}
                 tabHasRecentRound={tabHasRecentRound}
                 tabValue={value}
+                activeGoal={activeGoal}
+                setActiveGoal={setActiveGoal}
               />
             )}
           </Grid>

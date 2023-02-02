@@ -8,22 +8,16 @@ import {
   setNewGoalModalState,
   setSnackBar,
 } from "../../../../Redux/slices/uiSlice";
-import { GoalType } from "../../../../Redux/slices/workoutSlice";
+import {
+  GoalType,
+  addWorkoutGoal,
+} from "../../../../Redux/slices/workoutSlice";
 import { selectAccount } from "../../../../Redux/slices/accountSlice";
 
 export type FormErrors = Partial<GoalType>;
 
 export const newGoalApi = async (values: Partial<GoalType>) => {
   return await axios.post("goal", values);
-};
-
-export const updateGoalApi = async () => {
-  let res = await axios.put("goal");
-  if (res.status === 200) {
-    let data = res.data.payload;
-    return data;
-  }
-  return [];
 };
 
 const useForm = () => {
@@ -89,7 +83,6 @@ const useForm = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     try {
-      // console.log("Submit test");
       setLoading(true);
       e.preventDefault();
       var localErrors: FormErrors = validateFormData(values);
@@ -97,12 +90,11 @@ const useForm = () => {
 
       if (Object.keys(localErrors).length === 0) {
         if (values === null) return;
-        // console.log(values);
         const response = await newGoalApi(values);
 
         if (response.status === 200) {
-          let data = response.data;
-
+          let data = response.data.payload;
+          dispatch(addWorkoutGoal(data));
           dispatch(setNewGoalModalState());
           dispatch(
             setSnackBar({

@@ -1,10 +1,10 @@
 import {
   GoalType,
   WorkoutType,
-  GoalByMethod,
   RecentRound,
   RoundType,
 } from "../Redux/slices/workoutSlice";
+import { ProgressObjType } from "../pages/Workout/components/ProgressChart";
 
 // Brzycki Equation for estimating 1RM and lifting percentages
 // 1RM = w / [(1.0278) – (0.0278 * r)]
@@ -38,84 +38,51 @@ const calcLiftPercent = (weight: number, reps: number) => {
   return liftPercent;
 };
 
-interface WorkoutGoalAchievedObj {
-  totalSucessRounds: number;
-  roundTarget: number;
-  progressPercent: number;
-}
-
 // Return percent of rounds that meet current goal
 export const workoutGoalAchieved = (
   workout: WorkoutType,
-  roundData: Partial<RecentRound> | null,
-  goal: GoalByMethod
-): WorkoutGoalAchievedObj => {
-  var progressObj: WorkoutGoalAchievedObj = {
+  lastRound: Partial<RecentRound> | null,
+  goal: GoalType
+): ProgressObjType => {
+  var progressObj: ProgressObjType = {
+    targetRounds:
+      goal != null && goal.targetRounds != null ? goal.targetRounds : 6,
+    totalRounds:
+      lastRound != null && lastRound.rounds != null
+        ? lastRound.rounds.length
+        : 0,
     totalSucessRounds: 0,
-    roundTarget: 0,
     progressPercent: 0,
   };
-  try {
-    console.log(roundData);
-    if (roundData != null && roundData.rounds != null) {
-      // Test if all round's weight, sets, and reps are equal
-      let totalSuccessRounds = 0;
 
-      // for(let round = 0; round < workout.targetGoal.roundGoal, round++){
-      //   const { targetWeight, targetSets, targetReps } = goal.values[0];
-      //   if (
-      //     round.weight === targetWeight &&
-      //     round.sets === targetSets &&
-      //     round.reps === targetReps &&
-      //     round.successSetsReps === true
-      //   ) {
-      //     totalSuccessRounds++;
-      //   }
-      // }
-      let lastGoalRoundRange = roundData.rounds.slice(
-        0,
-        workout.targetGoal.roundGoal
-      );
-      lastGoalRoundRange.forEach((round) => {
-        const { targetWeight, targetSets, targetReps } = goal.values[0];
-        if (targetWeight != null && targetSets != null && targetReps != null) {
-          if (
-            round.successSetsReps === true &&
-            round.weight >= targetWeight &&
-            round.sets >= targetSets &&
-            round.reps >= targetReps
-          ) {
-            totalSuccessRounds++;
-          } else if (
-            round.successSetsReps === false &&
-            round.weight >= targetWeight &&
-            round.sets >= targetSets &&
-            targetReps - round.reps <= 1
-          ) {
-            totalSuccessRounds++;
+  try {
+    const { targetSets, targetWeight, targetReps } = goal;
+
+    if (lastRound != null && lastRound.rounds != null) {
+      lastRound.rounds.forEach((round) => {
+        if (targetSets != null && targetWeight != null && targetReps != null) {
+          var successfulSets: boolean[] = [];
+
+          round.sets.forEach((set) => {
+            if (set.weight >= targetWeight && set.reps >= targetReps) {
+              successfulSets.push(true);
+            }
+          });
+          if (successfulSets.length >= targetSets) {
+            progressObj.totalSucessRounds++;
           }
         }
       });
-
-      let percentWeightEqual: number =
-        totalSuccessRounds / workout.targetGoal.roundGoal;
-      console.log(percentWeightEqual);
-
-      if (typeof percentWeightEqual === "number") {
-        console.log("Is number");
-        progressObj.totalSucessRounds = totalSuccessRounds;
-        progressObj.roundTarget = workout.targetGoal.roundGoal;
-        progressObj.progressPercent = percentWeightEqual * 100;
-
-        return progressObj;
-      } else {
-        return progressObj;
-      }
-    } else {
-      return progressObj;
     }
+
+    if (progressObj.totalSucessRounds > progressObj.targetRounds) {
+      progressObj.totalSucessRounds = progressObj.targetRounds;
+    }
+
+    progressObj.progressPercent =
+      (progressObj.totalSucessRounds / progressObj.targetRounds) * 100;
   } catch (err) {
     console.log(err);
-    return progressObj;
   }
+  return progressObj;
 };

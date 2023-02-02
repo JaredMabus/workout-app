@@ -18,6 +18,7 @@ interface UiInitialState {
   activeWorkout: Partial<WorkoutType> | null;
   activeTabMethodFilter: WorkoutMethodType | null;
   form: FormDataType;
+  dialog: DialogType;
 }
 
 type SnackBarStatus = {
@@ -29,6 +30,16 @@ type SnackBarStatus = {
 
 interface ModalStateType {
   open: boolean;
+}
+
+interface CompletedSetsObjType extends RoundType {
+  isCompleted: boolean;
+}
+
+interface DialogType {
+  goal: {
+    status: boolean;
+  };
 }
 
 interface FormDataType {
@@ -43,6 +54,9 @@ interface FormDataType {
   round: {
     newRoundModalState: boolean;
     defaultValues: Partial<RoundType>;
+    completedSetsObj: Partial<CompletedSetsObjType>[] | null;
+    completedSetsIndices: { [k: number]: boolean };
+    activeSetsStep: number;
   };
   goal: {
     newGoalModalState: boolean;
@@ -97,14 +111,24 @@ export const initialState: UiInitialState = {
         workoutId: "",
         method: "",
         date: new Date(Date.now()),
-        weight: 100,
-        sets: 3,
-        reps: 8,
+        sets: [
+          { weight: 100, reps: 8, datetime: new Date(Date.now()) },
+          { weight: 100, reps: 8, datetime: new Date(Date.now()) },
+          { weight: 100, reps: 8, datetime: new Date(Date.now()) },
+        ],
         successSetsReps: true,
       },
+      completedSetsObj: null,
+      completedSetsIndices: [],
+      activeSetsStep: 0,
     },
     goal: {
       newGoalModalState: false,
+    },
+  },
+  dialog: {
+    goal: {
+      status: false,
     },
   },
 };
@@ -164,6 +188,17 @@ const uiSlice = createSlice({
     ) => {
       state.form.round.defaultValues = action.payload;
     },
+    setCompletedSetsIndices: (
+      state,
+      action: PayloadAction<{
+        [k: number]: boolean;
+      }>
+    ) => {
+      state.form.round.completedSetsIndices = action.payload;
+    },
+    setGoalDialogStatus: (state, action: PayloadAction<boolean>) => {
+      state.dialog.goal.status = action.payload;
+    },
     reset: () => initialState,
   },
 });
@@ -182,6 +217,8 @@ export const {
   setNewRoundDefaultValues,
   setNewGoalModalState,
   setActiveTabMethodFilter,
+  setCompletedSetsIndices,
+  setGoalDialogStatus,
   reset,
 } = uiSlice.actions;
 
