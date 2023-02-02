@@ -9,11 +9,38 @@ export interface RoundType {
   workoutId: Types.ObjectId;
   date: Date;
   method: WorkoutMethodType;
-  weight: number;
-  sets: number;
-  reps: number;
+  sets: SetType[];
+  weight?: number;
+  reps?: number;
   successSetsReps: boolean;
 }
+
+export interface SetType {
+  weight: number;
+  reps: number;
+  datetime: Date | null;
+}
+
+const SetSchema = new Schema(
+  {
+    weight: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    reps: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    datetime: {
+      type: Date,
+      required: true,
+      default: null,
+    },
+  },
+  { _id: false }
+);
 
 const RoundSchema = new Schema(
   {
@@ -33,21 +60,7 @@ const RoundSchema = new Schema(
       required: true,
       get: (date: Date) => `${date.toLocaleDateString("en-US")}`,
     },
-    weight: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
-    sets: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
-    reps: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
+    sets: [SetSchema],
     successSetsReps: {
       type: Boolean,
       default: true,

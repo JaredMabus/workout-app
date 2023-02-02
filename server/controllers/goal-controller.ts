@@ -67,6 +67,7 @@ export const getLoggedInGoalData = async (req: Request, res: Response) => {
 
 export const updateGoal = async (req: Request, res: Response) => {
   try {
+    console.log(req.body);
     const updatedGoal = await Goal.findByIdAndUpdate(req.body._id, req.body, {
       new: true,
     });

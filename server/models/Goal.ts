@@ -11,6 +11,7 @@ export interface GoalType {
   method: WorkoutMethodType;
   achieved: Boolean;
   achievedDate: Date | null;
+  targetRounds: number;
   targetWeight: number;
   targetSets: number;
   targetReps: number;
@@ -46,12 +47,17 @@ const GoalSchema = new Schema(
         return `${date.toLocaleDateString("en-US")}`;
       },
     },
-    targetWeight: {
+    targetRounds: {
+      type: Number,
+      default: 6,
+      required: true,
+    },
+    targetSets: {
       type: Number,
       default: 0,
       required: true,
     },
-    targetSets: {
+    targetWeight: {
       type: Number,
       default: 0,
       required: true,

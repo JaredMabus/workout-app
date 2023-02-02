@@ -8,18 +8,20 @@ const data: Partial<GoalType>[] = [
     accountId: new Types.ObjectId("63813132dc1a66e9faa840f3"),
     workoutId: new Types.ObjectId("638fa91fbd7c62d1aae60464"),
     method: "Barbell",
-    targetReps: 8,
+    targetRounds: 6,
     targetSets: 3,
     targetWeight: 120,
+    targetReps: 8,
   },
   {
     _id: new Types.ObjectId("63b5d4dffaaae1e0b1946cf8"),
     accountId: new Types.ObjectId("63813132dc1a66e9faa840f3"),
     workoutId: new Types.ObjectId("638fa91fbd7c62d1aae60464"),
     method: "Dumbbell",
-    targetReps: 8,
+    targetRounds: 6,
     targetSets: 3,
-    targetWeight: 30,
+    targetWeight: 45,
+    targetReps: 8,
   },
 ];
 
@@ -33,9 +35,10 @@ export default async function seed() {
       "workoutId",
       "date",
       "method",
-      "weight",
-      "sets",
-      "reps",
+      "targetRounds",
+      "targetSets",
+      "targetWeight",
+      "targetReps",
     ]);
     console.log(`${data.length} Goals seeded successfully! \n\n`);
   } else {

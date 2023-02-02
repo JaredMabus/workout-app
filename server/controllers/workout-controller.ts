@@ -2,6 +2,7 @@ import { Workout } from "../models";
 import { Request, Response } from "express";
 import dotenv from "dotenv";
 import mongoose, { Types } from "mongoose";
+import { workoutAgg } from "./aggregations/workout";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
 dotenv.config();
 
@@ -50,9 +51,37 @@ export const getWorkoutById = async (req: Request, res: Response) => {
 
 export const getLoggedInWorkoutData = async (req: Request, res: Response) => {
   try {
-    const query = await Workout.aggregate([
+    const query = await Workout.aggregate(workoutAgg(res));
+
+    if (!query)
+      return res
+        .status(404)
+        .json({ error: true, msg: "Could not find workout data" });
+
+    res.status(200).json({ payload: query });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .json({ error: true, msg: "Oops, could not retrieve workout data" });
+  }
+};
+
+export const updateWorkout = async (req: Request, res: Response) => {
+  try {
+    const updatedWorkout = await Workout.findByIdAndUpdate(
+      req.body._id,
+      req.body,
+      { new: true }
+    );
+
+    if (!updatedWorkout)
+      return res.status(404).json({ error: true, msg: "No Workout found" });
+
+    const data = await Workout.aggregate([
       {
         $match: {
+          _id: updatedWorkout._id,
           accountId: new Types.ObjectId(res.locals.cookie.accountData._id),
         },
       },
@@ -101,9 +130,10 @@ export const getLoggedInWorkoutData = async (req: Request, res: Response) => {
             {
               $group: {
                 _id: "$method",
-                lastWeight: { $last: "$weight" },
-                lastSets: { $last: "$sets" },
-                lastReps: { $last: "$reps" },
+                lastSets: { $last: { $size: "$sets" } },
+                lastWeightRep: {
+                  $last: { $first: "$sets" },
+                },
                 successSetsReps: { $last: "$successSetsReps" },
                 startDate: { $min: "$date" },
                 mostRecent: { $max: "$date" },
@@ -112,124 +142,34 @@ export const getLoggedInWorkoutData = async (req: Request, res: Response) => {
                   $topN: {
                     output: {
                       _id: "$_id",
-                      // accountId: "$accountId",
-                      // workoutId: "$workoutId",
                       date: "$date",
-                      // method: "$method",
-                      weight: "$weight",
                       sets: "$sets",
-                      reps: "$reps",
                       successSetsReps: "$successSetsReps",
-                      // createdAt: "$createdAt",
-                      // updatedAt: "$updatedAt",
                     },
                     sortBy: { date: -1 },
                     n: 9,
                   },
                 },
-                // rounds: {
-                //   $push: {
-                //     _id: "$_id",
-                //     accountId: "$accountId",
-                //     workoutId: "$workoutId",
-                //     date: "$date",
-                //     method: "$method",
-                //     weight: "$weight",
-                //     sets: "$sets",
-                //     reps: "$reps",
-                //     successSets: "$successSetsReps",
-                //     createdAt: "$createdAt",
-                //     updatedAt: "$updatedAt",
-                //   },
-                // },
               },
             },
-            // {
-            //   $group: {
-            //     _id: "$rounds",
-            //     targetWeight: { $max: "$weight" },
-            //     targetSet: { $max: "$sets" },
-            //     targetRep: { $max: "$weight" },
-            //   },
-            // },
-            // {
-            //   $addFields: {
-            //     goalByMethod: {
-            //       targetWeight: { $add: ["$lastWeight", "$$weightIncrease"] },
-            //       targetSet: { $add: ["$lastSets", "$$setIncrease"] },
-            //       targetRep: { $add: ["$lastReps", "$$repIncrease"] },
-            //     },
-            //   },
-            // },
-          ],
-        },
-      },
-    ]);
-
-    if (!query)
-      return res
-        .status(404)
-        .json({ error: true, msg: "Could not find workout data" });
-
-    res.status(200).json({ payload: query });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(400)
-      .json({ error: true, msg: "Oops, could not retrieve workout data" });
-  }
-};
-
-export const updateWorkout = async (req: Request, res: Response) => {
-  try {
-    const updatedWorkout = await Workout.findByIdAndUpdate(
-      req.body._id,
-      req.body,
-      { new: true }
-    );
-
-    if (!updatedWorkout)
-      return res.status(404).json({ error: true, msg: "No Workout found" });
-
-    const data = await Workout.aggregate([
-      {
-        $match: {
-          _id: updatedWorkout._id,
-          accountId: new Types.ObjectId(res.locals.cookie.accountData._id),
-        },
-      },
-      {
-        $lookup: {
-          from: "rounds",
-          localField: "_id",
-          foreignField: "workoutId",
-          as: "roundId",
-        },
-      },
-      {
-        $lookup: {
-          from: "rounds",
-          localField: "_id",
-          foreignField: "workoutId",
-          as: "lastRounds",
-          pipeline: [
             {
-              $group: {
-                _id: "$method",
-                lastWeight: { $last: "$weight" },
-                lastSets: { $last: "$sets" },
-                lastReps: { $last: "$reps" },
-                successSetsReps: { $last: "$successSetsReps" },
-                startDate: { $min: "$date" },
-                mostRecent: { $max: "$date" },
-                count: { $count: {} },
+              $project: {
+                _id: "$_id",
+                lastSets: "$lastSets",
+                lastWeight: "$lastWeightRep.weight",
+                lastReps: "$lastWeightRep.reps",
+                successSetsReps: "$successSetsReps",
+                startDate: "$startDate",
+                mostRecent: "$mostRecent",
+                totalRounds: "$totalRounds",
+                rounds: "$rounds",
               },
             },
-            { $sort: { _id: 1 } },
           ],
         },
       },
     ]);
+
     res.status(200).json({ payload: data[0] });
   } catch (err) {
     console.log(err);
