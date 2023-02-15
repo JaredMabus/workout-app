@@ -1,4 +1,4 @@
-import { Workout } from "../models";
+import { Workout, Account } from "../models";
 import { Request, Response } from "express";
 import dotenv from "dotenv";
 import mongoose, { Types } from "mongoose";

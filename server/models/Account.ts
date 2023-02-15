@@ -19,13 +19,13 @@ export interface AccountType {
 
 export type WorkoutPlanWeek = WorkoutPlanDays[];
 export interface WorkoutPlanDays {
-  0: string[];
-  1: string[];
-  2: string[];
-  3: string[];
-  4: string[];
-  5: string[];
-  6: string[];
+  0: Types.ObjectId[];
+  1: Types.ObjectId[];
+  2: Types.ObjectId[];
+  3: Types.ObjectId[];
+  4: Types.ObjectId[];
+  5: Types.ObjectId[];
+  6: Types.ObjectId[];
 }
 export type WeekDayNumber = "0" | "1" | "2" | "3" | "4" | "5" | "6";
 
@@ -39,41 +39,55 @@ const AccountSchema = new Schema(
       },
     ],
     workoutPlanWeek: {
-      "0": {
-        type: Array,
-        required: true,
-        default: [],
-      },
-      "1": {
-        type: Array,
-        required: true,
-        default: [],
-      },
-      "2": {
-        type: Array,
-        required: true,
-        default: [],
-      },
-      "3": {
-        type: Array,
-        required: true,
-        default: [],
-      },
-      "4": {
-        type: Array,
-        required: true,
-        default: [],
-      },
-      "5": {
-        type: Array,
-        required: true,
-        default: [],
-      },
-      "6": {
-        type: Array,
-        required: true,
-        default: [],
-      },
+      "0": [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Workout",
+          default: [],
+        },
+      ],
+      "1": [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Workout",
+          default: [],
+        },
+      ],
+      "2": [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Workout",
+          default: [],
+        },
+      ],
+      "3": [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Workout",
+          default: [],
+        },
+      ],
+      "4": [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Workout",
+          default: [],
+        },
+      ],
+      "5": [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Workout",
+          default: [],
+        },
+      ],
+      "6": [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Workout",
+          default: [],
+        },
+      ],
     },
     email: {
       type: String,
