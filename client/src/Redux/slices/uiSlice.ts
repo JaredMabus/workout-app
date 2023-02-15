@@ -21,12 +21,22 @@ interface UiInitialState {
   dialog: DialogType;
 }
 
+/**
+ * Set snack bar status
+ * @param state
+ * @param action.open boolean
+ * @param action.severity string: 'success', 'error', 'info'
+ * @param action.duration number: in mili-seconds
+ * @param action.message string: message to display
+ */
 type SnackBarStatus = {
-  open: boolean;
+  open?: boolean;
   severity: SnackBarSeverityTypes;
-  duration: number;
+  duration?: number;
   message: string;
 };
+
+type SnackBarSeverityTypes = "error" | "warning" | "info" | "success";
 
 interface ModalStateType {
   open: boolean;
@@ -62,8 +72,6 @@ interface FormDataType {
     newGoalModalState: boolean;
   };
 }
-
-type SnackBarSeverityTypes = "error" | "warning" | "info" | "success";
 
 export const initialState: UiInitialState = {
   navBarOpen: false,
@@ -140,6 +148,7 @@ const uiSlice = createSlice({
     setNavBar: (state, action: PayloadAction<boolean>) => {
       state.navBarOpen = action.payload;
     },
+
     setSnackBar: (state, action: PayloadAction<SnackBarStatus>) => {
       state.snackBarStatus.open = true;
       state.snackBarStatus.severity = action.payload.severity;

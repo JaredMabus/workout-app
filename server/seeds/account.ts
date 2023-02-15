@@ -10,6 +10,21 @@ const data: Partial<AccountType>[] = [
       new Types.ObjectId("639a8040083fbf7cecfd6b2a"),
       new Types.ObjectId("639a804787b821790d9ad1f0"),
     ],
+    workoutPlanWeek: {
+      0: [
+        new Types.ObjectId("638fa91fbd7c62d1aae60464"),
+        new Types.ObjectId("639a8040083fbf7cecfd6b2a"),
+      ],
+      1: [],
+      2: [
+        new Types.ObjectId("638fa91fbd7c62d1aae60464"),
+        new Types.ObjectId("639a8040083fbf7cecfd6b2a"),
+      ],
+      3: [],
+      4: [],
+      5: [],
+      6: [],
+    },
     email: "test@123.com",
     password: "password",
     fname: "Sarah",
@@ -43,20 +58,24 @@ const data: Partial<AccountType>[] = [
 ];
 
 export default async function seed() {
-  const queryFirst = await Account.find({});
-  if (queryFirst && queryFirst.length === 0) {
-    console.log("--- Seeding Accounts...");
-    await Account.insertMany(data);
-    console.table(data, [
-      "_id",
-      "email",
-      "password",
-      "fname",
-      "lname",
-      "gender",
-    ]);
-    console.log(`${data.length} Accounts seeded successfully! \n\n`);
-  } else {
-    console.log("Account data exist, no seeding needed");
-  }
+  await Account.insertMany(data);
+  console.table(data, ["_id", "email", "password", "fname", "lname", "gender"]);
+  console.log(`${data.length} Accounts seeded successfully! \n\n`);
+
+  // const queryFirst = await Account.find({});
+  // if (queryFirst && queryFirst.length === 0) {
+  //   console.log("--- Seeding Accounts...");
+  //   await Account.insertMany(data);
+  //   console.table(data, [
+  //     "_id",
+  //     "email",
+  //     "password",
+  //     "fname",
+  //     "lname",
+  //     "gender",
+  //   ]);
+  //   console.log(`${data.length} Accounts seeded successfully! \n\n`);
+  // } else {
+  //   console.log("Account data exist, no seeding needed");
+  // }
 }
