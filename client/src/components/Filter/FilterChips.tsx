@@ -151,7 +151,7 @@ export default function FilterChips({
   return (
     <>
       <Stack divider={<Divider />} spacing={1}>
-        <Typography variant="h6">Filters:</Typography>
+        {/* <Typography variant="h6">Filters:</Typography> */}
         {filterOptions.map((item: FilterOptions, key: number) => (
           <Box key={`${item.title}-${key}-chip-group`}>
             <Typography

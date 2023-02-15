@@ -2,19 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 
 // -- Workout Types -- //
-export interface WorkoutType {
-  _id: string;
-  accountId: string;
-  goalId: GoalType[];
-  roundId: Partial<RoundType>[] | string[];
-  targetGoal: TargetGoalType;
-  name: string;
-  muscleCategory: MuscleCategoryType;
-  muscleGroup: MuscleGroupType | MuscleGroupType[] | "";
-  methodSelection: WorkoutMethodType[] | string[];
-  lastRounds?: RecentRound[];
-}
-
 export interface TargetGoalType {
   weightIncrease: number;
   setIncrease: number;
@@ -73,7 +60,7 @@ export interface SetType {
   datetime: Date | string | null;
   isComplete?: boolean;
 }
-
+export type WeekDayNumberType = "0" | "1" | "2" | "3" | "4" | "5" | "6";
 export type MuscleCategoryType = "Upper Body" | "Lower Body" | "Core" | "";
 export type MuscleGroupType =
   | "Chest"
@@ -91,27 +78,67 @@ export type WorkoutMethodType =
   | "Machine"
   | "";
 
-export type WorkoutPlanWeek = WorkoutPlanDays[];
-
-export interface WorkoutPlanDays {
-  0: string[];
-  1: string[];
-  2: string[];
-  3: string[];
-  4: string[];
-  5: string[];
-  6: string[];
+// WORKOUT PLAN
+// export type WorkoutPlanWeek = WorkoutPlanDays[];
+export interface WorkoutPlanWeek {
+  0: string[] | [];
+  1: string[] | [];
+  2: string[] | [];
+  3: string[] | [];
+  4: string[] | [];
+  5: string[] | [];
+  6: string[] | [];
 }
-
 export type WeekDayNumber = "0" | "1" | "2" | "3" | "4" | "5" | "6";
+
 export interface ApiStatusType {
   loading: boolean;
   error: boolean;
   msg: string | [] | {} | null;
 }
+// DnD Workout Types
+export interface WorkoutCardDragObj {
+  _id?: string;
+  index?: number | string;
+  dragIndex: number;
+  hoverIndex: number;
+  dayIndex: WeekDayNumber | string;
+  dayHoverIndex: WeekDayNumber;
+  workout: Partial<WorkoutType>;
+  addNewWorkout?: boolean;
+}
+
+export interface WorkoutCardMoveObjMenu {
+  index: number | string;
+  dayIndex: WeekDayNumber | string;
+  newDayIndex: WeekDayNumber | string;
+  workout: Partial<WorkoutType>;
+  addNewWorkout?: boolean;
+}
+
+export interface WorkoutType {
+  _id: string;
+  accountId: string;
+  goalId: GoalType[];
+  roundId: Partial<RoundType>[] | string[];
+  targetGoal: TargetGoalType;
+  name: string;
+  muscleCategory: MuscleCategoryType;
+  muscleGroup: MuscleGroupType | MuscleGroupType[] | "";
+  methodSelection: WorkoutMethodType[] | string[];
+  lastRounds?: RecentRound[];
+}
+
+interface HydrateDataObj {
+  planData: boolean;
+}
+
 export interface WorkoutInitialState {
   workouts: WorkoutType[];
   api: ApiStatusType;
+  workoutPlanWeek: WorkoutPlanWeek;
+  hydrate: Partial<HydrateDataObj>;
+  hydrate1: boolean;
 }
 
 export const initialState: WorkoutInitialState = {
@@ -121,6 +148,11 @@ export const initialState: WorkoutInitialState = {
     error: false,
     msg: "",
   },
+  workoutPlanWeek: { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] },
+  hydrate: {
+    planData: false,
+  },
+  hydrate1: false,
 };
 
 const workoutSlice = createSlice({
@@ -208,7 +240,7 @@ const workoutSlice = createSlice({
       });
     },
     updateWorkout: (state, action: PayloadAction<any>) => {
-      console.log(action.payload);
+      // console.log(action.payload);
       let i = state.workouts.findIndex(
         (item) => item._id === action.payload._id
       );
@@ -229,6 +261,61 @@ const workoutSlice = createSlice({
         action.payload
       );
     },
+    setWorkoutPlanWeek: (state, action: PayloadAction<WorkoutPlanWeek>) => {
+      state.workoutPlanWeek = action.payload;
+    },
+    moveWorkoutCard: (state, action: PayloadAction<WorkoutCardDragObj>) => {
+      // console.log(action.payload.dragIndex);
+      // console.log(action.payload.hoverIndex);
+      // console.log(action.payload.dayIndex);
+      // console.log(action.payload.dayHoverIndex);
+      // console.log(action.payload.addNewWorkout);
+      if (action.payload.addNewWorkout === false) {
+        // @ts-ignore
+        state.workoutPlanWeek[action.payload.dayIndex].splice(
+          Number(action.payload.dragIndex),
+          1
+        );
+      }
+
+      // @ts-ignore
+      if (action.payload.workout) {
+        state.workoutPlanWeek[action.payload.dayHoverIndex].splice(
+          Number(action.payload.hoverIndex),
+          0,
+          action.payload.workout as string
+        );
+        state.hydrate1 = true;
+      }
+    },
+    moveWorkoutCardFromMenu: (
+      state,
+      action: PayloadAction<Partial<WorkoutCardMoveObjMenu>>
+    ) => {
+      if (action.payload.addNewWorkout === false) {
+        // @ts-ignore
+        state.workoutPlanWeek[action.payload.dayIndex].splice(
+          action.payload.index,
+          1
+        );
+      }
+      // @ts-ignore
+      state.workoutPlanWeek[action.payload.newDayIndex].push(
+        action.payload.workout
+      );
+    },
+    removeWorkoutFromDay: (
+      state,
+      action: PayloadAction<Partial<WorkoutCardDragObj>>
+    ) => {
+      if (Object.keys(state.workoutPlanWeek).length > 0) {
+        // @ts-ignore
+        state.workoutPlanWeek[action.payload.dayIndex].splice(
+          action.payload.index,
+          1
+        );
+      }
+    },
   },
 });
 
@@ -241,6 +328,10 @@ export const {
   updateWorkout,
   addRound,
   addWorkoutGoal,
+  setWorkoutPlanWeek,
+  moveWorkoutCard,
+  moveWorkoutCardFromMenu,
+  removeWorkoutFromDay,
 } = workoutSlice.actions;
 
 export const selectWorkout = (state: RootState) => state.workout;
