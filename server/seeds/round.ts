@@ -1,11 +1,24 @@
 import { Types } from "mongoose";
 import { Round } from "../models";
 import { RoundType } from "../models/Round";
-import { subDays } from "date-fns";
+import { subDays, subMonths } from "date-fns";
 
 const today = new Date();
 
 const data: Partial<RoundType>[] = [
+  {
+    _id: new Types.ObjectId("63f7c62a02dd894318d81e67"),
+    accountId: new Types.ObjectId("63813132dc1a66e9faa840f3"),
+    workoutId: new Types.ObjectId("638fa91fbd7c62d1aae60464"),
+    date: subMonths(today, 3),
+    method: "Barbell",
+    sets: [
+      { weight: 120, reps: 8, datetime: new Date("11/28/2022 15:30:00") },
+      { weight: 120, reps: 8, datetime: new Date("11/28/2022 15:31:00") },
+      { weight: 120, reps: 7, datetime: new Date("11/28/2022 15:32:00") },
+    ],
+    successSetsReps: true,
+  },
   {
     _id: new Types.ObjectId("63b5db577835ecd77f122c4b"),
     accountId: new Types.ObjectId("63813132dc1a66e9faa840f3"),
@@ -101,7 +114,7 @@ const data: Partial<RoundType>[] = [
     _id: new Types.ObjectId("63ab46108fa78c263aacfd89"),
     accountId: new Types.ObjectId("63813132dc1a66e9faa840f3"),
     workoutId: new Types.ObjectId("638fa91fbd7c62d1aae60464"),
-    date: subDays(today, 4),
+    date: today,
     method: "Barbell",
     sets: [
       { weight: 120, reps: 8, datetime: new Date("12/14/2022 15:30:00") },

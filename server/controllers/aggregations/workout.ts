@@ -1,11 +1,39 @@
 import { Request, Response } from "express";
 import mongoose, { Types } from "mongoose";
+import { subMonths } from "date-fns";
 
 export const workoutAgg = (res: Response) => {
   let aggArray = [
     {
       $match: {
         accountId: new Types.ObjectId(res.locals.cookie.accountData._id),
+      },
+    },
+    {
+      $lookup: {
+        from: "rounds",
+        localField: "roundId",
+        foreignField: "_id",
+        as: "roundId",
+        let: {
+          name: "$name",
+        },
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              accountId: 1,
+              workoutId: 1,
+              method: 1,
+              date: 1,
+              sets: 1,
+              successfulSetsReps: 1,
+              createAt: 1,
+              updatedAt: 1,
+              name: "$$name",
+            },
+          },
+        ],
       },
     },
     {
@@ -49,6 +77,7 @@ export const workoutAgg = (res: Response) => {
               method: 1,
               accountId: 1,
               workoutId: 1,
+              roundId: 1,
               achieved: "$goal.achieved",
               dateAchieved: "$goal.dateAchieved",
               targetRounds: "$goal.targetRounds",
@@ -113,6 +142,28 @@ export const workoutAgg = (res: Response) => {
             },
           },
         ],
+      },
+    },
+  ];
+  return aggArray;
+};
+
+export const workoutAggNorm = (res: Response) => {
+  let aggArray = [
+    {
+      $match: {
+        accountId: new Types.ObjectId(res.locals.cookie.accountData._id),
+      },
+    },
+    {
+      $project: {
+        id: {
+          $map: {
+            input: "$_id",
+            as: "workouts",
+            in: { $toobjectId: "$$_id" },
+          },
+        },
       },
     },
   ];

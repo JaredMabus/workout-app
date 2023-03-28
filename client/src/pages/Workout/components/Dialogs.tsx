@@ -49,10 +49,6 @@ export function DeleteWorkoutDialog({
   const uiState = useSelector(selectUi);
   const dispatch = useDispatch();
 
-  //   const handleClickOpen = () => {
-  //     setDialogStatus(true);
-  //   };
-
   const handleClose = () => {
     setDialogStatus(false);
     setLoading(false);

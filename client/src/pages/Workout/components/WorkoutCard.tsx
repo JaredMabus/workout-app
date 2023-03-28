@@ -22,22 +22,8 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import { grey } from "@mui/material/colors";
 // REDUX
-import {
-  selectAccount,
-  setApiStatus,
-  setAvatarUrl,
-} from "../../../Redux/slices/accountSlice";
-import {
-  selectUi,
-  setUpdateWorkoutDefaultValues,
-  setUpdateWorkoutModalState,
-  setNewRoundModalState,
-  setNewRoundDefaultValues,
-  setActiveWorkout,
-  setSnackBar,
-  setNewGoalModalState,
-  setActiveTabMethodFilter,
-} from "../../../Redux/slices/uiSlice";
+import { selectAccount } from "../../../Redux/slices/accountSlice";
+import * as ui from "../../../Redux/slices/uiSlice";
 import { useSelector, useDispatch } from "react-redux";
 import {
   RecentRound,
@@ -75,18 +61,13 @@ const CardMenuItemStyle = {
 
 export default function WorkoutCard({ workout }: any) {
   const dispatch = useDispatch();
-  const ui = useSelector(selectUi);
-  const theme = useTheme();
+  const uiState = useSelector(ui.selectUi);
   const account = useSelector(selectAccount);
+  const theme = useTheme();
   const [filterLastRound, setFilterLastRound] = useState<RecentRound | null>(
     null
   );
   const [loading, setLoading] = useState(false);
-
-  // useEffect(() => {
-  // console.log(workout);
-  // console.log(filterLastRound);
-  // }, [filterLastRound]);
 
   // Tab state and logic
   const [value, setTabValue] = React.useState<WorkoutMethodType>(
@@ -158,20 +139,20 @@ export default function WorkoutCard({ workout }: any) {
         workout.lastRounds &&
         workout.lastRounds.length > 0 &&
         tabHasRecentRound &&
-        ui.activeWorkout != null &&
-        ui.activeTabMethodFilter != null &&
+        uiState.activeWorkout != null &&
+        uiState.activeTabMethodFilter != null &&
         workout.lastRounds.findIndex(
-          (round: RecentRound) => round._id === ui.activeTabMethodFilter
+          (round: RecentRound) => round._id === uiState.activeTabMethodFilter
         ) >= 0
       ) {
-        handleChange(null, ui.activeTabMethodFilter);
+        handleChange(null, uiState.activeTabMethodFilter);
       } else {
         handleChange(null, workout.methodSelection[0]);
       }
     } catch (err) {
       console.log(err);
     }
-  }, []);
+  }, [workout]);
 
   const [activeGoal, setActiveGoal] = useState<GoalType | null>(null);
 
@@ -182,14 +163,11 @@ export default function WorkoutCard({ workout }: any) {
       );
       if (activeGoalNew != null) {
         setActiveGoal(activeGoalNew);
+      } else {
+        setActiveGoal(null);
       }
     }
   }, [value, workout]);
-
-  // useEffect(() => {
-  //   console.log(workout);
-  //   console.log(activeGoal);
-  // }, [activeGoal]);
 
   // Card Menu state and logic
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -235,18 +213,18 @@ export default function WorkoutCard({ workout }: any) {
         )
       );
     }
-  }, []);
+  }, [workout]);
 
   const openAddRound = () => {
-    dispatch(setActiveWorkout(workout));
-    dispatch(setActiveTabMethodFilter(value));
+    dispatch(ui.setActiveWorkout(workout));
+    dispatch(ui.setActiveTabMethodFilter(value));
     if (
       !workout.lastRounds ||
       workout.lastRounds.length === 0 ||
       !tabHasRecentRound
     ) {
       dispatch(
-        setNewRoundDefaultValues({
+        ui.setNewRoundDefaultValues({
           accountId: account.accountData._id,
           workoutId: workout._id,
           method: value,
@@ -255,12 +233,12 @@ export default function WorkoutCard({ workout }: any) {
           successSetsReps: true,
         })
       );
-      dispatch(setNewRoundModalState());
+      dispatch(ui.setNewRoundModalState());
       return;
     }
     if (filterLastRound !== null) {
       dispatch(
-        setNewRoundDefaultValues({
+        ui.setNewRoundDefaultValues({
           accountId: account.accountData._id,
           workoutId: workout._id,
           method: filterLastRound._id,
@@ -279,9 +257,17 @@ export default function WorkoutCard({ workout }: any) {
                 ),
         })
       );
-      dispatch(setNewRoundModalState());
+      dispatch(ui.setNewRoundModalState());
     }
   };
+
+  React.useEffect(() => {
+    try {
+      dispatch(ui.setActiveTabDataFilter(value));
+    } catch (err) {
+      console.log(err);
+    }
+  }, [value]);
 
   const resetSetsDate = (sets: SetType[]) => {
     if (sets != null && Array.isArray(sets)) {
@@ -333,6 +319,9 @@ export default function WorkoutCard({ workout }: any) {
           border: `1px solid ${grey[300]}`,
           boxShadow: "rgb(0 0 0 / 8%) 1px 2px 3px 1px",
           borderRadius: 2,
+          width: "100%",
+          minWidth: 250,
+          maxWidth: 600,
           minHeight: 260,
           maxHeight: 260,
         }}
@@ -411,7 +400,7 @@ export default function WorkoutCard({ workout }: any) {
                     onClick={() => {
                       handleCloseMenu();
                       dispatch(
-                        setUpdateWorkoutDefaultValues({
+                        ui.setUpdateWorkoutDefaultValues({
                           _id: workout._id,
                           name: workout.name,
                           muscleCategory: workout.muscleCategory,
@@ -419,7 +408,7 @@ export default function WorkoutCard({ workout }: any) {
                           methodSelection: workout.methodSelection,
                         })
                       );
-                      dispatch(setUpdateWorkoutModalState());
+                      dispatch(ui.setUpdateWorkoutModalState());
                     }}
                     autoFocus
                   >
@@ -440,9 +429,9 @@ export default function WorkoutCard({ workout }: any) {
                   </MenuItem>
                   <MenuItem
                     onClick={async () => {
-                      await dispatch(setActiveWorkout(workout));
-                      await dispatch(setActiveTabMethodFilter(value));
-                      await dispatch(setNewGoalModalState());
+                      await dispatch(ui.setActiveWorkout(workout));
+                      await dispatch(ui.setActiveTabMethodFilter(value));
+                      await dispatch(ui.setNewGoalModalState());
                       handleCloseMenu();
                     }}
                   >

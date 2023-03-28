@@ -49,6 +49,7 @@ export default function WorkoutContainer() {
     workoutState.workouts
   );
   const [loading, setLoading] = useState<boolean>(false);
+
   // Filter workouts logic
   const [filters, setFilterState] = useState<FilterState>({
     muscleCategory: [],
@@ -115,31 +116,6 @@ export default function WorkoutContainer() {
     expires: 100,
     trail: 75,
   });
-
-  const getWorkoutData = async () => {
-    try {
-      setLoading(true);
-      let data = await api.workoutApi();
-      dispatch(setWorkouts(data));
-    } catch (err) {
-      dispatch(
-        setSnackBar({
-          open: true,
-          severity: "error",
-          duration: 5000,
-          message: "Opps, could not retrieve workout data",
-        })
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-  // Inital load
-  useEffect(() => {
-    if (account.loginStatus === true && workoutState.workouts.length === 0) {
-      getWorkoutData();
-    }
-  }, [account]);
 
   useEffect(() => {
     filterWorkouts();

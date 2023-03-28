@@ -2,7 +2,7 @@ import { Workout, Account } from "../models";
 import { Request, Response } from "express";
 import dotenv from "dotenv";
 import mongoose, { Types } from "mongoose";
-import { workoutAgg } from "./aggregations/workout";
+import * as agg from "./aggregations/workout";
 import { format, formatDistance, formatRelative, subDays } from "date-fns";
 dotenv.config();
 
@@ -51,7 +51,7 @@ export const getWorkoutById = async (req: Request, res: Response) => {
 
 export const getLoggedInWorkoutData = async (req: Request, res: Response) => {
   try {
-    const query = await Workout.aggregate(workoutAgg(res));
+    const query = await Workout.aggregate(agg.workoutAgg(res));
 
     if (!query)
       return res

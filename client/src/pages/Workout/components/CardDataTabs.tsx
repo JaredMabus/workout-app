@@ -86,6 +86,10 @@ export default function CardDataTabs({
     setActiveStep(step);
   };
 
+  // useEffect(() => {
+  // console.log(workout);
+  // }, []);
+
   return (
     <div>
       <SwipeableViews

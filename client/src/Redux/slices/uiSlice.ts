@@ -17,6 +17,7 @@ interface UiInitialState {
   modal: ModalStateType;
   activeWorkout: Partial<WorkoutType> | null;
   activeTabMethodFilter: WorkoutMethodType | null;
+  activeTabDataFilter: WorkoutMethodType | null;
   form: FormDataType;
   dialog: DialogType;
 }
@@ -24,10 +25,10 @@ interface UiInitialState {
 /**
  * Set snack bar status
  * @param state
- * @param action.open boolean
- * @param action.severity string: 'success', 'error', 'info'
- * @param action.duration number: in mili-seconds
- * @param action.message string: message to display
+ * @param open snack bar open status
+ * @param severity 'success', 'error', 'info'
+ * @param duration in mili-seconds
+ * @param message message to display
  */
 type SnackBarStatus = {
   open?: boolean;
@@ -88,6 +89,7 @@ export const initialState: UiInitialState = {
   },
   activeWorkout: null,
   activeTabMethodFilter: null,
+  activeTabDataFilter: null,
   form: {
     workout: {
       muscleCategory: ["Upper Body", "Lower Body", "Core"],
@@ -148,7 +150,6 @@ const uiSlice = createSlice({
     setNavBar: (state, action: PayloadAction<boolean>) => {
       state.navBarOpen = action.payload;
     },
-
     setSnackBar: (state, action: PayloadAction<SnackBarStatus>) => {
       state.snackBarStatus.open = true;
       state.snackBarStatus.severity = action.payload.severity;
@@ -191,6 +192,12 @@ const uiSlice = createSlice({
     ) => {
       state.activeTabMethodFilter = action.payload;
     },
+    setActiveTabDataFilter: (
+      state,
+      action: PayloadAction<WorkoutMethodType | null>
+    ) => {
+      state.activeTabDataFilter = action.payload;
+    },
     setNewRoundDefaultValues: (
       state,
       action: PayloadAction<Partial<RoundType>>
@@ -226,6 +233,7 @@ export const {
   setNewRoundDefaultValues,
   setNewGoalModalState,
   setActiveTabMethodFilter,
+  setActiveTabDataFilter,
   setCompletedSetsIndices,
   setGoalDialogStatus,
   reset,

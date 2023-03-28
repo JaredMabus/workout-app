@@ -1,5 +1,24 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  PayloadAction,
+  createAsyncThunk,
+  AsyncThunkAction,
+} from "@reduxjs/toolkit";
 import type { RootState } from "../store";
+import axios from "../../lib/axios";
+import { GridRowSelectionModel } from "@mui/x-data-grid";
+
+export const deleteRound = createAsyncThunk(
+  "WORKOUT/deleteRound",
+  async (data: GridRowSelectionModel, { rejectWithValue }) => {
+    try {
+      let res = await axios.delete("/round", { data: data });
+      return res;
+    } catch (err: any) {
+      return rejectWithValue(err.res.data);
+    }
+  }
+);
 
 // -- Workout Types -- //
 export interface TargetGoalType {
@@ -27,7 +46,7 @@ export interface GoalType {
 export interface RoundType {
   _id: string;
   accountId: string;
-  workoutId: string;
+  workoutId: string | Partial<WorkoutType>;
   method: WorkoutMethodType;
   date: Date | null;
   sets: SetType[];
@@ -81,20 +100,20 @@ export type WorkoutMethodType =
 // WORKOUT PLAN
 // export type WorkoutPlanWeek = WorkoutPlanDays[];
 export interface WorkoutPlanWeek {
-  0: string[] | [];
-  1: string[] | [];
-  2: string[] | [];
-  3: string[] | [];
-  4: string[] | [];
-  5: string[] | [];
-  6: string[] | [];
+  0: Partial<WorkoutType>[] | [];
+  1: Partial<WorkoutType>[] | [];
+  2: Partial<WorkoutType>[] | [];
+  3: Partial<WorkoutType>[] | [];
+  4: Partial<WorkoutType>[] | [];
+  5: Partial<WorkoutType>[] | [];
+  6: Partial<WorkoutType>[] | [];
 }
 export type WeekDayNumber = "0" | "1" | "2" | "3" | "4" | "5" | "6";
 
 export interface ApiStatusType {
   loading: boolean;
-  error: boolean;
-  msg: string | [] | {} | null;
+  error?: boolean;
+  msg?: string | [] | {} | null;
 }
 // DnD Workout Types
 export interface WorkoutCardDragObj {
@@ -120,7 +139,7 @@ export interface WorkoutType {
   _id: string;
   accountId: string;
   goalId: GoalType[];
-  roundId: Partial<RoundType>[] | string[];
+  roundId: RoundType[] | string[];
   targetGoal: TargetGoalType;
   name: string;
   muscleCategory: MuscleCategoryType;
@@ -129,16 +148,11 @@ export interface WorkoutType {
   lastRounds?: RecentRound[];
 }
 
-interface HydrateDataObj {
-  planData: boolean;
-}
-
 export interface WorkoutInitialState {
   workouts: WorkoutType[];
   api: ApiStatusType;
   workoutPlanWeek: WorkoutPlanWeek;
-  hydrate: Partial<HydrateDataObj>;
-  hydrate1: boolean;
+  todayCompletedWorkouts: Partial<RoundType>[] | null;
 }
 
 export const initialState: WorkoutInitialState = {
@@ -149,10 +163,7 @@ export const initialState: WorkoutInitialState = {
     msg: "",
   },
   workoutPlanWeek: { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] },
-  hydrate: {
-    planData: false,
-  },
-  hydrate1: false,
+  todayCompletedWorkouts: null,
 };
 
 const workoutSlice = createSlice({
@@ -196,9 +207,12 @@ const workoutSlice = createSlice({
         };
 
         // Find workout id
-        if (workout._id === action.payload.workoutId) {
+        if (
+          typeof action.payload.workoutId === "object" &&
+          workout._id === action.payload.workoutId._id
+        ) {
           if (workout.roundId && Array.isArray(workout.roundId)) {
-            workout.roundId.unshift(action.payload._id);
+            workout.roundId.unshift(action.payload as string & RoundType);
           }
 
           // Add and update lastRounds by using the round object returned from new round api
@@ -240,7 +254,6 @@ const workoutSlice = createSlice({
       });
     },
     updateWorkout: (state, action: PayloadAction<any>) => {
-      // console.log(action.payload);
       let i = state.workouts.findIndex(
         (item) => item._id === action.payload._id
       );
@@ -265,27 +278,19 @@ const workoutSlice = createSlice({
       state.workoutPlanWeek = action.payload;
     },
     moveWorkoutCard: (state, action: PayloadAction<WorkoutCardDragObj>) => {
-      // console.log(action.payload.dragIndex);
-      // console.log(action.payload.hoverIndex);
-      // console.log(action.payload.dayIndex);
-      // console.log(action.payload.dayHoverIndex);
-      // console.log(action.payload.addNewWorkout);
       if (action.payload.addNewWorkout === false) {
-        // @ts-ignore
         state.workoutPlanWeek[action.payload.dayIndex].splice(
           Number(action.payload.dragIndex),
           1
         );
       }
 
-      // @ts-ignore
       if (action.payload.workout) {
         state.workoutPlanWeek[action.payload.dayHoverIndex].splice(
           Number(action.payload.hoverIndex),
           0,
-          action.payload.workout as string
+          action.payload.workout
         );
-        state.hydrate1 = true;
       }
     },
     moveWorkoutCardFromMenu: (
@@ -316,6 +321,47 @@ const workoutSlice = createSlice({
         );
       }
     },
+    setTodayCompletedWorkouts: (
+      state,
+      action: PayloadAction<Partial<RoundType>[] | null>
+    ) => {
+      state.todayCompletedWorkouts = action.payload;
+    },
+    addTodayCompletedWorkouts: (
+      state,
+      action: PayloadAction<Partial<RoundType>>
+    ) => {
+      if (state.todayCompletedWorkouts != null) {
+        state.todayCompletedWorkouts.unshift(action.payload);
+      } else {
+        state.todayCompletedWorkouts = [];
+        state.todayCompletedWorkouts.unshift(action.payload);
+      }
+    },
+  },
+  extraReducers(builder) {
+    builder
+      // Delete Round from today's workouts
+      .addCase(deleteRound.pending, (state) => {})
+      .addCase(deleteRound.fulfilled, (state, action) => {
+        if (
+          state.todayCompletedWorkouts != null &&
+          Array.isArray(action.payload.data.payload)
+        ) {
+          let idArray = action.payload.data.payload;
+          let newArray = state.todayCompletedWorkouts.filter((round) => {
+            if (round._id != null && idArray.includes(round._id)) {
+              return false;
+            } else {
+              return round;
+            }
+          });
+          state.todayCompletedWorkouts = newArray;
+        }
+      })
+      .addCase(deleteRound.rejected, (state, action) => {
+        console.log("Error trying to delete round");
+      });
   },
 });
 
@@ -332,6 +378,8 @@ export const {
   moveWorkoutCard,
   moveWorkoutCardFromMenu,
   removeWorkoutFromDay,
+  setTodayCompletedWorkouts,
+  addTodayCompletedWorkouts,
 } = workoutSlice.actions;
 
 export const selectWorkout = (state: RootState) => state.workout;

@@ -27,31 +27,31 @@ export const getWorkoutPlanWeek = async (
     )
       .populate({
         path: "workoutPlanWeek.0",
-        ...planFields,
+        // ...planFields,
       })
       .populate({
         path: "workoutPlanWeek.1",
-        ...planFields,
+        // ...planFields,
       })
       .populate({
         path: "workoutPlanWeek.2",
-        ...planFields,
+        // ...planFields,
       })
       .populate({
         path: "workoutPlanWeek.3",
-        ...planFields,
+        // ...planFields,
       })
       .populate({
         path: "workoutPlanWeek.4",
-        ...planFields,
+        // ...planFields,
       })
       .populate({
         path: "workoutPlanWeek.5",
-        ...planFields,
+        // ...planFields,
       })
       .populate({
         path: "workoutPlanWeek.6",
-        ...planFields,
+        // ...planFields,
       });
     if (!workoutPlanQuery)
       return res.status(403).json({ error: true, msg: "No Plan Plan" });
