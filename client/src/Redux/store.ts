@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { ThunkDispatch } from "redux-thunk";
 import * as slice from "./slices";
 
 export const createStore = () =>
@@ -7,6 +8,7 @@ export const createStore = () =>
       account: slice.accountSlice,
       ui: slice.uiSlice,
       workout: slice.workoutSlice,
+      data: slice.dataSlice,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
@@ -15,6 +17,8 @@ export const createStore = () =>
   });
 
 export const store = createStore();
+
+export type AppThunkDispatch = ThunkDispatch<RootState, any, any>;
 
 // Selectors
 export const selectAccount = (state: RootState) => state.account;

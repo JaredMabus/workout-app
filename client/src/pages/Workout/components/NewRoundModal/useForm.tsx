@@ -10,6 +10,7 @@ import {
   setSnackBar,
   setCompletedSetsIndices,
 } from "../../../../Redux/slices/uiSlice";
+import * as wk from "../../../../Redux/slices/workoutSlice";
 import { RoundType, addRound } from "../../../../Redux/slices/workoutSlice";
 
 export type FormErrors =
@@ -149,8 +150,18 @@ const useForm = () => {
 
         if (response.status === 200) {
           let data = response.data;
+
           dispatch(addRound(data.payload));
           dispatch(setNewRoundModalState());
+          //if round belongs to today's workout, add to todayCompletedWorkouts array
+          let newRound: Partial<RoundType> = {
+            _id: data.payload._id,
+            workoutId: data.payload.workoutId,
+            date: data.payload.date,
+            sets: data.payload.sets,
+          };
+
+          dispatch(wk.addTodayCompletedWorkouts(newRound));
           dispatch(
             setSnackBar({
               open: true,

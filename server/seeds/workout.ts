@@ -12,6 +12,7 @@ const data: WorkoutModelType[] = [
       new Types.ObjectId("63b5d4dffaaae1e0b1946cf8"),
     ],
     roundId: [
+      new Types.ObjectId("63f7c62a02dd894318d81e67"),
       new Types.ObjectId("63b5db577835ecd77f122c4b"),
       new Types.ObjectId("63b5db73b84507cab166c368"),
       new Types.ObjectId("63b5db79fda0415eb2fcc3c3"),
