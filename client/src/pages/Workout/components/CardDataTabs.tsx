@@ -38,15 +38,6 @@ import {
 import ProgressChart from "./ProgressChart";
 import GoalCard from "../components/NewGoalModal/GoalCard";
 
-interface Props {
-  workout: WorkoutType;
-  lastRound: Partial<RecentRound> | null;
-  tabHasRecentRound: boolean;
-  tabValue: WorkoutMethodType;
-  activeGoal: GoalType | null;
-  setActiveGoal: React.Dispatch<React.SetStateAction<GoalType | null>>;
-}
-
 const numberFormatSX = {
   fontFamily: "Saira Semi Condensed",
   fontSize: "1.3rem",
@@ -61,6 +52,15 @@ const metricTitlesSx = {
 };
 
 const tabs = [0, 1];
+
+interface Props {
+  workout: WorkoutType;
+  lastRound: Partial<RecentRound> | null;
+  tabHasRecentRound: boolean;
+  tabValue: WorkoutMethodType;
+  activeGoal: GoalType | null;
+  setActiveGoal: React.Dispatch<React.SetStateAction<GoalType | null>>;
+}
 
 export default function CardDataTabs({
   workout,

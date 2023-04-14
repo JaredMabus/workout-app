@@ -1,12 +1,23 @@
 import { Schema, model, Types } from "mongoose";
 import { Account } from "./index";
-import {
-  MuscleCategoryType,
-  MuscleGroupType,
-  WorkoutMethodType,
-  TargetGoalType,
-} from "../../client/src/Redux/slices/workoutSlice";
 
+export type MuscleCategoryType = "Upper Body" | "Lower Body" | "Core" | "";
+export type MuscleGroupType =
+  | "Chest"
+  | "Legs"
+  | "Glutes"
+  | "Shoulder"
+  | "Back"
+  | "Front Arm"
+  | "Back Arm"
+  | "Abs";
+
+export type WorkoutMethodType =
+  | "Barbell"
+  | "Cable"
+  | "Dumbbell"
+  | "Machine"
+  | "";
 // -- Workout Types -- //
 export interface WorkoutModelType {
   _id?: Types.ObjectId;

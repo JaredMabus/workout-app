@@ -1,7 +1,6 @@
 import { Types } from "mongoose";
 import { Workout } from "../models";
 import { WorkoutModelType } from "../models/Workout";
-import { TargetGoalType } from "../../client/src/Redux/slices/workoutSlice";
 
 const data: WorkoutModelType[] = [
   {

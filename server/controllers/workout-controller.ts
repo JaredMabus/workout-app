@@ -96,20 +96,21 @@ export const updateWorkout = async (req: Request, res: Response) => {
               $group: {
                 _id: "$method",
                 createAt: { $max: "$createdAt" },
-                values: {
-                  $topN: {
-                    output: {
-                      _id: "$_id",
-                      achieved: "$achieved",
-                      dateAchieved: "$dateAchieved",
-                      targetWeight: "$targetWeight",
-                      targetSets: "$targetSets",
-                      targetReps: "$targetReps",
-                    },
-                    sortBy: { createdBy: -1 },
-                    n: 1,
-                  },
-                },
+                document: { $first: "$$ROOT" },
+                // values: {
+                //   $topN: {
+                //     output: {
+                //       _id: "$_id",
+                //       achieved: "$achieved",
+                //       dateAchieved: "$dateAchieved",
+                //       targetWeight: "$targetWeight",
+                //       targetSets: "$targetSets",
+                //       targetReps: "$targetReps",
+                //     },
+                //     sortBy: { createdBy: -1 },
+                //     n: 1,
+                //   },
+                // },
               },
             },
           ],

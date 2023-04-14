@@ -173,6 +173,7 @@ const Account = () => {
                 sx={{
                   minHeight: 600,
                   alignItems: { xs: "start", sm: "center", md: "start" },
+                  backgroundColor: grey[50],
                 }}
               >
                 <Stack

@@ -206,6 +206,7 @@ export default function WeekDayCard({ day }: any) {
                   addNewWorkout: false,
                 }}
                 workout={workout}
+                addWorkout={false}
               />
             );
           })}

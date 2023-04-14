@@ -1,7 +1,7 @@
 import { Schema, model, Types } from "mongoose";
 import { Workout } from "./index";
 import { WorkoutMethodArray } from "./Workout";
-import { WorkoutMethodType } from "../../client/src/Redux/slices/workoutSlice";
+import { WorkoutMethodType } from "./Workout";
 
 // -- Goal Types -- //
 export interface GoalType {

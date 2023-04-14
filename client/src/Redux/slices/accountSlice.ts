@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import Cookie from "js-cookie";
-import { AccountType } from "../../../../server/models/Account";
 import { reset as uiReset } from "./uiSlice";
 import { reset as workoutReset } from "./workoutSlice";
 import useDispatch from "react-redux";

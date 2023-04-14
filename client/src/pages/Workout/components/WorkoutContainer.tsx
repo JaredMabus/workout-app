@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
-import * as api from "./workoutApi";
 import {
   Grid,
   Stack,
@@ -108,6 +107,7 @@ export default function WorkoutContainer() {
     enter: { x: 0, y: 0, opacity: 1 },
   };
 
+  // Render and apply animation to each WorkoutCard for filteredWorkouts array
   const transitions = useTransition(filteredWorkouts, {
     from: animateStyles.from,
     enter: () => async (next) => {
@@ -134,6 +134,7 @@ export default function WorkoutContainer() {
           mb: 2,
           border: `1px solid ${grey[200]}`,
           overflowX: "hidden",
+          backgroundColor: "#fff",
         }}
         direction="row"
         justifyContent={"space-between"}
@@ -147,9 +148,6 @@ export default function WorkoutContainer() {
           New Workout
         </Button>
         <Stack direction="row">
-          <IconButton>
-            <SearchIcon />
-          </IconButton>
           <IconButton onClick={toggleFlexFilter}>
             <FilterListIcon />
           </IconButton>
@@ -162,8 +160,8 @@ export default function WorkoutContainer() {
           border: `1px solid ${grey[200]}`,
           height: 650,
           maxHeight: 650,
-          // backgroundColor: "#FAFAFA",
-          backgroundColor: alpha(grey[50], 0.5),
+          backgroundColor: "#fff",
+          // backgroundColor: alpha(grey[50], 0.5),
         }}
       >
         <Stack
@@ -172,14 +170,13 @@ export default function WorkoutContainer() {
             overflowY: "scroll",
           }}
         >
-          <Grid container spacing={3} sx={{ px: 3, py: 1 }}>
-            {/* {loading && (
-              <Grid item xs={12}>
-                <LinearProgress />
-              </Grid>
-            )} */}
+          <Grid
+            container
+            spacing={3}
+            sx={{ px: 3, py: 2, backgroundColor: "#fff" }}
+          >
             {filteredWorkouts.length > 0 ? (
-              transitions((style, workout: Partial<WorkoutType>) => (
+              transitions((style, workout: WorkoutType) => (
                 <Grid item key={workout._id} xs={12} sm={6} md={4}>
                   <animated.div style={style} className="item">
                     <WorkoutCard workout={workout} />

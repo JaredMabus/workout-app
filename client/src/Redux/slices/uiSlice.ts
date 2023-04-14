@@ -5,7 +5,6 @@ import {
   MuscleCategoryType,
   MuscleGroupType,
   WorkoutMethodType,
-  RecentRound,
   RoundType,
 } from "./workoutSlice";
 
