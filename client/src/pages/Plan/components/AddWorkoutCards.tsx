@@ -34,7 +34,7 @@ export default function AddWorkoutCards({ filteredWorkouts }: Props) {
         }}
       >
         {filteredWorkouts != null &&
-          filteredWorkouts.map((workout: any, index: any) => (
+          filteredWorkouts.map((workout: wk.WorkoutType, index: any) => (
             <DnDWorkoutCard
               id={`${workout._id}-${index}-card-add`}
               key={`${workout._id}-${index}-card-add`}

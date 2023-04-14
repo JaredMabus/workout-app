@@ -51,29 +51,32 @@ export default function TodaysWorkout() {
   const [todayIndex, setTodayIndex] = React.useState(
     getDay(new Date()) as keyof wk.WorkoutPlanWeek
   );
-  const [steps, setSteps] = React.useState<Partial<wk.WorkoutType[]>>([]);
+  const [steps, setSteps] = React.useState<wk.WorkoutType[]>([]);
   const [initialLoad, setInitialLoad] = React.useState<boolean>(true);
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState<StepObj>({});
 
   const getTodaysWorkout = () => {
-    var todayWorkoutsIdArray = wkState.workoutPlanWeek[todayIndex].map(
-      (item: Partial<wk.RoundType>) => item._id
-    );
-
-    if (todayWorkoutsIdArray != null) {
-      var todaysWorkoutFinal = todayWorkoutsIdArray.map((workoutId) => {
-        var indexOfWorkout: number = wkState.workouts.findIndex(
-          (workout: wk.WorkoutType) => workout._id === workoutId
-        );
-        if (indexOfWorkout >= 0) {
-          return wkState.workouts[indexOfWorkout];
+    try {
+      var todayWorkoutsIdArray = wkState.workoutPlanWeek[todayIndex].map(
+        (item: Partial<wk.RoundType>) => item._id
+      );
+      if (todayWorkoutsIdArray != null && todayWorkoutsIdArray.length > 0) {
+        // For each id, find workout._id in Redux State
+        var todaysWorkoutFinal = todayWorkoutsIdArray.map((workoutId) => {
+          var indexOfWorkout: number = wkState.workouts.findIndex(
+            (workout: wk.WorkoutType) => workout._id === workoutId
+          );
+          if (indexOfWorkout >= 0) {
+            return wkState.workouts[indexOfWorkout];
+          }
+        });
+        if (todaysWorkoutFinal[0] != null) {
+          setSteps(todaysWorkoutFinal as wk.WorkoutType[]);
         }
-      });
-
-      if (todaysWorkoutFinal != null) {
-        setSteps(todaysWorkoutFinal);
       }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -282,9 +285,9 @@ export default function TodaysWorkout() {
   return (
     <>
       <Stack
-        spacing={3}
+        spacing={4}
         sx={{
-          px: { xs: 2, sm: 4 },
+          px: { xs: 2, sm: 3 },
           pt: 3,
           pb: 10,
           borderRadius: 0,
@@ -300,7 +303,13 @@ export default function TodaysWorkout() {
           justifyContent={"start"}
           alignItems={"baseline"}
         >
-          <Typography variant="h5">
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: { xs: 600, sm: 600 },
+              // fontSize: { xs: "1.7rem", sm: "2.5rem" },
+            }}
+          >
             {format(new Date(), "EEEE")}'s Workouts
           </Typography>
           <Typography variant="h6">
@@ -310,13 +319,13 @@ export default function TodaysWorkout() {
               : 0}
             /{steps.length}
           </Typography>
-          <Box
+          {/* <Box
             sx={{
               flex: 1,
               alignSelf: "baseline",
               borderBottom: `1px solid ${grey[300]}`,
             }}
-          />
+          /> */}
         </Stack>
         {steps.length <= 0 && (
           <Stack
@@ -451,7 +460,10 @@ export default function TodaysWorkout() {
                         alignItems: "center",
                       }}
                     >
-                      <WorkoutCard workout={steps[activeStep]} />
+                      {steps[activeStep] != null &&
+                        typeof steps[activeStep] === "object" && (
+                          <WorkoutCard workout={steps[activeStep]} />
+                        )}
                     </Stack>
                     <Stack
                       spacing={1}

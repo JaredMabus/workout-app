@@ -1,6 +1,6 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
-const otherThemes = {
+let otherThemes = {
   typography: {
     // h1: {
     //   fontWeight: 500,
@@ -12,7 +12,9 @@ const otherThemes = {
     //   fontWeight: 500,
     // },
     // h4: {
-    //   fontWeight: 600,
+    //   "@media (min-width:600px)": {
+    //     fontSize: "1.5rem",
+    //   },
     // },
     // h5: {
     //   fontWeight: 600,
@@ -52,7 +54,7 @@ const otherThemes = {
   },
 };
 
-export const themeLight = createTheme({
+export let themeLight = createTheme({
   ...otherThemes,
   palette: {
     mode: "light",
@@ -74,6 +76,8 @@ export const themeLight = createTheme({
     },
   },
 });
+
+themeLight = responsiveFontSizes(themeLight);
 
 export const themeDark = createTheme({
   ...otherThemes,

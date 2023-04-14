@@ -17,12 +17,12 @@ import {
 import * as ui from "../../../Redux/slices/uiSlice";
 import { CompletedGoal } from "./Dialogs";
 
-const updateGoalApi = async (id: string | undefined) => {
+const updateGoalApi = async (_id: string | undefined) => {
   try {
-    if (id == null) return;
+    if (_id == null) return;
 
     let data: Partial<GoalType> = {
-      _id: id,
+      _id: _id,
       achieved: true,
       dateAchieved: new Date(),
     };
@@ -154,10 +154,10 @@ export default function ProgressChart({
   });
 
   // useEffect(() => {
-  // console.log(workout);
-  // console.log(lastRound);
-  // console.log(tabValue);
-  // console.log(activeGoal);
+  //   console.log(workout);
+  //   console.log(lastRound);
+  //   console.log(tabValue);
+  //   console.log(activeGoal);
   // }, [tabValue]);
 
   useEffect(() => {
@@ -174,8 +174,10 @@ export default function ProgressChart({
     ) {
       dispatch(ui.setGoalDialogStatus(true));
       (async () => {
+        console.log(activeGoal._id);
         await updateGoalApi(activeGoal._id);
         let newGoal = await addNewGoalApi(workout, activeGoal);
+        console.log(newGoal);
         if (newGoal != null) {
           dispatch(addWorkoutGoal(newGoal));
         }

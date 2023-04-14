@@ -101,13 +101,17 @@ const App: FC = () => {
   }, []);
 
   useEffect(() => {
-    (async () => {
-      if (account.loginStatus === true) {
-        await getWorkoutData();
-        await getWorkoutPlanData();
-        await getTodayCompletedWorkouts();
-      }
-    })();
+    try {
+      (async () => {
+        if (account.loginStatus === true) {
+          await getWorkoutData();
+          await getWorkoutPlanData();
+          await getTodayCompletedWorkouts();
+        }
+      })();
+    } catch (err) {
+      console.log(err);
+    }
   }, [account.loginStatus]);
 
   return (

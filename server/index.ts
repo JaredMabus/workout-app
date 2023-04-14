@@ -7,18 +7,26 @@ import db from "./config/connection";
 import apiRoutes from "./routes/api";
 import multer, { Multer } from "multer";
 import compression from "compression";
-// import AWS from "aws-sdk";
+
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port: number = Number(process.env.PORT as string) || 3001;
+const host: string =
+  process.env.NODE_ENV === "production" ? "0.0.0.0" : "0.0.0.0";
 const upload = multer();
-// const s3 = new AWS.S3({ apiVersion: "2006-06-01" });
 
-app.use(express.static(path.resolve(__dirname, "../client/build")));
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "./build")));
+  app.use(morgan("tiny"));
+} else {
+  app.use(express.static(path.resolve(__dirname, "./build")));
+  app.use(morgan("tiny"));
+}
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://localhost:8080"],
     credentials: true,
   })
 );
@@ -26,16 +34,13 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(upload.array("files"));
-if (process.env.NODE_ENV !== "production") {
-  app.use(morgan("tiny"));
-}
 app.use(compression());
 
 app.use("/api", apiRoutes);
 
 app.get("*", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.sendFile(path.join(__dirname, "../client/build/index.html"));
+    res.sendFile(path.join(__dirname, "./build/index.html"));
   } catch (err) {
     res.status(500);
     next(err);
@@ -65,8 +70,8 @@ app.use(
 
 db.once("open", () => {
   try {
-    app.listen(port, () => {
-      console.log(`Listening at -- http://localhost:${port} -- 🚀`);
+    app.listen(port, host, () => {
+      console.log(`Listening at -- ${host}${port} -- 🚀`);
     });
   } catch (err) {
     console.log(err);

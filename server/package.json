@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon index.ts",
-    "seed": "ts-node seeds"
+    "seed": "ts-node seeds",
+    "build": "npx tsc"
   },
   "keywords": [],
   "author": "",

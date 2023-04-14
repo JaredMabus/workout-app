@@ -68,10 +68,10 @@ export interface DnDWorkoutCardProps {
     dayIndex: string;
     dayHoverIndex: string;
     workout: Partial<WorkoutType>;
-    addNewWorkout?: boolean;
+    addNewWorkout: boolean;
   };
   workout: Partial<WorkoutType>;
-  addWorkout?: boolean;
+  addWorkout: boolean;
 }
 /**
  * Draggable component that is managed by react-dnd and rendered by a useCallback function.
@@ -146,9 +146,10 @@ export default function DnDWorkoutCard({
       if (!ref.current) {
         return;
       }
-      item.addNewWorkout = addWorkout;
-      //   console.log(item);
-      //   console.log(index);
+
+      // item.addNewWorkout = addWorkout;
+      console.log(item);
+      console.log(item.addNewWorkout);
       const dragIndex = item.index;
       var hoverIndex = index;
       item.hoverIndex = hoverIndex;

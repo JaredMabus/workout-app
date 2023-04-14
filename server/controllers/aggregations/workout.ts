@@ -46,46 +46,15 @@ export const workoutAgg = (res: Response) => {
           {
             $group: {
               _id: "$method",
-              values: {
-                $topN: {
-                  output: {
-                    _id: "$_id",
-                    achieved: "$achieved",
-                    dateAchieved: "$dateAchieved",
-                    targetRounds: "$targetRounds",
-                    targetWeight: "$targetWeight",
-                    targetSets: "$targetSets",
-                    targetReps: "$targetReps",
-                  },
-                  sortBy: { createdAt: -1 },
-                  n: 1,
-                },
-              },
-            },
-          },
-          {
-            $project: {
-              method: "$_id",
-              accountId: 1,
-              workoutId: 1,
-              goal: { $arrayElemAt: ["$values", 0] },
-            },
-          },
-          {
-            $project: {
-              _id: "$goal._id",
-              method: 1,
-              accountId: 1,
-              workoutId: 1,
-              roundId: 1,
-              achieved: "$goal.achieved",
-              dateAchieved: "$goal.dateAchieved",
-              targetRounds: "$goal.targetRounds",
-              targetSets: "$goal.targetSets",
-              targetWeight: "$goal.targetWeight",
-              targetReps: "$goal.targetReps",
-              createdAt: "$goal.createdAt",
-              updatedAt: "$goal.updatedAt",
+              id: { $last: "$_id" },
+              method: { $last: "$method" },
+              createAt: { $last: "$createdAt" },
+              achieved: { $last: "$achieved" },
+              dateAchieved: { $last: "$dateAchieved" },
+              targetRounds: { $last: "$targetRounds" },
+              targetWeight: { $last: "$targetWeight" },
+              targetSets: { $last: "$targetSets" },
+              targetReps: { $last: "$targetReps" },
             },
           },
         ],
@@ -106,6 +75,7 @@ export const workoutAgg = (res: Response) => {
           {
             $group: {
               _id: "$method",
+
               lastSets: { $last: { $size: "$sets" } },
               lastWeightRep: {
                 $last: { $first: "$sets" },
@@ -115,15 +85,11 @@ export const workoutAgg = (res: Response) => {
               mostRecent: { $max: "$date" },
               totalRounds: { $count: {} },
               rounds: {
-                $topN: {
-                  output: {
-                    _id: "$_id",
-                    date: "$date",
-                    sets: "$sets",
-                    successSetsReps: "$successSetsReps",
-                  },
-                  sortBy: { date: -1 },
-                  n: 9,
+                $push: {
+                  _id: "$_id",
+                  date: "$date",
+                  successSetsReps: "$successSetsReps",
+                  sets: "$sets",
                 },
               },
             },

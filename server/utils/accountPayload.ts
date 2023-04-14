@@ -1,7 +1,3 @@
-import {
-  AccountInfo,
-  AccountStateType,
-} from "../../client/src/Redux/slices/accountSlice";
 import { Account } from "../models";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";

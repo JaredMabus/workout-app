@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import { Workout } from "./index";
-import { WorkoutMethodType } from "../../client/src/Redux/slices/workoutSlice";
+import { WorkoutMethodType } from "./Workout";
 
 // -- Round Types -- //
 export interface RoundType {

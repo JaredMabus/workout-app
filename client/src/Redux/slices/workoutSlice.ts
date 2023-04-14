@@ -29,7 +29,8 @@ export interface TargetGoalType {
 }
 
 export interface GoalType {
-  _id: string;
+  _id: string; // _id is the method type from a group agg
+  id?: string; // This is the goal's _id
   accountId: string;
   workoutId: string;
   method: WorkoutMethodType;
@@ -63,7 +64,6 @@ export interface RecentRound {
   mostRecent?: Date | string | any;
   totalRounds?: number;
   rounds?: RecentRoundsRoundsType[];
-  // sets?: SetType[]; // optional when using Round and RecentRound together
 }
 
 export interface RecentRoundsRoundsType {
@@ -144,8 +144,8 @@ export interface WorkoutType {
   name: string;
   muscleCategory: MuscleCategoryType;
   muscleGroup: MuscleGroupType | MuscleGroupType[] | "";
-  methodSelection: WorkoutMethodType[] | string[];
-  lastRounds?: RecentRound[];
+  methodSelection: WorkoutMethodType[];
+  lastRounds: RecentRound[];
 }
 
 export interface WorkoutInitialState {
@@ -265,7 +265,7 @@ const workoutSlice = createSlice({
       );
 
       let goalIdIndex = state.workouts[workoutIndex].goalId.findIndex(
-        (goal) => goal.method === action.payload.method
+        (goal) => goal._id === action.payload.method
       );
 
       state.workouts[workoutIndex].goalId.splice(
@@ -278,7 +278,9 @@ const workoutSlice = createSlice({
       state.workoutPlanWeek = action.payload;
     },
     moveWorkoutCard: (state, action: PayloadAction<WorkoutCardDragObj>) => {
+      console.log(action.payload);
       if (action.payload.addNewWorkout === false) {
+        // @ts-ignore
         state.workoutPlanWeek[action.payload.dayIndex].splice(
           Number(action.payload.dragIndex),
           1
@@ -348,6 +350,7 @@ const workoutSlice = createSlice({
           state.todayCompletedWorkouts != null &&
           Array.isArray(action.payload.data.payload)
         ) {
+          console.log(action.payload);
           let idArray = action.payload.data.payload;
           let newArray = state.todayCompletedWorkouts.filter((round) => {
             if (round._id != null && idArray.includes(round._id)) {
@@ -356,6 +359,7 @@ const workoutSlice = createSlice({
               return round;
             }
           });
+          console.log(newArray);
           state.todayCompletedWorkouts = newArray;
         }
       })
