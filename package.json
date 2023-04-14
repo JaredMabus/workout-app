@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd dist && NODE_ENV=production node server.js",
-    "start-pm2": "npx pm2 start pm2.config.js --no-daemon",
+    "start": "npx pm2 start pm2.config.js --no-daemon",
     "build": "cd server && npm run build && cd ../client && npm run build",
     "build-client": "cd client && npm run build",
-    "prod-install": "npm install && cd dist && npm install",
+    "install-build": "npm install && cd server && npm install && cd ../client && npm install",
+    "install-prod": "cd dist && npm install",
     "server-install": "cd server && npm install",
     "server-watch": "cd server && npm run watch",
     "seed": "cd server && npm run seed"

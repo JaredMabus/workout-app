@@ -71,7 +71,7 @@ app.use(
 db.once("open", () => {
   try {
     app.listen(port, host, () => {
-      console.log(`Listening at -- ${host}${port} -- 🚀`);
+      console.log(`Listening at -- ${host}:${port} -- 🚀`);
     });
   } catch (err) {
     console.log(err);

@@ -8,8 +8,7 @@ lerna-debug.log*
 
 # Docker
 **/*docker-compose*
-**/*Dockerfile*
-.dockerignore
+
 
 # Mac DS file
 .DS_Store

@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const baseUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = process.env.REACT_APP_HOST;
 
-axios.defaults.baseURL = `${baseUrl}/api/`;
+axios.defaults.baseURL = `${baseUrl || "http:localhost:3001"}/api/`;
 axios.defaults.withCredentials = true;
 
 axios.defaults.headers.common = {
