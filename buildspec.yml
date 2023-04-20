@@ -16,4 +16,5 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG 2> /tmp/docker-push-error.log || echo "Docker push failed! Check /tmp/docker-push-error.log for more details."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG 2>&1 | tee -a build.log
+      - if [ ${PIPESTATUS[0]} -ne 0 ]; then echo "Error: Docker push failed" && exit 1; fi
