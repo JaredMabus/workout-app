@@ -4,10 +4,7 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - LOGIN_COMMAND=$(aws sts assume-role --role-arn arn:aws:iam::140739330479:role/service-role/CodeBuildBasePolicy-workout-app-build-prod-us-east-2 --role-session-name CodeBuild-session | aws ecr get-login-password --debug --region $AWS_DEFAULT_REGION --username AWS --password-stdin)
-      - eval $LOGIN_COMMAND
-      - docker login -u AWS -p $LOGIN_COMMAND $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-
+      - aws ecr get-login-password --debug --region $AWS_DEFAULT_REGION --profile workout-app-builder | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
       - echo Build started on `date`
