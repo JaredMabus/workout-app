@@ -30,7 +30,7 @@ app.use(
       "http://localhost:3000",
       "http://localhost:8080",
       "http://3.12.238.39",
-      "ec2-3-12-238-39.us-east-2.compute.amazonaws.com",
+      "http://ec2-3-12-238-39.us-east-2.compute.amazonaws.com",
     ],
     credentials: true,
   })
