@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:16-alpine
+FROM --platform=linux/amd64/v8 node:16-alpine
 
 # Create app directory
 WORKDIR /app
