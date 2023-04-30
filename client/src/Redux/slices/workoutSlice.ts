@@ -278,7 +278,7 @@ const workoutSlice = createSlice({
       state.workoutPlanWeek = action.payload;
     },
     moveWorkoutCard: (state, action: PayloadAction<WorkoutCardDragObj>) => {
-      console.log(action.payload);
+      // console.log(action.payload);
       if (action.payload.addNewWorkout === false) {
         // @ts-ignore
         state.workoutPlanWeek[action.payload.dayIndex].splice(
@@ -350,7 +350,7 @@ const workoutSlice = createSlice({
           state.todayCompletedWorkouts != null &&
           Array.isArray(action.payload.data.payload)
         ) {
-          console.log(action.payload);
+          // console.log(action.payload);
           let idArray = action.payload.data.payload;
           let newArray = state.todayCompletedWorkouts.filter((round) => {
             if (round._id != null && idArray.includes(round._id)) {
@@ -359,7 +359,7 @@ const workoutSlice = createSlice({
               return round;
             }
           });
-          console.log(newArray);
+          // console.log(newArray);
           state.todayCompletedWorkouts = newArray;
         }
       })

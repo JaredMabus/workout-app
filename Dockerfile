@@ -6,6 +6,8 @@ WORKDIR /app
 # Copy all files to image
 COPY . .
 
+ENV REACT_APP_HOST=http://localhost:80
+
 # Install ./ modules pm2 and typescript
 RUN npm install
 
@@ -28,6 +30,7 @@ RUN npm run install-prod
 # Remove ./server and ./client directories
 RUN rm -rf ./client ./server
 
-EXPOSE 80
+EXPOSE 8080 
 
+# Start express server
 CMD [ "npm", "start" ]

@@ -29,8 +29,8 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:8080",
-      "http://3.12.238.39",
-      "http://ec2-3-12-238-39.us-east-2.compute.amazonaws.com",
+      "https://liftx.tech",
+      "http://liftx.tech",
     ],
     credentials: true,
   })
