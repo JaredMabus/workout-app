@@ -39,7 +39,7 @@ export const authenticateLogin = async (
     const token = signToken(foundAccount);
     if (process.env.NODE_ENV === "production") {
       res.cookie("token", token, {
-        secure: true,
+        secure: false,
       });
     } else {
       res.cookie("token", token, { secure: false });
