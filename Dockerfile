@@ -6,7 +6,7 @@ WORKDIR /app
 # Copy all files to image
 COPY . .
 
-ENV REACT_APP_HOST=http://localhost:80
+ENV REACT_APP_HOST=http://liftx.tech
 
 # Install ./ modules pm2 and typescript
 RUN npm install

@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM --platform=linux/amd64 nginx:alpine
 
 # Configure NGINX
 COPY nginx.conf /etc/nginx/nginx.conf
