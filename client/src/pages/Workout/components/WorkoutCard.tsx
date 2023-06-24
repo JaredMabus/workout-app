@@ -2,9 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useTheme, styled } from "@mui/material/styles";
 import * as date from "../../../utils/date";
 import { format, formatISO } from "date-fns";
-// import { toTitleCase } from "../../../utils/textFormat";
 import {
-  Grid,
+  // Grid,
   Stack,
   Paper,
   Button,
@@ -17,8 +16,8 @@ import {
   MenuItem,
   alpha,
   Divider,
-  Chip,
 } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { grey } from "@mui/material/colors";
 // REDUX
@@ -41,6 +40,7 @@ import {
   Edit,
   Delete,
   TrackChanges,
+  Circle,
 } from "@mui/icons-material";
 // COMPONENTS
 import { DeleteWorkoutDialog } from "./Dialogs";
@@ -71,14 +71,22 @@ export default function WorkoutCard({ workout }: Props) {
   const [filterLastRound, setFilterLastRound] = useState<RecentRound | null>(
     null
   );
-  const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    console.log(filterLastRound);
+  }, [filterLastRound]);
+  const [activeGoal, setActiveGoal] = useState<GoalType | null>(null);
+  const [loading, setLoading] = useState(false);
   // Tab state and logic
   const [value, setTabValue] = React.useState<WorkoutMethodType>(
     workout.methodSelection[0] || ""
   );
   const [tabHasRecentRound, setTabHasRecentRound] = useState<boolean>(true);
 
+  /**
+   * Handles tab change and sets filter values to update the workout card data based on
+   * tab's filter value
+   */
   const handleChange = (
     event: React.SyntheticEvent | null = null,
     newValue: WorkoutMethodType
@@ -156,8 +164,6 @@ export default function WorkoutCard({ workout }: Props) {
     }
   }, [workout]);
 
-  const [activeGoal, setActiveGoal] = useState<GoalType | null>(null);
-
   useEffect(() => {
     if (workout.goalId != null) {
       const activeGoalNew = workout.goalId.find(
@@ -171,6 +177,17 @@ export default function WorkoutCard({ workout }: Props) {
     }
   }, [value, workout]);
 
+  /**
+   * Update tab filter value in Redux state
+   */
+  useEffect(() => {
+    try {
+      dispatch(ui.setActiveTabDataFilter(value));
+    } catch (err) {
+      console.log(err);
+    }
+  }, [value]);
+
   // Card Menu state and logic
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -180,15 +197,18 @@ export default function WorkoutCard({ workout }: Props) {
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
-
   const [openDialog, setDialogStatus] = useState<boolean>(false);
   const [dialogResponse, setDialogResponse] = useState<boolean>(false);
 
+  /**
+   * Delete Workout Dialog
+   */
   const deleteWorkout = async () => {
     setLoading(true);
     setDialogStatus(true);
   };
 
+  // WORKOUT CARD LIFE CYCLE
   // Initial render, load first method if no rounds
   useEffect(() => {
     if (
@@ -221,6 +241,9 @@ export default function WorkoutCard({ workout }: Props) {
     }
   }, [workout]);
 
+  /**
+   * Open Add Round Modal and update Redux state to load default values for the form
+   */
   const openAddRound = () => {
     dispatch(ui.setActiveWorkout(workout));
     dispatch(ui.setActiveTabMethodFilter(value));
@@ -234,7 +257,7 @@ export default function WorkoutCard({ workout }: Props) {
           accountId: account.accountData._id,
           workoutId: workout._id,
           method: value,
-          date: new Date(Date.now()),
+          date: new Date(),
           sets: createSetObj(3, 100, 8),
           successSetsReps: true,
         })
@@ -248,7 +271,7 @@ export default function WorkoutCard({ workout }: Props) {
           accountId: account.accountData._id,
           workoutId: workout._id,
           method: filterLastRound._id,
-          date: new Date(Date.now()),
+          date: new Date(),
           successSetsReps: filterLastRound.successSetsReps,
           sets:
             filterLastRound != null &&
@@ -266,14 +289,6 @@ export default function WorkoutCard({ workout }: Props) {
       dispatch(ui.setNewRoundModalState());
     }
   };
-
-  React.useEffect(() => {
-    try {
-      dispatch(ui.setActiveTabDataFilter(value));
-    } catch (err) {
-      console.log(err);
-    }
-  }, [value]);
 
   const resetSetsDate = (sets: SetType[]) => {
     if (sets != null && Array.isArray(sets)) {
@@ -319,313 +334,323 @@ export default function WorkoutCard({ workout }: Props) {
             setLoading={setLoading}
             workout={workout}
           />
-          <Paper
-            elevation={1}
+          <Stack
             sx={{
-              py: 1,
-              px: 2,
-              border: `1px solid ${grey[300]}`,
-              boxShadow: "rgb(0 0 0 / 8%) 1px 2px 3px 1px",
+              flex: 1,
+              pt: { xs: 1, sm: 1, md: 1 },
+              pb: { xs: 1, sm: 1, md: 1 },
+              px: { xs: 1, sm: 2, md: 2.5, lg: 2.5 },
               borderRadius: 2,
-              width: "100%",
-              minWidth: 250,
-              maxWidth: 600,
+              // width: 530,
+              minWidth: 300,
+              maxWidth: 500,
+              height: 260,
               minHeight: 260,
               maxHeight: 260,
+              boxShadow: "rgb(0 0 0 / 8%) 1px 2px 3px 1px",
+              border: `1px solid ${grey[300]}`,
+              backgroundColor: "#fff",
             }}
           >
-            <Grid container>
-              <Grid item xs={12} sx={{ mb: 0.5 }}>
-                <Stack
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                  direction="row"
-                  sx={{ mb: 1 }}
-                >
-                  <Tooltip placement="top" title={workout.name}>
-                    <Typography
-                      variant="h5"
-                      noWrap
-                      sx={{
-                        textOverflow: "ellipsis",
-                        fontWeight: 600,
-                        // fontSize: "1.4rem",
-                      }}
-                    >
-                      {workout.name}
-                    </Typography>
-                  </Tooltip>
-                  <Stack direction="row">
-                    <IconButton
-                      aria-controls={openMenu ? "basic-menu" : undefined}
-                      aria-haspopup="true"
-                      aria-expanded={openMenu ? "true" : undefined}
-                      onClick={handleClick}
-                      size="medium"
-                    >
-                      <MoreHoriz />
-                    </IconButton>
-                    <Menu
-                      elevation={3}
-                      id="basic-menu"
-                      anchorEl={anchorEl}
-                      open={openMenu}
-                      onClose={handleCloseMenu}
-                      MenuListProps={{
-                        "aria-labelledby": "basic-button",
-                      }}
-                      sx={{
-                        justifyContent: "start",
-                        alignItems: "start",
-                        "& .MuiPaper-root": {
-                          borderRadius: 2,
+            {/* <Grid container> */}
+            <Stack>
+              <Stack
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                direction="row"
+                sx={{ mb: 1 }}
+              >
+                <Tooltip placement="top" title={workout.name}>
+                  <Typography
+                    variant="h5"
+                    noWrap
+                    sx={{
+                      textOverflow: "ellipsis",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {workout.name}
+                  </Typography>
+                </Tooltip>
+                <Stack direction="row">
+                  <IconButton
+                    aria-controls={openMenu ? "basic-menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={openMenu ? "true" : undefined}
+                    onClick={handleClick}
+                    size="medium"
+                  >
+                    <MoreHoriz />
+                  </IconButton>
+                  <Menu
+                    elevation={3}
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={openMenu}
+                    onClose={handleCloseMenu}
+                    MenuListProps={{
+                      "aria-labelledby": "basic-button",
+                    }}
+                    sx={{
+                      justifyContent: "start",
+                      alignItems: "start",
+                      "& .MuiPaper-root": {
+                        borderRadius: 2,
+                        border: `1px solid ${grey[300]}`,
+                        fontSize: 14,
+                        minWidth: 125,
+                      },
+                      "& .MuiMenu-list": {},
+                      "& .MuiMenuItem-root": {
+                        p: 0.5,
+                        px: 0.7,
+                        mx: 1,
+                        my: 0.2,
+                        border: `1px solid ${alpha(grey[200], 0)}`,
+                        borderRadius: 1,
+                        "&:hover": {
+                          border: `1px solid ${grey[200]}`,
+                        },
+                        "&:active": {
                           border: `1px solid ${grey[300]}`,
-                          fontSize: 14,
-                          minWidth: 125,
                         },
-                        "& .MuiMenu-list": {},
-                        "& .MuiMenuItem-root": {
-                          p: 0.5,
-                          px: 0.7,
-                          mx: 1,
-                          my: 0.2,
-                          border: `1px solid ${alpha(grey[200], 0)}`,
-                          borderRadius: 1,
-                          "&:hover": {
-                            border: `1px solid ${grey[200]}`,
-                          },
-                          "&:active": {
-                            border: `1px solid ${grey[300]}`,
-                          },
-                          "& .MuiSvgIcon-root": {
-                            fontSize: 16,
-                            mr: 0.8,
-                          },
+                        "& .MuiSvgIcon-root": {
+                          fontSize: 16,
+                          mr: 0.8,
                         },
+                      },
+                    }}
+                  >
+                    <MenuItem
+                      onClick={() => {
+                        handleCloseMenu();
+                        dispatch(
+                          ui.setUpdateWorkoutDefaultValues({
+                            _id: workout._id,
+                            name: workout.name,
+                            muscleCategory: workout.muscleCategory,
+                            muscleGroup: workout.muscleGroup,
+                            methodSelection: workout.methodSelection,
+                          })
+                        );
+                        dispatch(ui.setUpdateWorkoutModalState());
                       }}
+                      autoFocus
                     >
-                      <MenuItem
-                        onClick={() => {
-                          handleCloseMenu();
-                          dispatch(
-                            ui.setUpdateWorkoutDefaultValues({
-                              _id: workout._id,
-                              name: workout.name,
-                              muscleCategory: workout.muscleCategory,
-                              muscleGroup: workout.muscleGroup,
-                              methodSelection: workout.methodSelection,
-                            })
-                          );
-                          dispatch(ui.setUpdateWorkoutModalState());
-                        }}
-                        autoFocus
+                      <Button
+                        startIcon={<Edit sx={{ m: 0 }} />}
+                        variant="text"
+                        disableRipple
+                        sx={CardMenuItemStyle}
                       >
-                        <Button
-                          startIcon={<Edit sx={{ m: 0 }} />}
-                          variant="text"
-                          disableRipple
-                          sx={CardMenuItemStyle}
-                        >
-                          <Typography
-                            variant="body2"
-                            align="center"
-                            sx={{ fontWeight: 700, mt: 0.4 }}
-                          >
-                            Edit
-                          </Typography>
-                        </Button>
-                      </MenuItem>
-                      <MenuItem
-                        onClick={async () => {
-                          await dispatch(ui.setActiveWorkout(workout));
-                          await dispatch(ui.setActiveTabMethodFilter(value));
-                          await dispatch(ui.setNewGoalModalState());
-                          handleCloseMenu();
-                        }}
-                      >
-                        <Button
-                          startIcon={<TrackChanges sx={{ m: 0 }} />}
-                          variant="text"
-                          disableRipple
-                          sx={CardMenuItemStyle}
-                        >
-                          <Typography
-                            variant="body2"
-                            align="center"
-                            sx={{ fontWeight: 700, mt: 0.4 }}
-                          >
-                            New Goal
-                          </Typography>
-                        </Button>
-                      </MenuItem>
-                      <MenuItem>
-                        <LoadingButton
-                          onClick={deleteWorkout}
-                          loading={loading}
-                          loadingPosition="start"
-                          startIcon={<Delete sx={{ m: 0 }} />}
-                          variant="text"
-                          disableRipple
-                          disabled={loading ? true : false}
+                        <Typography
+                          variant="body2"
+                          align="center"
                           sx={{
-                            textTransform: "none",
-                            justifyContent: "start",
-                            p: 0,
-                            color: "#DA636B",
-                            backgroundColor: alpha("#fff", 0),
-                            ":hover": {
-                              backgroundColor: alpha("#DA636B", 0),
-                            },
-                            ".MuiButton-startIcon": {
-                              m: 0,
-                            },
-                            ".MuiLoadingButton-loadingIndicator": {
-                              ml: -1,
-                              height: 16,
-                              width: 16,
-                            },
+                            fontWeight: 700,
+                            mt: 0.4,
                           }}
                         >
-                          <Typography
-                            variant="body2"
-                            align="center"
-                            sx={{ fontWeight: 700, mt: 0.4 }}
-                          >
-                            Delete
-                          </Typography>
-                        </LoadingButton>
-                      </MenuItem>
-                    </Menu>
-                    <IconButton
-                      size="medium"
-                      color="secondary"
-                      title="New Round"
-                      onClick={openAddRound}
+                          Edit
+                        </Typography>
+                      </Button>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={async () => {
+                        await dispatch(ui.setActiveWorkout(workout));
+                        await dispatch(ui.setActiveTabMethodFilter(value));
+                        await dispatch(ui.setNewGoalModalState(null));
+                        handleCloseMenu();
+                      }}
                     >
-                      <AddCircle sx={{ height: 30, width: 30 }} />
-                    </IconButton>
-                  </Stack>
+                      <Button
+                        startIcon={<TrackChanges sx={{ m: 0 }} />}
+                        variant="text"
+                        disableRipple
+                        sx={CardMenuItemStyle}
+                      >
+                        <Typography
+                          variant="body2"
+                          align="center"
+                          sx={{
+                            fontWeight: 700,
+                            mt: 0.4,
+                          }}
+                        >
+                          New Goal
+                        </Typography>
+                      </Button>
+                    </MenuItem>
+                    <MenuItem>
+                      <LoadingButton
+                        onClick={deleteWorkout}
+                        loading={loading}
+                        loadingPosition="start"
+                        startIcon={<Delete sx={{ m: 0 }} />}
+                        variant="text"
+                        disableRipple
+                        disabled={loading ? true : false}
+                        sx={{
+                          textTransform: "none",
+                          justifyContent: "start",
+                          p: 0,
+                          color: "#DA636B",
+                          backgroundColor: alpha("#fff", 0),
+                          ":hover": {
+                            backgroundColor: alpha("#DA636B", 0),
+                          },
+                          ".MuiButton-startIcon": {
+                            m: 0,
+                          },
+                          ".MuiLoadingButton-loadingIndicator": {
+                            ml: -1,
+                            height: 16,
+                            width: 16,
+                          },
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          align="center"
+                          sx={{
+                            fontWeight: 700,
+                            mt: 0.4,
+                          }}
+                        >
+                          Delete
+                        </Typography>
+                      </LoadingButton>
+                    </MenuItem>
+                  </Menu>
+                  <IconButton
+                    size="medium"
+                    color="secondary"
+                    title="New Round"
+                    onClick={openAddRound}
+                  >
+                    <AddCircle sx={{ height: 35, width: 35 }} />
+                  </IconButton>
                 </Stack>
-              </Grid>
-              <Grid item xs={8}>
-                <Tabs
-                  value={value}
-                  onChange={handleChange}
-                  variant="scrollable"
-                  scrollButtons
-                  allowScrollButtonsMobile
-                  aria-label="scrollable force tabs example"
+              </Stack>
+            </Stack>
+            <Stack>
+              <Tabs
+                value={value}
+                onChange={handleChange}
+                variant="scrollable"
+                scrollButtons
+                allowScrollButtonsMobile
+                aria-label="scrollable force tabs example"
+                sx={{
+                  maxWidth: 234,
+                  height: 30,
+                  mt: -2,
+                  ml: -2,
+                  p: 0,
+                  ".MuiButtonBase-root": {
+                    padding: 0,
+                    borderRadius: 2,
+                    height: 40,
+                  },
+                  ".MuiTabs-scrollButtons": {
+                    height: 40,
+                  },
+                  ".MuiTabs-scroller": {
+                    height: 35,
+                  },
+                  ".MuiTabs-indicator": {
+                    opacity: 0,
+                  },
+                  ".MuiTabs-scrollButtons.Mui-disabled": {
+                    opacity: 0.2,
+                  },
+                }}
+              >
+                {workout.methodSelection.map((method: string) => (
+                  <Tab
+                    value={method}
+                    key={`${method}-tab`}
+                    label={method}
+                    sx={{
+                      height: 30,
+
+                      mt: -0.7,
+                      ml: -1,
+                      "&:hover": {
+                        fontWeight: 700,
+                        color: grey[700],
+                        opacity: 1,
+                        backgroundColor: alpha(grey[200], 0.3),
+                      },
+                      "&.Mui-selected": {
+                        fontWeight: 700,
+                      },
+                    }}
+                  />
+                ))}
+              </Tabs>
+            </Stack>
+            <Grid xs={12} sx={{ p: 0 }}>
+              {!tabHasRecentRound && workout.roundId.length > 0 && (
+                <Stack
+                  spacing={1}
                   sx={{
-                    maxWidht: 234,
-                    height: 30,
-                    mt: -2,
-                    ml: -2,
-                    p: 0,
-                    ".MuiButtonBase-root": {
-                      padding: 0,
-                      borderRadius: 2,
-                      height: 40,
-                    },
-                    ".MuiTabs-scrollButtons": {
-                      height: 40,
-                    },
-                    ".MuiTabs-scroller": {
-                      height: 35,
-                    },
-                    ".MuiTabs-indicator": {
-                      opacity: 0,
-                    },
-                    ".MuiTabs-scrollButtons.Mui-disabled": {
-                      opacity: 0.2,
-                    },
+                    pt: 1,
+                    height: "100%",
+                    justifyContent: "start",
+                    alignItems: "center",
                   }}
                 >
-                  {workout.methodSelection.map((method: string) => (
-                    <Tab
-                      value={method}
-                      key={`${method}-tab`}
-                      label={method}
-                      sx={{
-                        height: 30,
-                        mt: -0.7,
-                        ml: -1,
-                        "&:hover": {
-                          fontWeight: 700,
-                          color: grey[700],
-                          opacity: 1,
-                          backgroundColor: alpha(grey[200], 0.3),
-                        },
-                        "&.Mui-selected": {
-                          // backgroundColor: alpha(grey[200], 0.2),
-                          fontWeight: 700,
-                        },
-                      }}
-                    />
-                  ))}
-                </Tabs>
-              </Grid>
-              <Grid item xs={12}>
-                {!tabHasRecentRound && workout.roundId.length > 0 && (
-                  <Stack
-                    spacing={1}
+                  <Typography variant="body2">
+                    No rounds using {value}
+                  </Typography>
+                  <Button
+                    onClick={openAddRound}
                     sx={{
-                      pt: 1,
-                      height: "100%",
-                      justifyContent: "start",
-                      alignItems: "center",
+                      width: 150,
+                      borderRadius: 2,
                     }}
+                    variant="outlined"
                   >
-                    <Typography variant="body2">
-                      No rounds using {value}
-                    </Typography>
-                    <Button
-                      onClick={openAddRound}
-                      sx={{
-                        width: 150,
-                        borderRadius: 2,
-                      }}
-                      variant="outlined"
-                    >
-                      Add Round
-                    </Button>
-                  </Stack>
-                )}
-                {workout.roundId.length === 0 && (
-                  <Stack
-                    spacing={1}
+                    Add Round
+                  </Button>
+                </Stack>
+              )}
+              {workout.roundId.length === 0 && (
+                <Stack
+                  spacing={1}
+                  sx={{
+                    pt: 1,
+                    height: "100%",
+                    justifyContent: "start",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="body2">New Workout</Typography>
+                  <Button
+                    onClick={openAddRound}
                     sx={{
-                      pt: 1,
-                      height: "100%",
-                      justifyContent: "start",
-                      alignItems: "center",
+                      width: 150,
+                      borderRadius: 2,
                     }}
+                    variant="outlined"
                   >
-                    <Typography variant="body2">New Workout</Typography>
-                    <Button
-                      onClick={openAddRound}
-                      sx={{
-                        width: 150,
-                        borderRadius: 2,
-                      }}
-                      variant="outlined"
-                    >
-                      Add Round
-                    </Button>
-                  </Stack>
-                )}
-                {tabHasRecentRound && workout.roundId.length > 0 && (
-                  <CardDataTabs
-                    workout={workout}
-                    lastRound={filterLastRound}
-                    tabHasRecentRound={tabHasRecentRound}
-                    tabValue={value}
-                    activeGoal={activeGoal}
-                    setActiveGoal={setActiveGoal}
-                  />
-                )}
-              </Grid>
+                    Add Round
+                  </Button>
+                </Stack>
+              )}
+              {tabHasRecentRound && workout.roundId.length > 0 && (
+                <CardDataTabs
+                  workout={workout}
+                  lastRound={filterLastRound}
+                  tabHasRecentRound={tabHasRecentRound}
+                  tabValue={value}
+                  activeGoal={activeGoal}
+                  setActiveGoal={setActiveGoal}
+                />
+              )}
             </Grid>
-          </Paper>
+          </Stack>
         </>
       )}
     </>

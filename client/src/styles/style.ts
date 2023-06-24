@@ -24,16 +24,16 @@ let otherThemes = {
       // fontWeight: 600,
     },
     body1: {
-      fontWeight: 600,
       fontFamily: "Comfortaa",
+      fontWeight: 600,
     },
     body2: {
-      fontWeight: 600,
       fontFamily: "Comfortaa",
+      fontWeight: 600,
     },
     fontFamily: [
       "Titillium Web",
-      // "Comfortaa",
+      "Comfortaa",
       // "Saira Semi Condensed",
       "sans-serif",
     ].join(","),
@@ -73,7 +73,7 @@ export let themeLight = createTheme({
       main: "#EEB405",
       light: "#f1c337",
       dark: "#a67d03",
-    },
+    }
   },
 });
 

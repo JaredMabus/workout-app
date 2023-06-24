@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useForm from "./useForm";
+import {useTheme} from "@mui/material/styles";
 // MUI
-import { UISnack } from "../../components/UI";
+import SnackBar from "../../components/UI/components/SnackBar";
 import { styled } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import {
@@ -33,6 +34,7 @@ const CustomTextField = styled(TextField)(() => ({
 }));
 
 const NewSignUpComp = () => {
+  const theme = useTheme();
   const props = useSpring({
     from: { x: 0, y: -10, opacity: 0 },
     to: { x: 0, y: 0, opacity: 1 },
@@ -68,9 +70,9 @@ const NewSignUpComp = () => {
               sx={{
                 m: 1,
                 color: "text.light",
-                backgroundColor: "primary.main",
+                backgroundColor: theme.palette.secondary.main,
                 "&:hover": {
-                  backgroundColor: "primary.light",
+                  backgroundColor: theme.palette.primary.light,
                 },
               }}
               size="large"
@@ -99,6 +101,7 @@ const SignUp = () => {
     handleMouseDownPassword,
     handleClickShowPassword,
   } = useForm();
+  const theme = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -113,7 +116,7 @@ const SignUp = () => {
 
   return (
     <>
-      <UISnack />
+      <SnackBar />
       <Container
         maxWidth={false}
         sx={{
@@ -123,7 +126,7 @@ const SignUp = () => {
           alignItems: "center",
           width: "100%",
           minHeight: "100vh",
-          backgroundColor: "#F9BF03",
+          backgroundColor: theme.palette.secondary.main,
         }}
       >
         <Box
@@ -158,7 +161,7 @@ const SignUp = () => {
                 sx={{
                   mb: 1,
                   p: 0,
-                  border: "3px solid #F9BF03",
+                  border: `3px solid ${theme.palette.secondary.main}`,
                   backgroundImage: `url(${LifterIcon})`,
                   height: 125,
                   width: 125,
@@ -228,8 +231,8 @@ const SignUp = () => {
                   }}
                 />
                 <CustomTextField
-                  name="firstName"
-                  id="firstName"
+                  name="fname"
+                  id="fname"
                   value={values.fname}
                   onChange={handleChange}
                   label="First Name"

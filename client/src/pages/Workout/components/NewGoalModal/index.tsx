@@ -55,7 +55,7 @@ export default function NewGoalModal() {
   const theme = useTheme();
 
   const handleClose = () => {
-    dispatch(setNewGoalModalState());
+    dispatch(setNewGoalModalState(null));
   };
 
   return (

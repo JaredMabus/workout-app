@@ -21,10 +21,6 @@ export type FormErrors = Partial<FormValues>;
 
 /**
  * Custom hook for Login form.
- * @func [handleChange] handles changes to login form
- * @func [handleSubmit] handles submit for login form.
- * @func [attemptLogin] Runs POST login API and handles return logic
- * @returns
  */
 const useForm = () => {
   const [values, setValue] = useState<FormValues>({
@@ -36,10 +32,10 @@ const useForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
+  // useEffect(() => {
     // console.log(values);
     // console.log(errors);
-  }, [values, errors]);
+  // }, [values, errors]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setValue({ ...values, [e.target.name]: e.target.value });
@@ -75,7 +71,8 @@ const useForm = () => {
 
         if (response.status === 200) {
           let data = await response.data.payload;
-
+          console.log(response)
+          console.log(data)
           if (data) {
             dispatch(setLoginStatus(data));
             dispatch(setApiError(false));

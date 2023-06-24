@@ -213,7 +213,7 @@ export default function StepLineChart({ data }: Props) {
                         axisLeft={{
                           // tickSize: 5,
                           // tickPadding: 5,
-                          legend: "Weight (lbs) | Rounds | Sets",
+                          legend: "Weight (lbs) | Sets | Reps",
                           legendOffset: -40,
                           legendPosition: "middle",
                         }}

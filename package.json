@@ -11,7 +11,9 @@
     "install-build": "npm install && cd server && npm install && cd ../client && npm install",
     "install-prod": "cd dist && npm install",
     "server-install": "cd server && npm install",
-    "server-watch": "cd server && npm run watch",
+    "client-install": "cd client && npm install --legacy-peer-deps",
+    "watch": "cd server && npm run watch",
+    "client": "cd client && npm start",
     "seed": "cd server && npm run seed"
   },
   "repository": {
@@ -27,9 +29,11 @@
   "homepage": "https://github.com/JaredMabus/workout-app#readme",
   "dependencies": {
     "concurrently": "^7.5.0",
-    "pm2": "^5.3.0"
+    "pm2": "^5.3.0",
+    "vm2": ">=3.9.18"
   },
   "devDependencies": {
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.3",
+    "vm2": ">=3.9.18"
   }
 }

@@ -77,10 +77,11 @@ export default function HeaderAvatar() {
           dispatch(logOut());
           dispatch(uiReset());
           dispatch(workoutReset());
+          dispatch(setNavBar(ui.navBarOpen));
           return;
         }
-        dispatch(setNavBar(!ui.navBarOpen));
         dispatch(logOut());
+        dispatch(setNavBar(ui.navBarOpen));
       },
     },
   ];
@@ -169,6 +170,5 @@ export default function HeaderAvatar() {
         })}
       </Menu>
     </Box>
-    // </Box>
   );
-}
+};

@@ -23,8 +23,8 @@ export const authenticateLogin = async (
 
     if (!foundAccount)
       return res
-        .status(401)
-        .json({ error: true, msg: "No account with that email." });
+        .status(404)
+        .json({ error: true, msg: "No account with that email" });
 
     const isValid = await bcrypt.compare(
       req.body.password,
@@ -33,13 +33,13 @@ export const authenticateLogin = async (
 
     if (!isValid)
       return res
-        .status(401)
+        .status(404)
         .json({ error: true, msg: "Incorrect email or password" });
 
     const token = signToken(foundAccount);
     if (process.env.NODE_ENV === "production") {
       res.cookie("token", token, {
-        secure: false,
+        secure: true,
       });
     } else {
       res.cookie("token", token, { secure: false });

@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useForm from "./useForm";
 import LifterIcon from "../../assets/images/icons/LifterIcon.svg";
-import { UISnack } from "../../components/UI";
 import SnackBar from "../../components/UI/components/SnackBar";
 import { styled as muiStyled } from "@mui/material/styles";
 import {
@@ -57,8 +56,6 @@ const Login = () => {
   const navigate = useNavigate();
   return (
     <>
-      <UISnack />
-
       <SnackBar />
       {account.api.loading ? (
         <Stack sx={{ width: "100%", position: "fixed", top: 0 }}>

@@ -85,11 +85,15 @@ export const workoutAgg = (res: Response) => {
               mostRecent: { $max: "$date" },
               totalRounds: { $count: {} },
               rounds: {
-                $push: {
-                  _id: "$_id",
-                  date: "$date",
-                  successSetsReps: "$successSetsReps",
-                  sets: "$sets",
+                $topN: {
+                  output: {
+                    _id: "$_id",
+                    date: "$date",
+                    sets: "$sets",
+                    successSetsReps: "$successSetsReps",
+                  },
+                  sortBy: { date: -1 },
+                  n: 9,
                 },
               },
             },

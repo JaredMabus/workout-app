@@ -69,7 +69,7 @@ const Account = () => {
 
   return (
     <>
-      <UI />
+      <UI>
       <Container
         disableGutters
         sx={{ pb: "56px", maxWidth: { xs: "xl", sm: "xl" } }}
@@ -280,6 +280,7 @@ const Account = () => {
           </Grid>
         </Grid>
       </Container>
+      </UI>
     </>
   );
 };

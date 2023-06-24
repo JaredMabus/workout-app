@@ -1,258 +1,195 @@
 import UI from "../../components/UI";
 import { useNavigate } from "react-router-dom";
-import { styled } from "@mui/material/styles";
-import { Box, Container, Stack, Button, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { Stack, Button, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 //IMAGES
-import WeightAppSplashWeightRoom from "../../assets/images/WeightAppSplashWeightRoom2.svg";
+import HeroSectionDarkBG from "../../assets/images/hero-section-darker-bg.svg";
 // ICONS
-import AddWorkoutIconLight from "../../assets/images/icons/AddWorkoutIconLight.svg";
+import AddWorkoutIcon from "../../assets/images/icons/AddworkoutIcon.svg";
 import TrackProgressIconLight from "../../assets/images/icons/TrackProgressIconLight.svg";
 import CalendarOutlineLight from "../../assets/images/icons/CalendarOutlineLight.svg";
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
 
-const CustomButton = styled(Button)(
-  ({ theme }) => `
-  position: abosolute;
-  bottom: 0; 
-  display: flex;
-  // align-self: end; 
-  // justify-self: end; 
-  justify-content: center;
-  align-items: end; 
-  background-color: ${theme.palette.secondary.main};
-  font-weight: bold;
-  max-width: 165px;
-  border: 1px solid ${theme.palette.secondary.main}; 
-  outline: none; 
-  text-transform: none; 
-  padding: 8px;
-  margin: 15px 0 0 0; 
-  :hover {
-    background-color: ${theme.palette.secondary.light};
-  }
-`
-);
-
 const Home = () => {
   const navigate = useNavigate();
+  const muiTheme = useTheme();
+
+  const cardTextHeader: any = {
+    fontFamily: "Comfortaa",
+    fontWeight: 500,
+  };
+
+  const cardStyle: any = {
+    color: muiTheme.palette.text.primary,
+    backgroundColor: grey[100],
+    boxShadow: "rgb(0 0 0 / 15%) 0px 3px 8px",
+    p: 5,
+    pb: 8,
+    m: 1,
+    borderRadius: { xs: 0, sm: 0, md: 4},
+    backgroundRepeat: "no-repeat",
+    minHeight: 260, 
+    minWidth: { sm: 360},
+    maxWidth: "100%",
+    
+  };
 
   return (
     <>
-      <UI />
-      <Container
-        disableGutters
-        sx={{ pb: "56px", maxWidth: { xs: "xl", sm: "lg" } }}
-      >
-        <Box
+      <UI>
+        <Stack
           sx={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
             mb: { xs: 0, sm: 10, md: 5 },
+            position: "relative",
+            width: "100%"
           }}
         >
-          <Box
+          <Stack
             sx={{
+              position: "absolute",
+              top: "20%",
               px: 5,
-              flex: 1,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: grey[200],
-              borderRadius: { xs: "0 0 0 0", xl: "0 0 0 30%" },
-              "@media (max-width: 600px)": {
-                justifyContent: "center",
-                alignItems: "center",
-              },
-              maxHeight: 450,
+              justifyContent: "end",
+              alignItems: "end",
             }}
           >
-            <Box
-              sx={{
-                py: 4,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Typography
-                variant="h3"
-                align="center"
-                sx={{
-                  fontFamily: "Comfortaa",
-                  fontWeight: 300,
-                  width: "100%",
-                }}
-              >
-                Weight <br />
-                Lifting <br />
-                Tracker
-              </Typography>
-              <CustomButton
+            <Stack sx={{justifyContent: "end", alignItems: "end", color: muiTheme.palette.common.white}}>
+              <Typography sx={{fontFamily:"comfortaa", fontWeight:400}} variant="h1">Lift</Typography>
+              <Typography sx={{fontFamily:"comfortaa"}} variant="h5">Weight Lifting</Typography>
+              <Typography sx={{fontFamily:"comfortaa"}} variant="h5">Tracker</Typography>
+            </Stack>
+              <Button
+                size="large"
                 onClick={() => navigate("/sign-up")}
                 variant="contained"
+                endIcon={<DoubleArrowIcon />}
+                sx={{mt: 1}}
+                color="secondary"
               >
-                <Typography
-                  sx={{
-                    pl: 1,
-                    fontWeight: "bold",
-                  }}
-                  variant="body1"
-                >
-                  Get Started
-                </Typography>
-                <DoubleArrowIcon sx={{ ml: 1 }} />
-              </CustomButton>
-            </Box>
-          </Box>
-          <Box
+                Get Started
+              </Button>
+            </Stack>
+          <Stack
             sx={{
               flex: { xs: 1, sm: 3.5 },
-              minHeight: { xs: 250, sm: 350, md: 450, lg: 450 },
-              maxHeight: { xs: 350, sm: 350, md: 450, lg: 450 },
-              width: "100%",
+              minHeight: { xs: 250, sm: 350, md: 450 },
+              maxHeight: { xs: 350, sm: 350, md: 450 },
               minWidth: { xs: "100%", sm: 385 },
-              backgroundImage: `url(${WeightAppSplashWeightRoom})`,
+              backgroundImage: `url(${HeroSectionDarkBG})`,
               backgroundRepeat: "no-repeat",
               backgroundSize: { xs: "cover", sm: "cover" },
               backgroundPosition: "bottom-left",
-              borderRadius: { xs: 0, sm: "0 0 10% 0" },
+              borderRadius: { xs: 0, sm: "20px 20px 10% 20px" },
             }}
           />
-        </Box>
+        </Stack>
+        {/* CARD WRAPPER */}
         <Stack
+          direction="row"
+          flexWrap={"wrap"}
           sx={{
             mt: { xs: 0, sm: 10 },
             mb: 30,
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
+            width: "100%"
           }}
         >
           {/* CREATE WORKOUT */}
-          <Box
+          <Stack
             sx={{
-              p: 5,
-              pb: 10,
-              m: { xs: 0, sm: 0, md: 0, lg: 1 },
-              borderRadius: { xs: 0, sm: 0, md: 0, lg: 4 },
-              flex: 1.2,
-              display: "flex",
-              flexDirection: "column",
+              ...cardStyle,
+              flex: 1,
               justifyContent: "start",
               alignItems: "end",
-              backgroundColor: "#3B3A37",
-              boxShadow: "3px 4px 10px 3px rgba(0,0,0,.15)",
-              backgroundImage: `url(${AddWorkoutIconLight})`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "calc(0%) -3%;",
+              backgroundImage: `url(${AddWorkoutIcon})`,
+              backgroundPosition: "calc(0%) -22%;",
               backgroundSize: "125px 125px",
             }}
           >
-            <Typography
-              variant="h4"
-              align="right"
-              sx={{
-                fontFamily: "Comfortaa",
-                display: "flex",
-                justifySelf: "end",
-                alignSelf: "end",
-                fontWeight: 600,
-                color: "#fff",
-              }}
+            <Stack
+              spacing={1}
+              justifyContent={"end"}
+              alignItems={"end"}
             >
-              Add <br /> Workouts
-            </Typography>
-            <Typography
-              sx={{
-                pl: 1,
-                // fontWeight: 400,
-                color: "#fff",
-              }}
-              variant="body1"
-              align="right"
-            >
-              Create and manage your workouts
-            </Typography>
-            <CustomButton
-              sx={{ mt: 4 }}
-              onClick={() => navigate("/workouts")}
-              variant="contained"
-            >
+              <Typography
+                variant="h4"
+                align="right"
+                sx={{
+                  ...cardTextHeader,
+                }}
+              >
+                Add <br /> Workouts
+              </Typography>
               <Typography
                 sx={{
                   pl: 1,
-                  fontWeight: "bold",
                 }}
                 variant="body1"
+                align="right"
               >
-                Take a Look
+                Create and manage your workouts
               </Typography>
-              <DoubleArrowIcon sx={{ ml: 1 }} />
-            </CustomButton>
-          </Box>
+              {/* <Button
+                onClick={() => navigate("/sign-up")}
+                variant="contained"
+                endIcon={<DoubleArrowIcon />}
+                color="secondary"
+                sx={{mt: 3, maxWidth: 165}}
+              >
+                Create account
+              </Button> */}
+            </Stack>
+          </Stack>
           {/* WORKOUT PLAN */}
-          <Box
+          <Stack
             sx={{
-              p: 5,
-              pb: 10,
-              m: { xs: 0, sm: 0, md: 0, lg: 1 },
-              borderRadius: { xs: 0, sm: 0, md: 0, lg: 4 },
-              flex: { xs: 1, sm: 1, md: 0.8 },
-              display: "flex",
-              flexDirection: "column",
-              backgroundColor: grey[200],
-              boxShadow: "3px 4px 10px 3px rgba(0,0,0,.15)",
-              minWidth: { xs: "100%", sm: 385 },
+              ...cardStyle,
+              flex: 1,
               backgroundImage: `url(${CalendarOutlineLight})`,
-              backgroundRepeat: "no-repeat",
               backgroundPosition: "calc(100%) 100%;",
             }}
           >
-            <Typography
-              variant="h4"
-              sx={{
-                fontFamily: "Comfortaa",
-                fontWeight: 500,
-              }}
-            >
-              Workout
-              <br /> Plan
-            </Typography>
+            <Stack>
+              <Typography
+                variant="h4"
+                sx={{
+                  ...cardTextHeader,
+                }}
+              >
+                Plan your 
+              </Typography>
+              <Typography
+                variant="h4"
+                sx={{
+                  ...cardTextHeader,
+                }}
+              >
+                Workouts
+              </Typography>
+            </Stack>
             <Typography
               variant="body1"
               sx={{
-                pl: 1,
+                pl: .5,
                 fontWeight: 500,
               }}
             >
               Schedule your weekly routine
             </Typography>
-          </Box>
+          </Stack>
           {/* TRACK PROGRESS */}
-          <Box
+          <Stack
             sx={{
-              p: 5,
-              pb: 10,
-              m: { xs: 0, sm: 0, md: 0, lg: 1 },
-              borderRadius: { xs: 0, sm: 0, md: 0, lg: 4 },
+              ...cardStyle,
               flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              backgroundColor: "#EEB405",
-              boxShadow: "3px 4px 10px 3px rgba(0,0,0,.15)",
               backgroundImage: `url(${TrackProgressIconLight})`,
-              backgroundRepeat: "no-repeat",
               backgroundPosition: "calc(105%) 110%;",
             }}
           >
             <Typography
               variant="h4"
               sx={{
-                fontFamily: "Comfortaa",
-                fontWeight: 500,
+                ...cardTextHeader,
               }}
             >
               Track <br /> Progress
@@ -266,9 +203,9 @@ const Home = () => {
             >
               Submit workout rounds and track your progression
             </Typography>
-          </Box>
+          </Stack>
         </Stack>
-      </Container>
+      </UI>
     </>
   );
 };

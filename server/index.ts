@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 const port: number = Number(process.env.PORT as string) || 3001;
 const host: string =
-  process.env.NODE_ENV === "production" ? "0.0.0.0" : "0.0.0.0";
+  process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
 const upload = multer();
 
 if (process.env.NODE_ENV === "production") {
@@ -64,7 +64,7 @@ app.use(
               .status(405)
               .json({ err: true, msg: "Account already exist" });
         }
-      }
+      };
       console.log(err);
       return res.json({ err: true, msg: err.message });
     } catch (err) {

@@ -199,10 +199,10 @@ export const PlanContainer = () => {
 
   return (
     <>
-      <UI />
+      <UI>
 
       {/* PLAN CONTAINER */}
-      <Container
+      {/* <Container
         maxWidth={"xl"}
         disableGutters={true}
         sx={{
@@ -210,7 +210,7 @@ export const PlanContainer = () => {
           height: 800,
           backgroundColor: grey[50],
         }}
-      >
+      > */}
         {/* MENU WRAPPER */}
         <Stack
           sx={{
@@ -430,7 +430,8 @@ export const PlanContainer = () => {
             </Drawer>
           </Stack>
         </Stack>
-      </Container>
+      {/* </Container> */}
+      </UI>
     </>
   );
 };

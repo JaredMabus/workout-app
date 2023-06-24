@@ -24,8 +24,6 @@ router
   .get(cookieAuth, getAllAccounts)
   .put([cookieAuth], updateAccount)
   .post(createAccount);
-
-// Auth routes
 router.route("/login").post(authenticateLogin);
 router.post("/logout", cookieAuth, (req, res) => {
   try {

@@ -74,7 +74,7 @@ interface FormDataType {
 }
 
 export const initialState: UiInitialState = {
-  navBarOpen: false,
+  navBarOpen: true,
   snackBarStatus: {
     open: false,
     severity: "success",
@@ -179,8 +179,12 @@ const uiSlice = createSlice({
       state.form.round.newRoundModalState =
         !state.form.round.newRoundModalState;
     },
-    setNewGoalModalState: (state) => {
+    setNewGoalModalState: (state, action: PayloadAction<Partial<WorkoutMethodType | null>>) => {
+      if(action?.payload != null){
+        state.activeTabMethodFilter = action.payload;
+      }
       state.form.goal.newGoalModalState = !state.form.goal.newGoalModalState;
+      
     },
     setActiveWorkout: (state, action: PayloadAction<Partial<WorkoutType>>) => {
       state.activeWorkout = action.payload;

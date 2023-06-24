@@ -1,32 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useTheme, styled } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import * as date from "../../../utils/date";
-import { workoutGoalAchieved } from "../../../utils/math";
-// import { toTitleCase } from "../../../utils/textFormat";
 import {
-  Grid,
+  Box,
   Stack,
-  Paper,
   Button,
-  IconButton,
   Typography,
-  Tabs,
-  Tab,
-  Tooltip,
-  Menu,
-  MenuItem,
-  alpha,
   Divider,
-  MobileStepper,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import { grey } from "@mui/material/colors";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import SwipeableViews from "react-swipeable-views";
 // REDUX
-// import { selectAccount } from "../../../Redux/slices/accountSlice";
-// import { selectUi } from "../../../Redux/slices/uiSlice";
 import { useSelector, useDispatch } from "react-redux";
+import * as ui from "../../../Redux/slices/uiSlice";
 import {
   WorkoutType,
   RoundType,
@@ -37,6 +26,9 @@ import {
 // COMPONENTS
 import ProgressChart from "./ProgressChart";
 import GoalCard from "../components/NewGoalModal/GoalCard";
+// ICONS
+import { AddCircle } from "@mui/icons-material";
+import TargetGoalIcon from "../../../assets/images/icons/TargetGoal.svg";
 
 const numberFormatSX = {
   fontFamily: "Saira Semi Condensed",
@@ -70,9 +62,11 @@ export default function CardDataTabs({
   activeGoal,
   setActiveGoal,
 }: Props) {
+  const dispatch = useDispatch();
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const maxSteps = tabs.length;
+  const uiState = useSelector(ui.selectUi);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -87,197 +81,375 @@ export default function CardDataTabs({
   };
 
   // useEffect(() => {
-  // console.log(workout);
-  // }, []);
+  //     console.log(activeGoal);
+  // }, [tabValue]);
 
   return (
-    <div>
-      <SwipeableViews
-        axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-        index={activeStep}
-        onChangeIndex={handleStepChange}
-        enableMouseEvents
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        p: 0,
+        borderLeft: `1px solid ${grey[200]}`,
+        borderRadius: "15px 15px 0px 10px",
+      }}
+    >
+      <Grid
+        xs={6}
+        sx={{
+          p: 0,
+          pr: 1,
+          // px: 1,
+          py: 0,
+        }}
       >
-        {/* <div> */}
         <Stack
-          justifyContent={"start"}
-          alignItems={"center"}
-          direction="row"
           sx={{
-            // border: "1px solid red",
-            width: "100%",
+            flexDirection: "row",
+            alignItems: "baseline",
+            gap: { xs: 0.7 },
+            borderBottom: `1px solid ${grey[200]}`,
+            borderRadius: "15px 15px 0 0",
+            backgroundColor: grey[50],
+            px: 1,
+            py: 0.5,
           }}
         >
-          {workout.roundId.length > 0 &&
-            tabHasRecentRound &&
-            lastRound !== null &&
-            lastRound !== undefined && (
-              <Stack
-                direction="row"
-                spacing={1}
-                justifyContent={"start"}
-                alignItems={"center"}
+          <Typography
+            variant={"body2"}
+            noWrap
+            sx={{
+              fontFamily: "Titillium Web",
+              fontWeight: "bold",
+              fontSize: "1rem",
+            }}
+          >
+            Last:
+          </Typography>
+          <Typography
+            variant={"body1"}
+            noWrap
+            sx={{
+              fontFamily: "Titillium Web",
+            }}
+          >
+            {date.dateDiff(lastRound?.mostRecent, new Date().toString()) || ""}
+          </Typography>
+        </Stack>
+        <List dense={true} disablePadding>
+          <ListItem disablePadding>
+            <ListItemText
+              sx={{
+                display: "flex",
+                flex: 1,
+                justifyContent: "end",
+              }}
+            >
+              <Typography
+                variant={"body1"}
                 sx={{
-                  position: "relative",
-                  width: "100%",
-                  // border: "1px solid green",
+                  fontFamily: "Titillium Web",
                 }}
               >
-                <Stack
-                  spacing={1}
+                Weight:
+              </Typography>
+            </ListItemText>
+            <ListItemText
+              sx={{
+                display: "flex",
+                flex: 1,
+                justifyContent: "center",
+              }}
+            >
+              <Stack
+                direction={"row"}
+                spacing={0.5}
+                sx={{
+                  justifyContent: "baseline",
+                  alignItems: "baseline",
+                }}
+              >
+                <Typography
+                  variant={"h6"}
                   sx={{
-                    flex: 1,
-                    maxWidth: 175,
-                    minWidth: 175,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "8px",
-                    border: `1px solid ${grey[200]}`,
+                    fontFamily: "Titillium Web",
+                    fontWeight: "bold",
                   }}
                 >
-                  <Stack
-                    direction="row"
-                    spacing={1}
+                  {lastRound?.lastWeight}
+                </Typography>
+                <Typography
+                  variant={"body2"}
+                  sx={{
+                    fontFamily: "Titillium Web",
+                  }}
+                >
+                  (lbs)
+                </Typography>
+              </Stack>
+            </ListItemText>
+          </ListItem>
+          <Divider />
+          <ListItem
+            disablePadding
+            sx={{
+              px: 1,
+              gap: 1,
+            }}
+          >
+            <ListItemText
+              sx={{
+                display: "flex",
+                flex: 1,
+                justifyContent: "end",
+              }}
+            >
+              <Typography
+                variant={"body1"}
+                sx={{
+                  fontFamily: "Titillium Web",
+                }}
+              >
+                Sets:
+              </Typography>
+            </ListItemText>
+            <ListItemText
+              sx={{
+                display: "flex",
+                flex: 1,
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                variant={"subtitle1"}
+                sx={{
+                  fontFamily: "Titillium Web",
+                  fontWeight: "bold",
+                }}
+              >
+                {lastRound?.lastSets}
+              </Typography>
+            </ListItemText>
+          </ListItem>
+          <Divider />
+          <ListItem
+            disablePadding
+            sx={{
+              px: 1,
+              gap: 1,
+            }}
+          >
+            <ListItemText
+              sx={{
+                // px: 1,
+                display: "flex",
+                flex: 1,
+                justifyContent: "end",
+              }}
+            >
+              <Typography
+                variant={"body1"}
+                sx={{
+                  fontFamily: "Titillium Web",
+                }}
+              >
+                Reps:
+              </Typography>
+            </ListItemText>
+            <ListItemText
+              sx={{
+                display: "flex",
+                flex: 1,
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                variant={"subtitle1"}
+                sx={{
+                  fontFamily: "Titillium Web",
+                  fontWeight: "bold",
+                }}
+              >
+                {lastRound?.lastReps}
+              </Typography>
+            </ListItemText>
+          </ListItem>
+        </List>
+      </Grid>
+      <Grid
+        xs={6}
+        sx={{
+          p: 0,
+          px: 0,
+          py: 0,
+        }}
+      >
+        <Stack
+          direction={"row"}
+          spacing={0.5}
+          alignItems={"center"}
+          sx={{
+            justifyContent: "start",
+            borderBottom: `1px solid ${grey[200]}`,
+            borderRadius: "0 15px 0 0",
+            px: 1,
+            py: 0.5,
+          }}
+        >
+          <Box
+            component="img"
+            src={TargetGoalIcon}
+            alt="Goal Icon"
+            sx={{ height: 20, width: 20 }}
+          />
+          <Typography
+            variant={"body2"}
+            sx={{
+              fontFamily: "Titillium Web",
+              fontWeight: "bold",
+              fontSize: "1rem",
+            }}
+          >
+            Goal
+          </Typography>
+        </Stack>
+        <Stack direction={"row"} spacing={2}>
+          {activeGoal !== null ? (
+            <>
+              <List
+                dense={true}
+                disablePadding
+                sx={{ flex: 1, color: grey[500] }}
+              >
+                <ListItem
+                  disablePadding
+                  sx={{
+                    px: 1,
+                    gap: 1,
+                  }}
+                >
+                  <ListItemText
                     sx={{
-                      width: "100%",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: grey[200],
-                      borderBottom: `1px solid ${grey[200]}`,
-                      borderRadius: "8px 8px 0 0",
-                      px: 2,
-                      pt: 0.5,
+                      display: "flex",
+                      flex: 1,
+                      justifyContent: "end",
                     }}
                   >
                     <Typography
+                      variant={"h6"}
                       sx={{
                         fontFamily: "Titillium Web",
-                        fontWeight: 500,
-                        fontSize: ".9rem",
+                        fontWeight: "bold",
                       }}
                     >
-                      Last Round:
+                      {activeGoal?.targetWeight}
                     </Typography>
-                    <Typography
-                      sx={{
-                        fontFamily: "Titillium Web",
-                        fontWeight: 700,
-                        fontSize: ".9rem",
-                        backgroundColor: grey[200],
-                      }}
-                    >
-                      {date.dateDiff(
-                        lastRound?.mostRecent,
-                        new Date().toString()
-                      ) || ""}
-                    </Typography>
-                  </Stack>
-                  <Stack
-                    direction="row"
-                    spacing={0.5}
-                    sx={{ alignItems: "center", pb: 0.5 }}
-                  >
-                    <Stack direction="row" spacing={1} divider={<Divider />}>
-                      <Stack sx={{ alignItems: "center" }}>
-                        <Typography sx={metricTitlesSx}>Weight</Typography>
-                        <Typography sx={numberFormatSX}>
-                          {lastRound.lastWeight}
-                        </Typography>
-                      </Stack>
-                      <Stack sx={{ alignItems: "center" }}>
-                        <Typography sx={metricTitlesSx}>Sets</Typography>{" "}
-                        <Typography sx={numberFormatSX}>
-                          {lastRound.lastSets}
-                        </Typography>
-                      </Stack>
-                      <Stack sx={{ alignItems: "center" }}>
-                        <Typography sx={metricTitlesSx}>Reps</Typography>
-                        <Typography sx={numberFormatSX}>
-                          {lastRound.lastReps}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Stack>
-                <Stack
+                  </ListItemText>
+                </ListItem>
+                <Divider />
+                <ListItem
+                  disablePadding
                   sx={{
-                    flex: 1,
-                    height: 100,
-                    width: "100%",
-                    // border: "1px solid blue",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    px: 1,
+                    gap: 1,
                   }}
                 >
-                  <Typography
-                    variant="body2"
-                    sx={{ fontWeight: 400, fontFamily: "Titillium Web" }}
+                  <ListItemText
+                    sx={{
+                      display: "flex",
+                      flex: 1,
+                      justifyContent: "end",
+                    }}
                   >
-                    Progress
-                  </Typography>
-                  <ProgressChart
-                    workout={workout}
-                    lastRound={lastRound}
-                    tabValue={tabValue}
-                    activeGoal={activeGoal}
-                    setActiveGoal={setActiveGoal}
-                  />
-                </Stack>
+                    <Typography
+                      variant={"subtitle1"}
+                      sx={{
+                        fontFamily: "Titillium Web",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {activeGoal?.targetSets}
+                    </Typography>
+                  </ListItemText>
+                </ListItem>
+                <Divider />
+                <ListItem
+                  disablePadding
+                  sx={{
+                    px: 1,
+                    gap: 1,
+                  }}
+                >
+                  <ListItemText
+                    sx={{
+                      display: "flex",
+                      flex: 1,
+                      justifyContent: "end",
+                    }}
+                  >
+                    <Typography
+                      variant={"subtitle1"}
+                      sx={{
+                        fontFamily: "Titillium Web",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {activeGoal?.targetReps}
+                    </Typography>
+                  </ListItemText>
+                </ListItem>
+              </List>
+              <Stack
+                spacing={0.5}
+                justifyContent={"center"}
+                alignItems={"center"}
+                sx={{ flex: 1 }}
+              >
+                <ProgressChart
+                  workout={workout}
+                  lastRound={lastRound}
+                  tabValue={tabValue}
+                  activeGoal={activeGoal}
+                  setActiveGoal={setActiveGoal}
+                />
+                <Typography
+                  variant={"body2"}
+                  sx={{
+                    fontFamily: "Titillium Web",
+                    color: "text.secondary",
+                  }}
+                >
+                  Rounds
+                </Typography>
               </Stack>
-            )}
-        </Stack>
-        {/* Goals Tab */}
-        <Stack>
-          <GoalCard
-            workout={workout}
-            activeGoal={activeGoal}
-            progressObj={null}
-            type="current"
-          />
-        </Stack>
-      </SwipeableViews>
-      {lastRound && Object.keys(lastRound).length > 0 && tabHasRecentRound && (
-        <MobileStepper
-          steps={maxSteps}
-          position="static"
-          activeStep={activeStep}
-          nextButton={
-            <Button
-              size="small"
-              onClick={handleNext}
-              disabled={activeStep === maxSteps - 1}
-              sx={{ "&.Mui-disabled": { opacity: 0.5 } }}
+            </>
+          ) : (
+            <Stack
+              sx={{
+                flex: 1,
+                p: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              {theme.direction === "rtl" ? (
-                <KeyboardArrowLeft />
-              ) : (
-                <KeyboardArrowRight />
-              )}
-            </Button>
-          }
-          backButton={
-            <Button
-              size="small"
-              onClick={handleBack}
-              disabled={activeStep === 0}
-              sx={{ "&.Mui-disabled": { opacity: 0.5 } }}
-            >
-              {theme.direction === "rtl" ? (
-                <KeyboardArrowRight />
-              ) : (
-                <KeyboardArrowLeft />
-              )}
-            </Button>
-          }
-          sx={{
-            justifyContent: "center",
-            background: "none",
-            py: 0,
-            pt: 1,
-            width: "100%",
-          }}
-        />
-      )}
-    </div>
+              <Button
+                size={"small"}
+                onClick={() => {
+                  dispatch(ui.setActiveWorkout(workout));
+                  dispatch(ui.setActiveTabMethodFilter(tabValue));
+                  dispatch(ui.setNewGoalModalState(null));
+                }}
+                sx={{
+                  width: "50%",
+                  border: `1px solid ${grey[200]}`,
+                }}
+              >
+                Start goal
+              </Button>
+            </Stack>
+          )}
+        </Stack>
+      </Grid>
+    </Grid>
   );
 }

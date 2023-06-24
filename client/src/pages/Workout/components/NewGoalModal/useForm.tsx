@@ -56,8 +56,8 @@ const useForm = () => {
   }, [ui]);
 
   // useEffect(() => {
-  //   console.log(values);
-  //   console.log(errors);
+  // console.log(values);
+  // console.log(errors);
   // }, [values, errors]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -95,7 +95,7 @@ const useForm = () => {
         if (response.status === 200) {
           let data = response.data.payload;
           dispatch(addWorkoutGoal(data));
-          dispatch(setNewGoalModalState());
+          dispatch(setNewGoalModalState(null));
           dispatch(
             setSnackBar({
               open: true,

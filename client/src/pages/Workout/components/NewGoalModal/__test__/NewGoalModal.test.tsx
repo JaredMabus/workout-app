@@ -14,7 +14,7 @@ describe("Component Rendering", () => {
     );
 
     act(() => {
-      store.dispatch(ui.setNewGoalModalState());
+      store.dispatch(ui.setNewGoalModalState(null));
     });
 
     const setActiveGoalTextElement = screen.getByText(/Set Active Goal/i);

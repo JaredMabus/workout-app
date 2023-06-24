@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Stack } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 // COMPONENTS
 import UI from "../../components/UI";
@@ -8,38 +7,46 @@ import TodaysWorkouts from "./components/TodaysWorkouts";
 import UpdateWorkoutModal from "../Workout/components/UpdateWorkoutForm";
 import NewRoundModal from "../Workout/components/NewRoundModal";
 import NewGoalModal from "../Workout/components/NewGoalModal";
+// REDUX
+import { useSelector } from "react-redux";
+import * as account from "../../Redux/slices/accountSlice";
 
 const Dashboard = () => {
-  const theme = useTheme();
+  const accountState = useSelector(account.selectAccount);
+
+  useEffect(() => {
+    if (!accountState.loginStatus) {
+      window.location.href = "/";
+    };
+  },[accountState]);
 
   return (
     <>
-      <UI />
-      <UpdateWorkoutModal />
-      <NewRoundModal />
-      <NewGoalModal />
-      <Container
-        sx={{
-          maxWidth: {
-            xs: "xl",
-            sm: "xl",
-            md: "lg",
-          },
-          pt: 5,
-        }}
-      >
-        <Stack>
-          <TodaysWorkouts />
-        </Stack>
-      </Container>
+      <UI>
+        <UpdateWorkoutModal />
+        <NewRoundModal />
+        <NewGoalModal />
+        <Container
+          sx={{
+            maxWidth: {
+              xs: "xl",
+              sm: "xl",
+              md: "lg",
+            },
+          }}
+        >
+          <Stack>
+            <TodaysWorkouts />
+          </Stack>
+        </Container>
+      </UI>
     </>
   );
 };
 
 export default Dashboard;
 
-// Used for refactored normalized state.
-
+// Used for refactored normalized redux state.
 // const [todayWorkouts, setTodayWorkouts] = React.useState<
 //   Partial<wk.WorkoutType>[]
 // >([]);

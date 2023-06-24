@@ -79,59 +79,70 @@ export interface ProgressObjType {
 }
 
 function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number; progressobj: ProgressObjType }
+  props: CircularProgressProps & {
+    value: number;
+    progressobj: ProgressObjType;
+  }
 ) {
   return (
-    <Box
-      sx={{
-        position: "relative",
-        justifySelf: "center",
-        alignSelf: "center",
-      }}
-    >
-      <CircularProgress
-        variant="determinate"
-        size={55}
-        thickness={3}
-        color="success"
+    <>
+      <Stack
         sx={{
-          color: "#6AB73D",
-          borderRadius: 50,
-          backgroundColor: alpha("#6AB73D", 0.15),
-        }}
-        {...props}
-      />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: "absolute",
-          display: "flex",
-          alignItems: "center",
+          position: "relative",
+          justifySelf: "center",
+          alignSelf: "center",
           justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
         }}
       >
-        <Typography
+        <CircularProgress
+          {...props}
+          variant="determinate"
+          value={props.value}
+          size={55}
+          thickness={2.5}
           sx={{
-            fontWeight: 700,
-            fontSize: "1rem",
-            fontFamily: "Saira Semi Condensed",
+            color: "#6AB73D",
+            borderRadius: 50,
+            backgroundColor: grey[50],
+            boxShadow: "rgb(0 0 0 / 24%) 0px 0px 3px",
+            "& .MuiCircularProgress-circle": {
+              strokeLinecap: "round",
+            },
           }}
-          variant="body2"
-          color="text.secondary"
+        />
+        <Stack
+          sx={{
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            position: "absolute",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
-          {props.progressobj.totalSucessRounds}/{props.progressobj.targetRounds}
-        </Typography>
-      </Box>
-    </Box>
+          <Typography
+            variant="subtitle1"
+            color="text.secondary"
+            sx={{
+              fontWeight: 700,
+              fontFamily: "Saira Semi Condensed",
+            }}
+          >
+            {props.progressobj.totalSucessRounds}/
+            {props.progressobj.targetRounds}
+          </Typography>
+        </Stack>
+      </Stack>
+    </>
   );
 }
 
 export interface Props {
   workout: WorkoutType;
-  lastRound: Partial<RecentRound>;
+  lastRound: Partial<RecentRound> | null;
   tabValue: WorkoutMethodType;
   activeGoal: GoalType | null;
   setActiveGoal: React.Dispatch<React.SetStateAction<GoalType | null>>;
@@ -154,11 +165,11 @@ export default function ProgressChart({
   });
 
   // useEffect(() => {
-  //   console.log(workout);
-  //   console.log(lastRound);
-  //   console.log(tabValue);
-  //   console.log(activeGoal);
-  // }, [tabValue]);
+  // console.log(workout);
+  // console.log(lastRound);
+  // console.log(tabValue);
+  // console.log(activeGoal);
+  // }, [activeGoal]);
 
   useEffect(() => {
     if (activeGoal != null && lastRound != null) {

@@ -1,18 +1,23 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import {
-  Grid,
+  // Grid,
   Stack,
   Button,
   IconButton,
   Typography,
   alpha,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
 } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import { grey } from "@mui/material/colors";
 import { animated, useTransition } from "@react-spring/web";
 // ICONS
 import FilterListIcon from "@mui/icons-material/FilterList";
-import SearchIcon from "@mui/icons-material/Search";
+import FilterListOffIcon from "@mui/icons-material/FilterListOff";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 // REDUX
 import { useSelector, useDispatch } from "react-redux";
 import { selectAccount } from "../../../Redux/slices/accountSlice";
@@ -33,6 +38,7 @@ import UpdateWorkoutModal from "./UpdateWorkoutForm";
 import NewRoundModal from "./NewRoundModal";
 import NewGoalModal from "./NewGoalModal";
 import WorkoutCard from "./WorkoutCard";
+
 import FilterChips, {
   FilterState,
   FilterOptions,
@@ -44,18 +50,19 @@ export default function WorkoutContainer() {
   const dispatch = useDispatch();
   const account = useSelector(selectAccount);
   const workoutState = useSelector(selectWorkout);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [expanded, setExpanded] = React.useState<boolean>(false);
+  // Filter workout logic
   const [filteredWorkouts, setFilteredWorkouts] = useState<WorkoutType[] | []>(
     workoutState.workouts
   );
-  const [loading, setLoading] = useState<boolean>(false);
-
-  // Filter workouts logic
-  const [filters, setFilterState] = useState<FilterState>({
+  const defaultFilterState: FilterState = {
     muscleCategory: [],
     muscleGroup: [],
     methodSelection: [],
-  });
-
+  };
+  const [filters, setFilterState] = useState<FilterState>(defaultFilterState);
+  const [isFiltering, setIfFiltering] = useState<boolean>(false);
   const filterOptions: any[] = [
     {
       muscleCategory: ["All", "Upper Body", "Lower Body", "Core"],
@@ -67,12 +74,12 @@ export default function WorkoutContainer() {
         "All",
         "Abs",
         "Back",
-        "Back Arm",
         "Chest",
         "Front Arm",
+        "Back Arm",
+        "Shoulder",
         "Glutes",
         "Legs",
-        "Shoulder",
       ],
       filterByString: false,
       title: "Muscle Group:",
@@ -84,21 +91,19 @@ export default function WorkoutContainer() {
     },
   ];
 
+  const checkIfFiltering = () => {
+    setIfFiltering(
+      Object.values(filters).some((filter) => {
+        return filter.length > 0;
+      })
+    );
+  };
+
   const filterWorkouts = () => {
     if (workoutState.workouts.length > 0) {
       setFilteredWorkouts(filterData(workoutState.workouts, filters));
     }
     return;
-  };
-
-  // Filter Container State
-  const [flexFilter, setFlexFilter] = useState(0);
-  const toggleFlexFilter = () => {
-    if (flexFilter === 0) {
-      setFlexFilter(0.4);
-      return;
-    }
-    setFlexFilter(0);
   };
 
   // Animation for Cards
@@ -119,6 +124,7 @@ export default function WorkoutContainer() {
 
   useEffect(() => {
     filterWorkouts();
+    checkIfFiltering();
   }, [filters, workoutState.workouts]);
 
   return (
@@ -127,108 +133,156 @@ export default function WorkoutContainer() {
       <UpdateWorkoutModal />
       <NewRoundModal />
       <NewGoalModal />
-      {/* Workout menu */}
-      <Stack
+      <Grid
+        container
         sx={{
-          mt: 10,
-          mb: 2,
-          border: `1px solid ${grey[200]}`,
-          overflowX: "hidden",
-          backgroundColor: "#fff",
-        }}
-        direction="row"
-        justifyContent={"space-between"}
-      >
-        <Button
-          onClick={() => dispatch(setNewWorkoutModalState())}
-          variant="contained"
-          color="secondary"
-          sx={{ maxWidth: 250 }}
-        >
-          New Workout
-        </Button>
-        <Stack direction="row">
-          <IconButton onClick={toggleFlexFilter}>
-            <FilterListIcon />
-          </IconButton>
-        </Stack>
-      </Stack>
-      {/* Workout Filter and Grid  */}
-      <Stack
-        direction="row"
-        sx={{
-          border: `1px solid ${grey[200]}`,
-          height: 650,
-          maxHeight: 650,
-          backgroundColor: "#fff",
-          // backgroundColor: alpha(grey[50], 0.5),
+          p: 0,
+          backgroundColor: grey[50],
+          borderLeft: `1px solid ${grey[200]}`,
+          borderRight: `1px solid ${grey[200]}`,
+          borderBottom: `1px solid ${grey[200]}`,
         }}
       >
-        <Stack
+        {/* WORKOUT MENU */}
+        <Grid xs={12} sx={{ position: "relative", p: 0 }}>
+          <Stack
+            direction="row"
+            justifyContent={"space-between"}
+            sx={{
+              backgroundColor: "#fff",
+            }}
+          >
+            <Stack
+              direction="row"
+              spacing={1}
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
+              <Button
+                onClick={() => dispatch(setNewWorkoutModalState())}
+                variant="contained"
+                color="secondary"
+                sx={{ maxWidth: 250 }}
+              >
+                New Workout
+              </Button>
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent={"center"}
+              alignItems={"center"}
+              spacing={1}
+            >
+              {isFiltering && (
+                <Button
+                  startIcon={<FilterListOffIcon />}
+                  onClick={() => {
+                    setFilterState(defaultFilterState);
+                  }}
+                  sx={{
+                    border: `1px solid ${grey[200]}`,
+                  }}
+                >
+                  Clear
+                </Button>
+              )}
+              <Typography variant={"body2"}>
+                {filteredWorkouts.length}/{workoutState.workouts.length}
+              </Typography>
+              <IconButton
+                onClick={() => {
+                  setExpanded(!expanded);
+                }}
+                sx={{
+                  borderRadius: 0,
+                  "& .MuiTouchRipple-root": {
+                    borderRadius: "0%",
+                  },
+                }}
+              >
+                {expanded ? <KeyboardArrowUpIcon /> : <FilterListIcon />}
+              </IconButton>
+            </Stack>
+          </Stack>
+          <Accordion disableGutters expanded={expanded}>
+            <AccordionSummary
+              aria-controls="panel1bh-content"
+              id="panel1bh-header"
+              sx={{ display: "none" }}
+            />
+            <AccordionDetails
+              sx={{
+                height: expanded ? "auto" : 0,
+                transition: "height 300ms ease-in-out",
+              }}
+            >
+              <Stack
+                sx={{
+                  p: 1,
+                  backgroundColor: "#fff",
+                }}
+              >
+                <FilterChips
+                  filters={filters}
+                  setFilterState={setFilterState}
+                  filterOptions={filterOptions}
+                />
+              </Stack>
+            </AccordionDetails>
+          </Accordion>
+        </Grid>
+        <Grid
+          xs={12}
           sx={{
-            flex: 1,
+            p: 1,
+            minHeight: 750,
+            maxHeight: 750,
+            // mr: "-15px",
             overflowY: "scroll",
+            overflowX: "hidden",
           }}
         >
           <Grid
             container
+            wrap={"wrap"}
             spacing={3}
-            sx={{ px: 3, py: 2, backgroundColor: "#fff" }}
+            sx={{
+              //   p: 0,
+              px: { xs: 2, sm: 1 },
+              py: { xs: 0, sm: 2 },
+              // backgroundColor: "#fff",
+            }}
           >
             {filteredWorkouts.length > 0 ? (
               transitions((style, workout: WorkoutType) => (
-                <Grid item key={workout._id} xs={12} sm={6} md={4}>
+                <Grid
+                  wrap="wrap"
+                  key={workout._id}
+                  xs={12}
+                  sm={6}
+                  md={6}
+                  lg={4}
+                >
                   <animated.div style={style} className="item">
                     <WorkoutCard workout={workout} />
                   </animated.div>
                 </Grid>
               ))
             ) : (
-              <Grid item xs={12}>
-                <Stack sx={{ justifyConent: "center", alignItems: "center" }}>
+              <Grid xs={12}>
+                <Stack
+                  sx={{
+                    justifyConent: "center",
+                    alignItems: "center",
+                  }}
+                >
                   <Typography variant="h5">No data</Typography>
                 </Stack>
               </Grid>
             )}
           </Grid>
-        </Stack>
-        <Stack
-          sx={{
-            flex: flexFilter,
-            boxShadow: "rgb(0 0 0 / 3%) -4px 0px 1px 1px",
-            position: {
-              xs: flexFilter === 0 ? "fixed" : "absolute",
-              sm: flexFilter === 0 ? "fixed" : "relative",
-            },
-            visibility: flexFilter === 0 ? "hidden" : "visible",
-            width: {
-              xs: flexFilter === 0 ? 0 : "99%",
-            },
-            right: {
-              xs: flexFilter === 0 ? "" : 0,
-            },
-            height: {
-              xs: flexFilter === 0 ? "" : "100%",
-            },
-            minHeight: "100%",
-            backgroundColor: "#fff",
-            transition: "flex 250ms ease-in-out",
-          }}
-        >
-          <Stack
-            sx={{
-              p: 1,
-              backgroundColor: "#fff",
-            }}
-          >
-            <FilterChips
-              filters={filters}
-              setFilterState={setFilterState}
-              filterOptions={filterOptions}
-            />
-          </Stack>
-        </Stack>
-      </Stack>
+        </Grid>
+      </Grid>
     </>
   );
 }
