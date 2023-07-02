@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import {
-  // Grid,
   Stack,
   Button,
   IconButton,
@@ -244,25 +243,16 @@ export default function WorkoutContainer() {
         >
           <Grid
             container
-            wrap={"wrap"}
             spacing={3}
+            wrap="wrap"
             sx={{
-              //   p: 0,
               px: { xs: 2, sm: 1 },
               py: { xs: 0, sm: 2 },
-              // backgroundColor: "#fff",
             }}
           >
             {filteredWorkouts.length > 0 ? (
               transitions((style, workout: WorkoutType) => (
-                <Grid
-                  wrap="wrap"
-                  key={workout._id}
-                  xs={12}
-                  sm={6}
-                  md={6}
-                  lg={4}
-                >
+                <Grid key={workout._id} xs={12} sm={6} md={6} lg={4}>
                   <animated.div style={style} className="item">
                     <WorkoutCard workout={workout} />
                   </animated.div>
@@ -276,7 +266,7 @@ export default function WorkoutContainer() {
                     alignItems: "center",
                   }}
                 >
-                  <Typography variant="h5">No data</Typography>
+                  <Typography variant="h5">No workouts</Typography>
                 </Stack>
               </Grid>
             )}

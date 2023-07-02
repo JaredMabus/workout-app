@@ -72,9 +72,7 @@ export default function WorkoutCard({ workout }: Props) {
     null
   );
 
-  useEffect(() => {
-    console.log(filterLastRound);
-  }, [filterLastRound]);
+  useEffect(() => {}, [filterLastRound]);
   const [activeGoal, setActiveGoal] = useState<GoalType | null>(null);
   const [loading, setLoading] = useState(false);
   // Tab state and logic
@@ -337,12 +335,13 @@ export default function WorkoutCard({ workout }: Props) {
           <Stack
             sx={{
               flex: 1,
+              m: 1,
               pt: { xs: 1, sm: 1, md: 1 },
               pb: { xs: 1, sm: 1, md: 1 },
               px: { xs: 1, sm: 2, md: 2.5, lg: 2.5 },
               borderRadius: 2,
-              // width: 530,
-              minWidth: 300,
+              // width: { xs: 300, sm: 350, md: 400 },
+              // minWidth: 300,
               maxWidth: 500,
               height: 260,
               minHeight: 260,
@@ -352,7 +351,6 @@ export default function WorkoutCard({ workout }: Props) {
               backgroundColor: "#fff",
             }}
           >
-            {/* <Grid container> */}
             <Stack>
               <Stack
                 justifyContent={"space-between"}

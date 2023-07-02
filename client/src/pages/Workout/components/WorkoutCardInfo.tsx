@@ -54,9 +54,13 @@ export default function WorkoutCardInfo() {
           py: 2,
         }}
       >
-        <Grid xs={12} md={6}>
+        <Grid
+          xs={12}
+          md={6}
+          sx={{ px: { xs: 2, sm: 5 }, py: { xs: 2, sm: 5 } }}
+        >
           <Stack sx={{ maxWidth: 500 }}>
-            <Typography variant="h4" fontWeight={600}>
+            <Typography variant="h3" fontWeight={600}>
               Workout Cards
             </Typography>
             <Typography
@@ -120,8 +124,8 @@ export default function WorkoutCardInfo() {
                         </ListItemIcon>
                         <ListItemText>
                           <Typography variant="body2">
-                            Monitor and control your rest periods with ease
-                            using an integrated rest timer
+                            Monitor and control your rest periods using an
+                            integrated rest timer
                           </Typography>
                         </ListItemText>
                       </ListItem>
@@ -173,8 +177,8 @@ export default function WorkoutCardInfo() {
                         </ListItemIcon>
                         <ListItemText>
                           <Typography variant="body2">
-                            Effortlessly track and advance your goals with our
-                            automated progress system
+                            Track and advance your goals with our automated
+                            progress system
                           </Typography>
                         </ListItemText>
                       </ListItem>

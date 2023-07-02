@@ -15,6 +15,7 @@ import {
   StepLabel,
   Link as MuiLink,
 } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import { grey } from "@mui/material/colors";
 import { Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
@@ -452,19 +453,20 @@ export default function TodaysWorkout() {
                 </React.Fragment>
               ) : (
                 <React.Fragment>
-                  <Stack spacing={2}>
-                    <Stack
-                      sx={{
-                        width: "100%",
-                        pt: 3,
-                        alignItems: "center",
-                      }}
-                    >
+                  <Grid
+                    container
+                    display="flex"
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                  >
+                    <Grid xs={12} sm={6} sx={{ p: 1 }}>
                       {steps[activeStep] != null &&
                         typeof steps[activeStep] === "object" && (
                           <WorkoutCard workout={steps[activeStep]} />
                         )}
-                    </Stack>
+                    </Grid>
+                  </Grid>
+                  <Stack spacing={2} sx={{ width: "100%" }}>
                     <Stack
                       spacing={1}
                       direction="row"

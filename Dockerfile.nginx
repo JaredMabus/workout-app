@@ -3,12 +3,6 @@ FROM --platform=linux/amd64 nginx:alpine
 # Install Certbot and dependencies
 RUN apk add --no-cache certbot certbot-nginx openssl
 
-# Move SSL Certificates to container
-COPY ssl /etc/letsencrypt/live/liftx.tech;
-
-# Configure NGINX
-COPY nginx.conf /etc/nginx/nginx.conf
-
 EXPOSE 80 443
 
 # Start Nginx
