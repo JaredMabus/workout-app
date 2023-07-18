@@ -55,7 +55,7 @@ import * as ui from "../../Redux/slices/uiSlice";
 import PlanProvider, { PlanContext } from "./context/PlanContext";
 import * as action from "./context/actions";
 
-const drawerWidth = 450;
+const drawerWidth = 400;
 const drawerWidthxs = "100%";
 
 interface AppBarProps extends MuiAppBarProps {
@@ -200,17 +200,6 @@ export const PlanContainer = () => {
   return (
     <>
       <UI>
-
-      {/* PLAN CONTAINER */}
-      {/* <Container
-        maxWidth={"xl"}
-        disableGutters={true}
-        sx={{
-          pt: 5,
-          height: 800,
-          backgroundColor: grey[50],
-        }}
-      > */}
         {/* MENU WRAPPER */}
         <Stack
           sx={{
@@ -225,7 +214,7 @@ export const PlanContainer = () => {
               height: "100%",
               bgcolor: "#fff",
               overflowX: "hidden",
-              overflowY: "hidden",
+              overflowY: "scroll",
             }}
           >
             <CssBaseline />
@@ -235,7 +224,6 @@ export const PlanContainer = () => {
               sx={{
                 px: 2,
                 backgroundColor: grey[50],
-                // backgroundColor: backgroundColor: "red",,
                 boxShadow: "none",
                 borderBottom: "1px solid #E0E0E0",
               }}
@@ -265,10 +253,15 @@ export const PlanContainer = () => {
                   justifyContent={"space-between"}
                   alignItems={"space-between"}
                 >
-                  <CalendarOutline />
-                  <Typography>
-                    <b>Weekly</b>
-                  </Typography>
+                  <Stack
+                    direction={"row"}
+                    spacing={1}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                  >
+                    <CalendarOutline />
+                    <Typography>Weekly</Typography>
+                  </Stack>
                 </Stack>
                 <Stack direction="row" spacing={2} sx={{ pb: 0.5 }}>
                   <IconButton
@@ -308,6 +301,7 @@ export const PlanContainer = () => {
                 borderRight: `2px solid ${grey[200]}`,
                 borderRadius: 1,
                 minHeight: 900,
+                maxHeight: 900,
                 py: 3,
                 pl: { xs: 1, sm: 3 },
                 pb: 20,
@@ -338,7 +332,6 @@ export const PlanContainer = () => {
                 }}
               >
                 {Object.entries(workoutState.workoutPlanWeek).map((day) => {
-                  // return renderCard(day);
                   return (
                     <Grid
                       key={`${day[0]}-day-card`}
@@ -370,7 +363,10 @@ export const PlanContainer = () => {
                   px: 0.5,
                   width: { xs: drawerWidthxs, sm: drawerWidth },
                   position: "absolute",
-                  borderTop: `1px solid ${grey[100]}`,
+                  borderTop: `1px solid ${grey[400]}`,
+                  borderBottom: `1px solid ${grey[400]}`,
+                  borderRight: `1px solid ${grey[400]}`,
+                  borderLeft: `1px solid ${grey[400]}`,
                   borderRadius: ".5rem",
                   zIndex: 2,
                 },
@@ -383,21 +379,24 @@ export const PlanContainer = () => {
               <Stack
                 direction="row"
                 sx={{
-                  height: 51,
+                  height: 48,
                   backgroundColor: "#fff",
                   borderTop: `1px solid ${grey[300]}`,
                   borderBottom: `1px solid ${grey[300]}`,
+                  px: 1,
                 }}
                 justifyContent={"space-between"}
                 alignItems={"center"}
               >
-                <IconButton onClick={handleDrawerClose}>
-                  <Close />
-                </IconButton>
                 <Typography>Workouts</Typography>
-                <IconButton onClick={toggleFilter}>
-                  <FilterList />
-                </IconButton>
+                <Stack direction={"row"} spacing={1}>
+                  <IconButton onClick={toggleFilter}>
+                    <FilterList />
+                  </IconButton>
+                  <IconButton onClick={handleDrawerClose}>
+                    <Close />
+                  </IconButton>
+                </Stack>
               </Stack>
               <Accordion
                 expanded={filterOpen}
@@ -416,7 +415,6 @@ export const PlanContainer = () => {
                     filterOptions={filterOptions}
                   />
                 </AccordionDetails>
-                <Divider />
               </Accordion>
               <Stack
                 sx={{
@@ -430,7 +428,6 @@ export const PlanContainer = () => {
             </Drawer>
           </Stack>
         </Stack>
-      {/* </Container> */}
       </UI>
     </>
   );

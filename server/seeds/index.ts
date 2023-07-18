@@ -7,12 +7,12 @@ import * as model from "../models";
 import dotenv from "dotenv";
 dotenv.config();
 
-
 db.once("open", async () => {
   try {
-
-    if(process.env.MONGODB_URI) {
-      throw new Error("There is a MONGODB_URI environment variable. Cannot run seed files on production database.")
+    if (process.env.MONGODB_URI) {
+      throw new Error(
+        "There is a MONGODB_URI environment variable. Cannot run seed files on production database."
+      );
     }
     // Start timer. Displayed after seeding is complete
     console.time("seeding time:");

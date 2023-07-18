@@ -6,26 +6,27 @@ WORKDIR /app
 # Copy all files to image
 COPY . .
 
-ENV REACT_APP_HOST=http://liftx.tech
+# Set frontend prod host
+ENV REACT_APP_HOST="https://liftx.tech"
 
 # Install ./ modules pm2 and typescript
 RUN npm install
 
-# Install ./server modules
 WORKDIR /app/server
-RUN npm install
+RUN npm install --production=false
+# RUN npm build
 
 # Install ./client modules
 WORKDIR /app/client
-RUN npm install --legacy-peer-deps
+RUN npm install --production=false
+# RUN npm build
 
+# Build server and client to ./dist 
 WORKDIR /app
-
-# Build/compile to ./server and ./client to ./dist 
-RUN npm run build
+RUN npm run build-prod
 
 # Install ./dist server modules
-RUN npm run install-prod
+RUN npm run install-build
 
 # Remove ./server and ./client directories
 RUN rm -rf ./client ./server

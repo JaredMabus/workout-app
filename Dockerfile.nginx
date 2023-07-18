@@ -1,9 +1,0 @@
-FROM --platform=linux/amd64 nginx:alpine
-
-# Install Certbot and dependencies
-RUN apk add --no-cache certbot certbot-nginx openssl
-
-EXPOSE 80 443
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]

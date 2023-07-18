@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM --platform=linux/amd64 node:16-alpine
 
 # Create app directory
 WORKDIR /app
@@ -6,21 +6,17 @@ WORKDIR /app
 # Copy files to image
 COPY . .
 
-# Set frontend dev host
-ENV REACT_APP_HOST=http://localhost:3001
+# Remove local node_modules
+# RUN rm -rf ./client/node_modules
+# RUN rm -rf ./server/node_modules
+# RUN rm -rf ./node_modules
 
-# Install root app's modules
+# Install ./ dependencies
 RUN npm install
 
-# Build/transpile server and client code
-RUN npm run build
+# Install ./server dependencies
+RUN npm run install-server
 
-# Install ./server and ./client modules
-RUN npm run install-prod
-
-# Remove ./server and ./client directories
-RUN rm -rf ./client ./server
-
-EXPOSE 3001
+EXPOSE 8080
 
 CMD [ "npm", "run", "watch" ]

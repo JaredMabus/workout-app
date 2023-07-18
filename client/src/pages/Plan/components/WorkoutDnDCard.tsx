@@ -147,9 +147,6 @@ export default function DnDWorkoutCard({
         return;
       }
 
-      // item.addNewWorkout = addWorkout;
-      console.log(item);
-      console.log(item.addNewWorkout);
       const dragIndex = item.index;
       var hoverIndex = index;
       item.hoverIndex = hoverIndex;

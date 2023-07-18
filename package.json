@@ -4,17 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx pm2 start pm2.config.js",
-    "build": "cd server && npm run build && cd ../client && npm run build",
+    "start": "npx pm2 start pm2.config.js --no-daemon",
+    "build": "cd server && npx tsc -p ./server/tsconfig.json && cd ../client && npm run build",
+    "build-prod": "cd server && npm run build && cd ../client && npm run build",
     "build-client": "cd client && npm run build",
-    "install-build": "npm install && cd server && npm install && cd ../client && npm install",
-    "install-prod": "cd dist && npm install",
-    "server-install": "cd server && npm install",
-    "client-install": "cd client && npm install --legacy-peer-deps",
+    "build-server": "cd server && npm run build",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+    "install-build": "cd dist && npm install",
+    "install-server": "cd server && npm install",
+    "install-client": "cd client && npm install",
     "watch": "cd server && npm run watch",
     "client": "cd client && npm start",
-    "seed": "cd server && npm run seed"
+    "seed": "cd server && npm run seed",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -33,7 +35,6 @@
     "vm2": ">=3.9.18"
   },
   "devDependencies": {
-    "typescript": "^4.9.3",
     "vm2": ">=3.9.18"
   }
 }

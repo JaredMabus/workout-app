@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "cd ../dist && node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon index.ts",
     "seed": "ts-node seeds",
@@ -25,7 +26,7 @@
     "@types/uuid": "^9.0.0",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.3",
+    "typescript": "^4.9.5",
     "vm2": ">=3.9.18"
   },
   "dependencies": {

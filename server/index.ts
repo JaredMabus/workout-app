@@ -11,7 +11,7 @@ import compression from "compression";
 dotenv.config();
 
 const app = express();
-const port: number = Number(process.env.PORT as string) || 3001;
+const port: number = Number(process.env.PORT as string) || 8080;
 const host: string =
   process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
 const upload = multer();
@@ -20,18 +20,13 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "./build")));
   app.use(morgan("tiny"));
 } else {
-  app.use(express.static(path.resolve(__dirname, "./build")));
+  // app.use(express.static(path.join(__dirname, "../client/public")));
   app.use(morgan("tiny"));
 }
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:8080",
-      "https://liftx.tech",
-      "http://liftx.tech",
-    ],
+    origin: ["http://localhost:3000"],
     credentials: true,
   })
 );
@@ -64,7 +59,7 @@ app.use(
               .status(405)
               .json({ err: true, msg: "Account already exist" });
         }
-      };
+      }
       console.log(err);
       return res.json({ err: true, msg: err.message });
     } catch (err) {

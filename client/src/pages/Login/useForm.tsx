@@ -33,8 +33,8 @@ const useForm = () => {
   const navigate = useNavigate();
 
   // useEffect(() => {
-    // console.log(values);
-    // console.log(errors);
+  // console.log(values);
+  // console.log(errors);
   // }, [values, errors]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -71,8 +71,6 @@ const useForm = () => {
 
         if (response.status === 200) {
           let data = await response.data.payload;
-          console.log(response)
-          console.log(data)
           if (data) {
             dispatch(setLoginStatus(data));
             dispatch(setApiError(false));

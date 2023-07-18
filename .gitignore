@@ -8,9 +8,14 @@ lerna-debug.log*
 
 # Docker
 **/*docker-compose*
+Dockerfile.dev
+Dockerfile.*dev*
+
+# Database volume data
+data
 
 # NGINX
-*.nginx.conf
+ec2.nginx.conf
 
 # Mac DS file
 .DS_Store
