@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useForm from "./useForm";
-import {useTheme} from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 // MUI
 import SnackBar from "../../components/UI/components/SnackBar";
 import { styled } from "@mui/material/styles";
@@ -179,6 +179,7 @@ const SignUp = () => {
               </Typography>
               <FormControl
                 id="SignUp-form"
+                data-testid="sign-up-form"
                 component="form"
                 sx={{
                   display: "flex",
@@ -190,6 +191,7 @@ const SignUp = () => {
                 <CustomTextField
                   name="email"
                   id="email"
+                  data-testid="email"
                   value={values.email}
                   onChange={handleChange}
                   label="Email"
@@ -201,6 +203,7 @@ const SignUp = () => {
                 />
                 <CustomTextField
                   id="outlined-adornment-password"
+                  data-testid="password"
                   label="Password"
                   name="password"
                   type={values.showPassword ? "text" : "password"}
@@ -230,18 +233,6 @@ const SignUp = () => {
                     ),
                   }}
                 />
-                <CustomTextField
-                  name="fname"
-                  id="fname"
-                  value={values.fname}
-                  onChange={handleChange}
-                  label="First Name"
-                  variant="standard"
-                  required
-                  error={"firstName" in errors ? true : false}
-                  helperText={"firstName" in errors ? `${errors.fname}` : ""}
-                  margin="normal"
-                />
                 <Stack
                   sx={{
                     display: "flex",
@@ -253,6 +244,7 @@ const SignUp = () => {
                   }}
                 >
                   <Button
+                    data-testid="create-account-btn"
                     sx={{
                       minWidth: 165.13,
                       my: 2,

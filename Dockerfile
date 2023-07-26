@@ -19,7 +19,7 @@ RUN npm install --production=false
 # Install ./client modules
 WORKDIR /app/client
 RUN npm install --production=false
-# RUN npm build
+RUN npm run test-client
 
 # Build server and client to ./dist 
 WORKDIR /app
