@@ -35,6 +35,7 @@ export default function CustomizedSnackbars() {
 
   return (
     <Snackbar
+      data-testid="snackbar"
       sx={{ mb: "50px", indexZ: 1, borderRadius: 1 }}
       open={ui.snackBarStatus.open}
       autoHideDuration={ui.snackBarStatus.duration}
