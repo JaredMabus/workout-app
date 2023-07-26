@@ -2,7 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3001",
+  "proxy": "http://localhost:8080",
   "devServer": {
     "allowedHosts": [
       "localhost",
@@ -87,6 +87,7 @@
     "@types/react-swipeable-views": "^0.13.1",
     "chance": "^1.1.9",
     "jest-canvas-mock": "^2.4.0",
+    "msw": "^1.2.3",
     "vm2": ">=3.9.18"
   }
 }
