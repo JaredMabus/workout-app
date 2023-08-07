@@ -18,6 +18,8 @@ import {
   Timer10,
 } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
+import * as CustomComp from "../../../../styles/components";
+
 export interface Props {
   time: number;
   defaultTime: number;
@@ -33,6 +35,8 @@ export default function Timer({
   timerOn,
   setTimeOn,
 }: Props) {
+  const theme = useTheme();
+
   function fmtMSS(time: number) {
     return (time - (time %= 60)) / 60 + (9 < time ? ":" : ":0") + time;
   }
@@ -58,17 +62,17 @@ export default function Timer({
           <Typography
             align="center"
             sx={{
-              backgroundColor: grey[100],
+              // backgroundColor: grey[100],
               width: "100%",
               borderRadius: 1,
-              border: `1px solid ${grey[200]}}`,
+              border: `1px solid ${theme.palette.border.main}`,
             }}
             variant="h5"
           >
             {fmtMSS(time)}
           </Typography>
           <ButtonGroup variant="outlined" size="medium">
-            <Button
+            <CustomComp.OutlinedHoverContrastBtn
               onClick={async () => {
                 await setTimeOn(false);
                 await setTime(time + 10);
@@ -76,18 +80,20 @@ export default function Timer({
               }}
             >
               +<Timer10 />
-            </Button>
+            </CustomComp.OutlinedHoverContrastBtn>
 
             {timerOn && (
               <>
-                <Button onClick={() => setTimeOn(false)}>
+                <CustomComp.OutlinedHoverContrastBtn
+                  onClick={() => setTimeOn(false)}
+                >
                   <PauseOutlined />
-                </Button>
+                </CustomComp.OutlinedHoverContrastBtn>
               </>
             )}
             {!timerOn && (
               <>
-                <Button
+                <CustomComp.OutlinedHoverContrastBtn
                   onClick={() => {
                     if (time === 0) {
                       setTime(defaultTime);
@@ -96,17 +102,17 @@ export default function Timer({
                   }}
                 >
                   <PlayArrow />
-                </Button>
+                </CustomComp.OutlinedHoverContrastBtn>
               </>
             )}
-            <Button
+            <CustomComp.OutlinedHoverContrastBtn
               onClick={() => {
                 setTimeOn(false);
                 setTime(defaultTime);
               }}
             >
               <UpdateOutlined />
-            </Button>
+            </CustomComp.OutlinedHoverContrastBtn>
           </ButtonGroup>
         </Stack>
       </Stack>

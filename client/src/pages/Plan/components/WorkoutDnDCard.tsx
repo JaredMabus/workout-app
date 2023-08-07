@@ -6,6 +6,7 @@ import React, {
   useContext,
 } from "react";
 import * as date from "../../../utils/date";
+import * as CustomComp from "../../../styles/components";
 // import { ItemType } from "../../../utils/items";
 // import * as planApi from "../PlanApi";
 // DRAG N DROP
@@ -184,7 +185,7 @@ export default function DnDWorkoutCard({
 
   const placementIndicator = isDragging
     ? `1px solid ${theme.palette.secondary.main}`
-    : "1px solid #E0E0E0";
+    : `1px solid ${theme.palette.border.dark}`;
 
   drag(drop(ref));
 
@@ -288,11 +289,11 @@ export default function DnDWorkoutCard({
           borderRadius: 2,
           opacity: isDragging ? 1 : 1,
           border: placementIndicator,
-          backgroundColor: "#fff",
+          // backgroundColor: "#fff",
           boxShadow: "0 2px 4px 1px rgba(140, 149, 159, .1)",
           cursor: "grab",
           "&: hover": {
-            border: "2px solid grey",
+            border: `2px solid ${theme.palette.border.dark}`,
             boxShadow: "none",
             ".plan-workout-card-menu-btn": {
               visibility: "visible",
@@ -318,13 +319,14 @@ export default function DnDWorkoutCard({
             className="plan-workout-card-menu-btn"
             size="small"
             id="basic-button"
+            color="inherit"
             aria-controls={open ? "basic-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
             onClick={handleClick}
             sx={{ visibility: "hidden", mt: -0.5 }}
           >
-            <MoreHorizIcon fontSize="small" color="primary" />
+            <MoreHorizIcon fontSize="small" />
           </IconButton>
           <Menu
             sx={{ maxWidth: 200 }}
@@ -394,7 +396,7 @@ export default function DnDWorkoutCard({
                   color: "#DA636B",
                   transition: "150ms ease-in-out",
                   "&: hover": {
-                    backgroundColor: "#DA636B30",
+                    // backgroundColor: "#DA636B30",
                   },
                 }}
               >

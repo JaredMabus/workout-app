@@ -13,6 +13,7 @@ import { filterData } from "../../utils/filterObject";
 import FilterChips, { FilterState } from "../../components/Filter/FilterChips";
 import WeekDayCard from "./components/WeekDayCard";
 import AddWorkoutCards from "./components/AddWorkoutCards";
+import * as CustomComp from "../../styles/components";
 // MUI
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
@@ -212,20 +213,22 @@ export const PlanContainer = () => {
               position: "relative",
               width: "100%",
               height: "100%",
-              bgcolor: "#fff",
+              backgroundColor: theme.palette.background.default,
               overflowX: "hidden",
-              overflowY: "scroll",
+              overflowY: "hidden",
             }}
           >
-            <CssBaseline />
             <AppBar
               open={open}
               position={"relative"}
               sx={{
-                px: 2,
-                backgroundColor: grey[50],
+                // px: 2,
+                backgroundColor: theme.palette.background.default,
                 boxShadow: "none",
-                borderBottom: "1px solid #E0E0E0",
+                borderBottom: `1px solid ${theme.palette.border.light}`,
+                "& .MuiPaper-root": {
+                  backgroundColor: theme.palette.background.default,
+                },
               }}
             >
               <Toolbar
@@ -233,6 +236,7 @@ export const PlanContainer = () => {
                 sx={{
                   justifyContent: "space-between",
                   alignItems: "end",
+                  backgroundColor: theme.palette.background.default,
                 }}
               >
                 <Stack
@@ -242,12 +246,12 @@ export const PlanContainer = () => {
                     py: 1,
                     mb: -0.1,
                     zIndex: 1,
-                    borderTop: "1px solid #E0E0E0",
-                    borderLeft: "1px solid #E0E0E0",
-                    borderRight: "1px solid #E0E0E0",
+                    borderTop: `1px solid ${theme.palette.border.main}`,
+                    borderLeft: `1px solid ${theme.palette.border.main}`,
+                    borderRight: `1px solid ${theme.palette.border.main}`,
                     borderRadius: "5px 5px 0px 0px",
-                    backgroundColor: "#fff",
                     color: theme.palette.text.primary,
+                    backgroundColor: theme.palette.background.paper,
                   }}
                   direction="row"
                   justifyContent={"space-between"}
@@ -279,15 +283,13 @@ export const PlanContainer = () => {
                     <Expand />
                   </IconButton>
                   {open === false && (
-                    <Button
+                    <CustomComp.ContrastBtn
                       variant="outlined"
-                      color="primary"
                       startIcon={<Add />}
                       onClick={() => setOpen(true)}
-                      sx={{ color: theme.palette.text.primary }}
                     >
                       Plan Workout
-                    </Button>
+                    </CustomComp.ContrastBtn>
                   )}
                 </Stack>
               </Toolbar>
@@ -295,13 +297,15 @@ export const PlanContainer = () => {
             <Stack
               sx={{
                 flexGrow: 1,
-                height: "100%",
-                borderBottom: `2px solid ${grey[200]}`,
-                borderLeft: `2px solid ${grey[200]}`,
-                borderRight: `2px solid ${grey[200]}`,
+                borderTop: `1px solid ${theme.palette.border.main}`,
+                borderBottom: `1px solid ${theme.palette.border.main}`,
+                borderLeft: `1px solid ${theme.palette.border.main}`,
+                borderRight: `1px solid ${theme.palette.border.main}`,
                 borderRadius: 1,
+                height: "100%",
                 minHeight: 900,
                 maxHeight: 900,
+                backgroundColor: theme.palette.background.paper,
                 py: 3,
                 pl: { xs: 1, sm: 3 },
                 pb: 20,
@@ -312,6 +316,21 @@ export const PlanContainer = () => {
                   easing: theme.transitions.easing.sharp,
                   duration: theme.transitions.duration.leavingScreen,
                 }),
+                "&::-webkit-scrollbar": {
+                  width: 10,
+                },
+                "&::-webkit-scrollbar-track": {
+                  border: `1px solid ${theme.palette.border.light}`,
+                  backgroundColor: theme.palette.background.paper,
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  border: `2px solid ${theme.palette.background.paper}`,
+                  backgroundColor: alpha(theme.palette.border.dark, 0.5),
+                  borderRadius: 4,
+                },
+                "&::-webkit-scrollbar-thumb:hover": {
+                  backgroundColor: alpha(theme.palette.border.light, 1),
+                },
                 ...(open && {
                   transition: theme.transitions.create("margin", {
                     easing: theme.transitions.easing.easeOut,
@@ -325,7 +344,25 @@ export const PlanContainer = () => {
                 container
                 spacing={1}
                 sx={{
-                  overflowX: { xs: "scroll", sm: "hidden" },
+                  overflowX: {
+                    xs: "scroll",
+                    sm: "hidden",
+                    "&::-webkit-scrollbar": {
+                      width: 10,
+                    },
+                    "&::-webkit-scrollbar-track": {
+                      border: `1px solid ${theme.palette.border.light}`,
+                      backgroundColor: theme.palette.background.paper,
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                      border: `2px solid ${theme.palette.background.paper}`,
+                      backgroundColor: alpha(theme.palette.border.dark, 0.5),
+                      borderRadius: 4,
+                    },
+                    "&::-webkit-scrollbar-thumb:hover": {
+                      backgroundColor: alpha(theme.palette.border.light, 1),
+                    },
+                  },
                   width: "100%",
                   display: "flex",
                   flexWrap: { xs: "nowrap", sm: "wrap" },
@@ -358,15 +395,15 @@ export const PlanContainer = () => {
                 width: { xs: drawerWidthxs, sm: drawerWidth },
                 flexShrink: 0,
                 borderRadius: "1rem",
-                backgroundColor: grey[300],
                 "& .MuiDrawer-paper": {
                   px: 0.5,
+                  backgroundColor: theme.palette.background.paper,
                   width: { xs: drawerWidthxs, sm: drawerWidth },
                   position: "absolute",
-                  borderTop: `1px solid ${grey[400]}`,
-                  borderBottom: `1px solid ${grey[400]}`,
-                  borderRight: `1px solid ${grey[400]}`,
-                  borderLeft: `1px solid ${grey[400]}`,
+                  borderTop: `1px solid ${theme.palette.border.main}`,
+                  borderBottom: `1px solid ${theme.palette.border.main}`,
+                  borderRight: `1px solid ${theme.palette.border.main}`,
+                  borderLeft: `1px solid ${theme.palette.border.main}`,
                   borderRadius: ".5rem",
                   zIndex: 2,
                 },
@@ -380,9 +417,8 @@ export const PlanContainer = () => {
                 direction="row"
                 sx={{
                   height: 48,
-                  backgroundColor: "#fff",
-                  borderTop: `1px solid ${grey[300]}`,
-                  borderBottom: `1px solid ${grey[300]}`,
+                  borderTop: `1px solid ${theme.palette.border.main}`,
+                  borderBottom: `1px solid ${theme.palette.border.main}`,
                   px: 1,
                 }}
                 justifyContent={"space-between"}

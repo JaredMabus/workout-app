@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useTheme, styled } from "@mui/material/styles";
-// import { toTitleCase } from "../../../utils/textFormat";
+import { useTheme } from "@mui/material/styles";
 import {
   Box,
   Stack,
@@ -15,7 +14,6 @@ import {
   MenuItem,
   alpha,
   Divider,
-  MobileStepper,
   List,
   ListItem,
   ListItemText,
@@ -31,11 +29,9 @@ import {
 import { AddCircle } from "@mui/icons-material";
 import TargetGoalIcon from "../../../assets/images/icons/TargetGoal.svg";
 
-// interface Props {
-//     workout: WorkoutType
-// }
-
 export default function WorkoutCardDemo() {
+  const theme = useTheme();
+
   // Tab state and logic
   const [value, setTabValue] = React.useState<WorkoutMethodType>("Barbell");
 
@@ -54,8 +50,8 @@ export default function WorkoutCardDemo() {
           minHeight: 260,
           // maxHeight: 270,
           boxShadow: "rgb(0 0 0 / 8%) 1px 2px 3px 1px",
-          border: `1px solid ${grey[300]}`,
-          backgroundColor: "#fff",
+          border: `1px solid ${theme.palette.border.main}`,
+          backgroundColor: theme.palette.background.paper,
         }}
       >
         <Stack
@@ -122,17 +118,21 @@ export default function WorkoutCardDemo() {
                 label={method}
                 disabled
                 sx={{
+                  color: alpha(theme.palette.text.primary, 0.4),
                   height: 30,
                   mt: -0.7,
                   ml: -1,
+                  "&.Mui-selected": {
+                    color: alpha(theme.palette.text.primary, 1),
+                    fontWeight: 700,
+                  },
                   "&:hover": {
                     fontWeight: 700,
-                    color: grey[700],
-                    opacity: 1,
-                    backgroundColor: alpha(grey[200], 0.3),
-                  },
-                  "&.Mui-selected": {
-                    fontWeight: 700,
+                    color: alpha(theme.palette.text.primary, 0.8),
+                    backgroundColor:
+                      theme.palette.mode === "light"
+                        ? alpha(grey[200], 0.3)
+                        : alpha(theme.palette.background.paper, 1),
                   },
                 }}
               />
@@ -149,7 +149,7 @@ export default function WorkoutCardDemo() {
                 // alignSelf: "end",
                 flexDirection: "row",
                 gap: { xs: 0.2, sm: 0.5, md: 0.5 },
-                borderBottom: `1px solid ${grey[200]}`,
+                borderBottom: `1px solid ${theme.palette.border.main}`,
                 py: 0.5,
               }}
             >
@@ -464,7 +464,7 @@ export default function WorkoutCardDemo() {
                 sx={{
                   color: "#6AB73D",
                   borderRadius: 50,
-                  backgroundColor: grey[50],
+                  backgroundColor: theme.palette.background.paper,
                   boxShadow: "rgb(0 0 0 / 45%) 0px 0px 3px",
                   "& .MuiCircularProgress-circle": {
                     strokeLinecap: "round",

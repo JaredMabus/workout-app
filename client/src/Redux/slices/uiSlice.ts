@@ -9,6 +9,7 @@ import {
 } from "./workoutSlice";
 
 interface UiInitialState {
+  light: boolean;
   navBarOpen: boolean;
   snackBarStatus: SnackBarStatus;
   workoutsHydrated: boolean;
@@ -74,6 +75,7 @@ interface FormDataType {
 }
 
 export const initialState: UiInitialState = {
+  light: true,
   navBarOpen: true,
   snackBarStatus: {
     open: false,
@@ -146,6 +148,14 @@ const uiSlice = createSlice({
   name: "UI",
   initialState,
   reducers: {
+    setTheme: (state, action: PayloadAction<boolean>) => {
+      state.light = action.payload;
+      if (action.payload) {
+        localStorage.setItem("theme", "light");
+      } else {
+        localStorage.setItem("theme", "dark");
+      }
+    },
     setNavBar: (state, action: PayloadAction<boolean>) => {
       state.navBarOpen = action.payload;
     },
@@ -179,12 +189,14 @@ const uiSlice = createSlice({
       state.form.round.newRoundModalState =
         !state.form.round.newRoundModalState;
     },
-    setNewGoalModalState: (state, action: PayloadAction<Partial<WorkoutMethodType | null>>) => {
-      if(action?.payload != null){
+    setNewGoalModalState: (
+      state,
+      action: PayloadAction<Partial<WorkoutMethodType | null>>
+    ) => {
+      if (action?.payload != null) {
         state.activeTabMethodFilter = action.payload;
       }
       state.form.goal.newGoalModalState = !state.form.goal.newGoalModalState;
-      
     },
     setActiveWorkout: (state, action: PayloadAction<Partial<WorkoutType>>) => {
       state.activeWorkout = action.payload;
@@ -224,6 +236,7 @@ const uiSlice = createSlice({
 
 // Export actions
 export const {
+  setTheme,
   setNavBar,
   setSnackBar,
   closeSnackBar,

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useForm from "./useForm";
-import { useTheme } from "@mui/material/styles";
+import { alpha, useTheme } from "@mui/material/styles";
+import * as comp from "../../../../styles/components";
 import {
   Button,
   Stack,
@@ -13,25 +14,12 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  Slider,
-  FormGroup,
-  FormControlLabel,
-  Select,
-  OutlinedInput,
-  InputLabel,
-  MenuItem,
-  FormControl,
-  Chip,
-  Box,
-  Checkbox,
-  ListItemText,
-  FormHelperText,
-  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
+
 import {
   TrackChanges,
   ExpandMore,
@@ -106,10 +94,10 @@ export default function NewGoalModal() {
                   fontWeight: 700,
                   mt: 0.4,
                   fontSize: { xs: 15, sm: 18 },
-                  color: grey[600],
+                  color: alpha(theme.palette.text.primary, 0.6),
                 }}
               >
-                Set Active Goal
+                Set active goal
               </Typography>
             </Stack>
           </Stack>
@@ -263,7 +251,9 @@ export default function NewGoalModal() {
             alignItems: "center",
           }}
         >
-          <Button onClick={handleClose}>Cancel</Button>
+          <comp.OutlinedHoverContrastBtn onClick={handleClose}>
+            Cancel
+          </comp.OutlinedHoverContrastBtn>
           <Button
             variant="contained"
             color="secondary"

@@ -17,8 +17,8 @@ const Dashboard = () => {
   useEffect(() => {
     if (!accountState.loginStatus) {
       window.location.href = "/";
-    };
-  },[accountState]);
+    }
+  }, [accountState]);
 
   return (
     <>

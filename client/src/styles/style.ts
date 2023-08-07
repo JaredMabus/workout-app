@@ -1,27 +1,28 @@
-import { createTheme, responsiveFontSizes } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes, alpha } from "@mui/material/styles";
+import { grey } from "@mui/material/colors";
+import {
+  PaletteColorOptions,
+  SimplePaletteColorOptions,
+} from "@mui/material/styles";
+
+declare module "@mui/material/styles" {
+  interface Palette {
+    custom: Palette["primary"];
+    surface: Palette["primary"];
+    border: Palette["primary"];
+  }
+
+  interface PaletteOptions {
+    custom: PaletteOptions["primary"];
+    surface: PaletteOptions["primary"];
+    border?: Palette["primary"];
+  }
+}
 
 let otherThemes = {
   typography: {
-    // h1: {
-    //   fontWeight: 500,
-    // },
-    // h2: {
-    //   fontWeight: 500,
-    // },
-    // h3: {
-    //   fontWeight: 500,
-    // },
-    // h4: {
-    //   "@media (min-width:600px)": {
-    //     fontSize: "1.5rem",
-    //   },
-    // },
-    // h5: {
-    //   fontWeight: 600,
-    // },
     subtitle1: {
       fontFamily: "Comfortaa",
-      // fontWeight: 600,
     },
     body1: {
       fontFamily: "Comfortaa",
@@ -31,15 +32,8 @@ let otherThemes = {
       fontFamily: "Comfortaa",
       fontWeight: 600,
     },
-    fontFamily: [
-      "Titillium Web",
-      "Comfortaa",
-      // "Saira Semi Condensed",
-      "sans-serif",
-    ].join(","),
+    fontFamily: ["Titillium Web", "Comfortaa", "sans-serif"].join(","),
     button: {
-      // fontFamily: "Comfortaa",
-      // textTransform: "none" as const,
       fontWeight: 600,
     },
   },
@@ -58,46 +52,88 @@ export let themeLight = createTheme({
   ...otherThemes,
   palette: {
     mode: "light",
-    background: {
-      default: "#fff",
-    },
-    text: {
-      primary: "#21262E",
-    },
     primary: {
       main: "#3b3a37",
       light: "#62615f",
       dark: "#292826",
+      contrastText: "#E5E5E5",
     },
     secondary: {
       main: "#EEB405",
       light: "#f1c337",
       dark: "#a67d03",
-    }
+      contrastText: "#21262E",
+    },
+    custom: {
+      dark: grey[400],
+      main: grey[200],
+      light: grey[100],
+    },
+    surface: {
+      dark: grey[400],
+      main: "#fff",
+      light: grey[100],
+    },
+    border: {
+      dark: grey[400],
+      main: grey[300],
+      light: grey[200],
+      contrastText: "#21262E",
+    },
+    text: {
+      primary: "#21262E",
+      secondary: alpha("#21262E", 0.6),
+    },
+    background: {
+      default: alpha(grey[100], 1),
+      paper: "#fff",
+    },
   },
 });
 
 themeLight = responsiveFontSizes(themeLight);
 
-export const themeDark = createTheme({
+export let themeDark = createTheme({
   ...otherThemes,
   palette: {
     mode: "dark",
-    background: {
-      default: "rgb(13, 17, 23)",
-    },
-    text: {
-      primary: "#E5E5E5",
-    },
     primary: {
       main: "#3b3a37",
       light: "#62615f",
       dark: "#292826",
+      contrastText: "#E5E5E5",
     },
     secondary: {
       main: "#EEB405",
       light: "#f1c337",
       dark: "#a67d03",
+      contrastText: "#21262E",
+    },
+    custom: {
+      dark: grey[900],
+      main: grey[800],
+      light: grey[700],
+    },
+    surface: {
+      dark: "#2D2E31",
+      main: "#121212",
+      light: "#121212",
+    },
+    border: {
+      dark: grey[500],
+      main: grey[800],
+      light: grey[900],
+      contrastText: "#21262E",
+    },
+    text: {
+      primary: "#E5E5E5",
+      secondary: alpha("#E5E5E5", 0.8),
+    },
+    background: {
+      default: "#121212",
+      paper: "#2D2E31",
     },
   },
 });
+
+themeDark = responsiveFontSizes(themeDark);

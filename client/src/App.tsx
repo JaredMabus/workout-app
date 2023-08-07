@@ -1,4 +1,10 @@
-import { FC, useEffect, useLayoutEffect } from "react";
+import React, {
+  FC,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  createContext,
+} from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import * as page from "./pages/index";
 import axios from "./lib/axios";
@@ -6,8 +12,8 @@ import axios from "./lib/axios";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 // THEME
-import { themeLight } from "./styles/style";
-import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { themeLight, themeDark } from "./styles/style";
 // UTILS
 import useToken from "./utils/useToken";
 // REDUX
@@ -114,9 +120,32 @@ const App: FC = () => {
     }
   }, [account.loginStatus]);
 
+  // THEME
+  const setInitialTheme = () => {
+    const initialThemeMq = window.matchMedia("(prefers-color-scheme: light)");
+    if (initialThemeMq.matches) {
+      dispatch(ui.setTheme(true));
+    } else {
+      dispatch(ui.setTheme(false));
+    }
+  };
+
+  useLayoutEffect(() => {
+    const localTheme = localStorage.getItem("theme");
+    if (!localTheme) {
+      setInitialTheme();
+    } else {
+      ui.setTheme(localTheme === "light" ? true : false);
+      localTheme === "light"
+        ? dispatch(ui.setTheme(true))
+        : dispatch(ui.setTheme(false));
+    }
+  }, []);
+
   return (
-    <>
-      <MuiThemeProvider theme={themeLight}>
+    <React.Fragment>
+      <ThemeProvider theme={uiState.light ? themeLight : themeDark}>
+        <CssBaseline />
         <DndProvider backend={HTML5Backend}>
           <BrowserRouter>
             <Routes>
@@ -156,8 +185,8 @@ const App: FC = () => {
             </Routes>
           </BrowserRouter>
         </DndProvider>
-      </MuiThemeProvider>
-    </>
+      </ThemeProvider>
+    </React.Fragment>
   );
 };
 

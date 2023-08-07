@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useForm from "./useForm";
 import LifterIcon from "../../assets/images/icons/LifterIcon.svg";
 import SnackBar from "../../components/UI/components/SnackBar";
-import { styled as muiStyled } from "@mui/material/styles";
+import { styled as muiStyled, useTheme } from "@mui/material/styles";
 import {
   Box,
   Container,
@@ -35,6 +35,7 @@ const CustomTextField = muiStyled(TextField)({
 });
 
 const Login = () => {
+  const theme = useTheme();
   const account = useSelector(selectAccount);
   const {
     values,
@@ -44,8 +45,6 @@ const Login = () => {
     handleMouseDownPassword,
     handleClickShowPassword,
   } = useForm();
-
-  useEffect(() => {}, []);
 
   const initialAnimate = useSpring({
     from: { x: 0, y: -10, opacity: 0 },
@@ -77,7 +76,7 @@ const Login = () => {
         }}
       >
         <Tooltip placement="left" title="Back to App">
-          <IconButton onClick={() => navigate("/")} color="primary">
+          <IconButton onClick={() => navigate("/")}>
             <ExitToAppIcon sx={{ height: 30, width: 30 }} />
           </IconButton>
         </Tooltip>
@@ -196,7 +195,12 @@ const Login = () => {
                     Login
                   </Button>
                 </Stack>
-                <Typography variant="body2">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    a: { color: theme.palette.secondary.main },
+                  }}
+                >
                   Create an account? <Link to="/sign-up">Sign up here</Link>
                 </Typography>
               </FormControl>

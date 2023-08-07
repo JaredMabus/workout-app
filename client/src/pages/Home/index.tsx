@@ -1,7 +1,7 @@
 import UI from "../../components/UI";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
-import { Stack, Button, Typography } from "@mui/material";
+import { Stack, Button, Typography, Paper } from "@mui/material";
 import { grey } from "@mui/material/colors";
 //IMAGES
 import HeroSectionDarkBG from "../../assets/images/hero-section-darker-bg.svg";
@@ -22,17 +22,16 @@ const Home = () => {
 
   const cardStyle: any = {
     color: muiTheme.palette.text.primary,
-    backgroundColor: grey[100],
+    backgroundColor: muiTheme.palette.background.paper,
+    borderRadius: { xs: 0, sm: 0, md: 4 },
     boxShadow: "rgb(0 0 0 / 15%) 0px 3px 8px",
     p: 5,
     pb: 8,
     m: 1,
-    borderRadius: { xs: 0, sm: 0, md: 4},
     backgroundRepeat: "no-repeat",
-    minHeight: 260, 
-    minWidth: { sm: 360},
+    minHeight: 260,
+    minWidth: { sm: 360 },
     maxWidth: "100%",
-    
   };
 
   return (
@@ -42,7 +41,7 @@ const Home = () => {
           sx={{
             mb: { xs: 0, sm: 10, md: 5 },
             position: "relative",
-            width: "100%"
+            width: "100%",
           }}
         >
           <Stack
@@ -54,22 +53,37 @@ const Home = () => {
               alignItems: "end",
             }}
           >
-            <Stack sx={{justifyContent: "end", alignItems: "end", color: muiTheme.palette.common.white}}>
-              <Typography sx={{fontFamily:"comfortaa", fontWeight:400}} variant="h1">Lift</Typography>
-              <Typography sx={{fontFamily:"comfortaa"}} variant="h5">Weight Lifting</Typography>
-              <Typography sx={{fontFamily:"comfortaa"}} variant="h5">Tracker</Typography>
-            </Stack>
-              <Button
-                size="large"
-                onClick={() => navigate("/sign-up")}
-                variant="contained"
-                endIcon={<DoubleArrowIcon />}
-                sx={{mt: 1}}
-                color="secondary"
+            <Stack
+              sx={{
+                justifyContent: "end",
+                alignItems: "end",
+                color: muiTheme.palette.common.white,
+              }}
+            >
+              <Typography
+                sx={{ fontFamily: "comfortaa", fontWeight: 400 }}
+                variant="h1"
               >
-                Get Started
-              </Button>
+                Lift
+              </Typography>
+              <Typography sx={{ fontFamily: "comfortaa" }} variant="h5">
+                Weight Lifting
+              </Typography>
+              <Typography sx={{ fontFamily: "comfortaa" }} variant="h5">
+                Tracker
+              </Typography>
             </Stack>
+            <Button
+              size="large"
+              onClick={() => navigate("/sign-up")}
+              variant="contained"
+              endIcon={<DoubleArrowIcon />}
+              sx={{ mt: 1 }}
+              color="secondary"
+            >
+              Get Started
+            </Button>
+          </Stack>
           <Stack
             sx={{
               flex: { xs: 1, sm: 3.5 },
@@ -91,7 +105,7 @@ const Home = () => {
           sx={{
             mt: { xs: 0, sm: 10 },
             mb: 30,
-            width: "100%"
+            width: "100%",
           }}
         >
           {/* CREATE WORKOUT */}
@@ -106,11 +120,7 @@ const Home = () => {
               backgroundSize: "125px 125px",
             }}
           >
-            <Stack
-              spacing={1}
-              justifyContent={"end"}
-              alignItems={"end"}
-            >
+            <Stack spacing={1} justifyContent={"end"} alignItems={"end"}>
               <Typography
                 variant="h4"
                 align="right"
@@ -156,7 +166,7 @@ const Home = () => {
                   ...cardTextHeader,
                 }}
               >
-                Plan your 
+                Plan your
               </Typography>
               <Typography
                 variant="h4"
@@ -170,7 +180,7 @@ const Home = () => {
             <Typography
               variant="body1"
               sx={{
-                pl: .5,
+                pl: 0.5,
                 fontWeight: 500,
               }}
             >

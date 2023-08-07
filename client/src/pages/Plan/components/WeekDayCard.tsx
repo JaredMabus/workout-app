@@ -15,7 +15,7 @@ import { updateWorkoutPlanWeekApi } from "../planApi";
 // DRAG N DROP
 import { useDrag, useDrop } from "react-dnd";
 // MUI
-import { styled } from "@mui/material/styles";
+import { useTheme, alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -63,6 +63,7 @@ export const ItemType = {
 };
 
 export default function WeekDayCard({ day }: any) {
+  const theme = useTheme();
   const dispatch = useDispatch();
   const [planState, dispatchCtx] = useContext(PlanContext);
   const workoutState = useSelector(selectWorkout);
@@ -141,7 +142,7 @@ export default function WeekDayCard({ day }: any) {
           borderRadius: 2,
           minHeight: 325,
           height: planState.cardExpanded ? 600 : 350,
-          border: "1px solid #E0E0E0",
+          border: `1px solid ${theme.palette.border.main}`,
           boxShadow: "0 2px 2px 1px rgba(140, 149, 159, .15)",
           overflow: "hidden",
           transition: "150ms ease-in-out",
@@ -163,17 +164,17 @@ export default function WeekDayCard({ day }: any) {
             zIndex: 2,
             borderRadiusTop: 2,
             borderBottom: "1px solid #E9ECF0",
-            backgroundColor: "#F6F8FA",
+            backgroundColor: theme.palette.background.default,
           }}
         >
-          <Typography align="center" sx={{}}>
+          <Typography align="center">
             {date.dayOfTheWeekToString(day[0])}
           </Typography>
-          <ButtonGroup>
+          {/* <ButtonGroup>
             <IconButton sx={{ p: 0, m: 0 }} color="primary">
               <MoreHorizIcon />
             </IconButton>
-          </ButtonGroup>
+          </ButtonGroup> */}
         </Stack>
         <Stack
           sx={{
@@ -185,7 +186,7 @@ export default function WeekDayCard({ day }: any) {
             p: 1,
             pb: "103px",
             mr: "-15px",
-            backgroundColor: "#fff",
+            // backgroundColor: "#fff",
           }}
           direction="column"
         >
@@ -211,6 +212,7 @@ export default function WeekDayCard({ day }: any) {
             );
           })}
         </Stack>
+        {/* BOTTOM MENU */}
         <Stack
           direction="row"
           sx={{
@@ -222,7 +224,7 @@ export default function WeekDayCard({ day }: any) {
             position: "sticky",
             bottom: 0,
             // width: 270,
-            backgroundColor: "#F6F8FA",
+            backgroundColor: theme.palette.background.default,
             zIndex: 2,
             borderRadiusTop: 2,
             borderTop: "1px solid #E0E0E0",

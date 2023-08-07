@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import LoadingButton from "@mui/lab/LoadingButton";
+import * as comp from "../../../styles/components";
 import { grey } from "@mui/material/colors";
 // REDUX
 import { selectAccount } from "../../../Redux/slices/accountSlice";
@@ -45,19 +46,6 @@ import {
 // COMPONENTS
 import { DeleteWorkoutDialog } from "./Dialogs";
 import CardDataTabs from "./CardDataTabs";
-
-const CardMenuItemStyle = {
-  textTransform: "none",
-  p: 0,
-  justifyContent: "start",
-  backgroundColor: alpha("#fff", 0),
-  ":hover": {
-    backgroundColor: alpha("#fff", 0),
-  },
-  ".MuiButton-startIcon": {
-    m: 0,
-  },
-};
 
 interface Props {
   workout: WorkoutType;
@@ -187,6 +175,19 @@ export default function WorkoutCard({ workout }: Props) {
   }, [value]);
 
   // Card Menu state and logic
+  const CardMenuItemStyle = {
+    color: theme.palette.text.primary,
+    textTransform: "none",
+    p: 0,
+    justifyContent: "start",
+    backgroundColor: alpha(theme.palette.background.paper, 0),
+    ":hover": {
+      backgroundColor: alpha("#fff", 0),
+    },
+    ".MuiButton-startIcon": {
+      m: 0,
+    },
+  };
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -347,8 +348,8 @@ export default function WorkoutCard({ workout }: Props) {
               minHeight: 260,
               maxHeight: 260,
               boxShadow: "rgb(0 0 0 / 8%) 1px 2px 3px 1px",
-              border: `1px solid ${grey[300]}`,
-              backgroundColor: "#fff",
+              border: `1px solid ${theme.palette.border.main}`,
+              backgroundColor: theme.palette.background.paper,
             }}
           >
             <Stack>
@@ -370,15 +371,16 @@ export default function WorkoutCard({ workout }: Props) {
                     {workout.name}
                   </Typography>
                 </Tooltip>
-                <Stack direction="row">
+                <Stack direction="row" spacing={0.5}>
                   <IconButton
                     aria-controls={openMenu ? "basic-menu" : undefined}
                     aria-haspopup="true"
                     aria-expanded={openMenu ? "true" : undefined}
                     onClick={handleClick}
-                    size="medium"
+                    size="small"
+                    sx={{ height: 35, width: 35 }}
                   >
-                    <MoreHoriz />
+                    <MoreHoriz sx={{ height: 25, width: 25 }} />
                   </IconButton>
                   <Menu
                     elevation={3}
@@ -394,7 +396,7 @@ export default function WorkoutCard({ workout }: Props) {
                       alignItems: "start",
                       "& .MuiPaper-root": {
                         borderRadius: 2,
-                        border: `1px solid ${grey[300]}`,
+                        border: `1px solid ${theme.palette.border.dark}`,
                         fontSize: 14,
                         minWidth: 125,
                       },
@@ -404,13 +406,16 @@ export default function WorkoutCard({ workout }: Props) {
                         px: 0.7,
                         mx: 1,
                         my: 0.2,
-                        border: `1px solid ${alpha(grey[200], 0)}`,
+                        border: `1px solid ${alpha(
+                          theme.palette.border.main,
+                          0
+                        )}`,
                         borderRadius: 1,
                         "&:hover": {
-                          border: `1px solid ${grey[200]}`,
+                          border: `1px solid ${theme.palette.border.main}`,
                         },
                         "&:active": {
-                          border: `1px solid ${grey[300]}`,
+                          border: `1px solid ${theme.palette.border.dark}`,
                         },
                         "& .MuiSvgIcon-root": {
                           fontSize: 16,
@@ -521,12 +526,13 @@ export default function WorkoutCard({ workout }: Props) {
                     </MenuItem>
                   </Menu>
                   <IconButton
-                    size="medium"
+                    // size="small"
                     color="secondary"
                     title="New Round"
                     onClick={openAddRound}
+                    sx={{ height: 35, width: 35 }}
                   >
-                    <AddCircle sx={{ height: 35, width: 35 }} />
+                    <AddCircle sx={{ height: 33, width: 33 }} />
                   </IconButton>
                 </Stack>
               </Stack>
@@ -542,7 +548,8 @@ export default function WorkoutCard({ workout }: Props) {
                 sx={{
                   maxWidth: 234,
                   height: 30,
-                  mt: -2,
+                  mt: -1.5,
+                  mb: 0.5,
                   ml: -2,
                   p: 0,
                   ".MuiButtonBase-root": {
@@ -570,18 +577,23 @@ export default function WorkoutCard({ workout }: Props) {
                     key={`${method}-tab`}
                     label={method}
                     sx={{
+                      transition: "color 200ms ease-in-out",
+                      color: alpha(theme.palette.text.primary, 0.4),
                       height: 30,
-
                       mt: -0.7,
                       ml: -1,
+                      "&.Mui-selected": {
+                        color: alpha(theme.palette.text.primary, 1),
+                        fontWeight: 700,
+                      },
                       "&:hover": {
                         fontWeight: 700,
-                        color: grey[700],
                         opacity: 1,
-                        backgroundColor: alpha(grey[200], 0.3),
-                      },
-                      "&.Mui-selected": {
-                        fontWeight: 700,
+                        color: alpha(theme.palette.text.primary, 0.8),
+                        backgroundColor:
+                          theme.palette.mode === "light"
+                            ? alpha(grey[200], 0.3)
+                            : alpha(theme.palette.background.paper, 1),
                       },
                     }}
                   />
@@ -602,16 +614,16 @@ export default function WorkoutCard({ workout }: Props) {
                   <Typography variant="body2">
                     No rounds using {value}
                   </Typography>
-                  <Button
+                  <comp.OutlinedContrastBtn
                     onClick={openAddRound}
-                    sx={{
-                      width: 150,
-                      borderRadius: 2,
-                    }}
+                    // sx={{
+                    //   width: 150,
+                    //   borderRadius: 2,
+                    // }}
                     variant="outlined"
                   >
                     Add Round
-                  </Button>
+                  </comp.OutlinedContrastBtn>
                 </Stack>
               )}
               {workout.roundId.length === 0 && (
@@ -625,7 +637,7 @@ export default function WorkoutCard({ workout }: Props) {
                   }}
                 >
                   <Typography variant="body2">New Workout</Typography>
-                  <Button
+                  <comp.OutlinedContrastBtn
                     onClick={openAddRound}
                     sx={{
                       width: 150,
@@ -634,7 +646,7 @@ export default function WorkoutCard({ workout }: Props) {
                     variant="outlined"
                   >
                     Add Round
-                  </Button>
+                  </comp.OutlinedContrastBtn>
                 </Stack>
               )}
               {tabHasRecentRound && workout.roundId.length > 0 && (

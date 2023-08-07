@@ -105,7 +105,6 @@ function CircularProgressWithLabel(
           sx={{
             color: "#6AB73D",
             borderRadius: 50,
-            backgroundColor: grey[50],
             boxShadow: "rgb(0 0 0 / 24%) 0px 0px 3px",
             "& .MuiCircularProgress-circle": {
               strokeLinecap: "round",

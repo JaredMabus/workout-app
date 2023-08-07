@@ -16,7 +16,9 @@ import {
   FormHelperText,
   Typography,
 } from "@mui/material";
+import * as comp from "../../../../styles/components";
 import { grey } from "@mui/material/colors";
+import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -43,6 +45,7 @@ const MenuProps = {
 export default function FormDialog() {
   const dispatch = useDispatch();
   const ui = useSelector(selectUi);
+  const theme = useTheme();
   const { values, errors, handleChange, handleSubmit } = useForm();
 
   const handleClose = () => {
@@ -148,12 +151,7 @@ export default function FormDialog() {
                   renderValue={(selected) => (
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                       {selected.map((value) => (
-                        <Chip
-                          key={value}
-                          label={value}
-                          variant="outlined"
-                          sx={{ backgroundColor: grey[100] }}
-                        />
+                        <Chip key={value} label={value} variant="outlined" />
                       ))}
                     </Box>
                   )}
@@ -167,6 +165,12 @@ export default function FormDialog() {
                           typeof method === "string" &&
                           values.methodSelection.indexOf(method) > -1
                         }
+                        sx={{
+                          color: theme.palette.text.primary,
+                          "&.Mui-checked": {
+                            color: theme.palette.text.primary,
+                          },
+                        }}
                       />
                       <ListItemText primary={method} />
                     </MenuItem>
@@ -186,7 +190,9 @@ export default function FormDialog() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
+            <comp.OutlinedHoverContrastBtn onClick={handleClose}>
+              Cancel
+            </comp.OutlinedHoverContrastBtn>
             <Button
               variant="contained"
               color="secondary"
