@@ -13,6 +13,7 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import { grey } from "@mui/material/colors";
 import { animated, useTransition } from "@react-spring/web";
+import * as comp from "../../../styles/components";
 // ICONS
 import FilterListIcon from "@mui/icons-material/FilterList";
 import FilterListOffIcon from "@mui/icons-material/FilterListOff";
@@ -37,7 +38,6 @@ import UpdateWorkoutModal from "./UpdateWorkoutForm";
 import NewRoundModal from "./NewRoundModal";
 import NewGoalModal from "./NewGoalModal";
 import WorkoutCard from "./WorkoutCard";
-
 import FilterChips, {
   FilterState,
   FilterOptions,
@@ -51,6 +51,7 @@ export default function WorkoutContainer() {
   const workoutState = useSelector(selectWorkout);
   const [loading, setLoading] = useState<boolean>(false);
   const [expanded, setExpanded] = React.useState<boolean>(false);
+  const theme = useTheme();
   // Filter workout logic
   const [filteredWorkouts, setFilteredWorkouts] = useState<WorkoutType[] | []>(
     workoutState.workouts
@@ -136,10 +137,11 @@ export default function WorkoutContainer() {
         container
         sx={{
           p: 0,
-          backgroundColor: grey[50],
-          borderLeft: `1px solid ${grey[200]}`,
-          borderRight: `1px solid ${grey[200]}`,
-          borderBottom: `1px solid ${grey[200]}`,
+          m: 0,
+          backgroundColor: "transparent",
+          // borderLeft: `1px solid ${theme.palette.border.main}`,
+          // borderRight: `1px solid ${theme.palette.border.main}`,
+          borderBottom: `1px solid ${theme.palette.border.main}`,
         }}
       >
         {/* WORKOUT MENU */}
@@ -148,7 +150,8 @@ export default function WorkoutContainer() {
             direction="row"
             justifyContent={"space-between"}
             sx={{
-              backgroundColor: "#fff",
+              border: `1px solid ${theme.palette.border.light}`,
+              backgroundColor: theme.palette.background.paper,
             }}
           >
             <Stack
@@ -173,17 +176,14 @@ export default function WorkoutContainer() {
               spacing={1}
             >
               {isFiltering && (
-                <Button
+                <comp.OutlinedHoverContrastBtn
                   startIcon={<FilterListOffIcon />}
                   onClick={() => {
                     setFilterState(defaultFilterState);
                   }}
-                  sx={{
-                    border: `1px solid ${grey[200]}`,
-                  }}
                 >
                   Clear
-                </Button>
+                </comp.OutlinedHoverContrastBtn>
               )}
               <Typography variant={"body2"}>
                 {filteredWorkouts.length}/{workoutState.workouts.length}
@@ -207,7 +207,9 @@ export default function WorkoutContainer() {
             <AccordionSummary
               aria-controls="panel1bh-content"
               id="panel1bh-header"
-              sx={{ display: "none" }}
+              sx={{
+                display: "none",
+              }}
             />
             <AccordionDetails
               sx={{
@@ -218,7 +220,8 @@ export default function WorkoutContainer() {
               <Stack
                 sx={{
                   p: 1,
-                  backgroundColor: "#fff",
+                  backgroundColor: theme.palette.background.paper,
+                  borderRadius: 2,
                 }}
               >
                 <FilterChips
@@ -236,9 +239,23 @@ export default function WorkoutContainer() {
             p: 1,
             minHeight: 750,
             maxHeight: 750,
-            // mr: "-15px",
             overflowY: "scroll",
             overflowX: "hidden",
+            "&::-webkit-scrollbar": {
+              width: 10,
+            },
+            "&::-webkit-scrollbar-track": {
+              border: `1px solid ${theme.palette.border.light}`,
+              backgroundColor: theme.palette.background.paper,
+            },
+            "&::-webkit-scrollbar-thumb": {
+              border: `2px solid ${theme.palette.background.paper}`,
+              backgroundColor: alpha(theme.palette.border.dark, 0.5),
+              borderRadius: 4,
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: alpha(theme.palette.border.light, 1),
+            },
           }}
         >
           <Grid

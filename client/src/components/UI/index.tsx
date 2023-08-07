@@ -31,11 +31,13 @@ import { grey } from "@mui/material/colors";
 import HeaderAvatar from "./components/HeaderAvatar";
 // ICONS
 import LifterIcon from "../../assets/images/icons/LifterIconWhiteBg.svg";
+import LifterIconDarkTheme from "../../assets/images/icons/LifterIconWhite.svg";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import HomeIcon from "@mui/icons-material/Home";
-
+import NightlightIcon from "@mui/icons-material/Nightlight";
+import LightModeIcon from "@mui/icons-material/LightMode";
 // REDUX
 import { useSelector, useDispatch } from "react-redux";
 import * as ui from "../../Redux/slices/uiSlice";
@@ -49,31 +51,6 @@ interface LinksArrayObj {
   loggedIn: boolean;
 }
 
-// const linksArray: LinksArrayObj[] = [
-
-//   {
-//     id: "0",
-//     name: "Dashboard",
-//     path: "/dashboard",
-//     icon: <DashboardIcon id="link-element-dash" />,
-//     loggedIn: true,
-//   },
-//   {
-//     id: "1",
-//     name: "Workouts",
-//     path: "/workouts",
-//     icon: <FitnessCenterIcon id="link-element-workout" />,
-//     loggedIn: true,
-//   },
-//   {
-//     id: "2",
-//     name: "Plan",
-//     path: "/plan",
-//     icon: <CalendarMonthOutlinedIcon id="link-element-plan" />,
-//     loggedIn: true,
-//   },
-// ];
-
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
@@ -82,11 +59,9 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
-  boxShadow: "rgba(0, 0, 0, 0.26) 0px 2px 4px",
-  backgroundColor: theme.palette.common.white,
-  // backgroundColor: "rgba(0, 0, 0, 0)",
-  // boxShadow: "rgba(0, 0, 0, 0) 0px 3px 8px",
+  backgroundColor: theme.palette.background.default,
   color: theme.palette.text.primary,
+  boxShadow: "rgba(0, 0, 0, 0.26) 0px 2px 4px",
   borderRadius: "0px 0px 20px 20px",
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
@@ -122,6 +97,7 @@ const drawerStyle: DrawerStyle = {
 
 const openedMixin = (theme: Theme): CSSObject => ({
   top: "80px",
+  boxShadow: "rgba(0, 0, 0, 0.26) 0px 1px 4px",
   width: drawerStyle.width,
   borderRadius: "0px 20px 20px 0px",
   transition: theme.transitions.create("width", {
@@ -133,6 +109,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
 
 const closedMixin = (theme: Theme): CSSObject => ({
   top: "80px",
+  boxShadow: "rgba(0, 0, 0, 0.26) 0px 2px 4px",
   borderRadius: "0px 20px 20px 0px",
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -221,20 +198,20 @@ export default function UI(props: any) {
 
   const linkStyle: any = {
     flex: 1,
-    color: theme.palette.primary.main,
+    color: theme.palette.text.primary,
     borderLeft: "5px solid transparent",
     textDecoration: "none",
+    cursor: "pointer",
   };
 
   return (
     <>
       <Container disableGutters>
-        <CssBaseline />
         <AppBar
           open={uiState.navBarOpen}
           elevation={0}
           sx={{
-            backgroundColor: "#fff",
+            backgroundColor: theme.palette.background.paper,
             boxShadow: "rgba(0, 0, 0, 0.26) 0px 2px 4px",
             mb: 9,
             position: "sticky",
@@ -247,8 +224,12 @@ export default function UI(props: any) {
               backgroundColor: "transparent",
             }}
           >
-            <Link to="/">
-              <img src={LifterIcon} alt="Lifter Icon" />
+            <Link to="/" className={"lift-icon-svg"}>
+              {theme.palette.mode === "light" ? (
+                <img src={LifterIcon} alt="Lifter Icon" />
+              ) : (
+                <img src={LifterIconDarkTheme} alt="Lifter Icon" />
+              )}
             </Link>
             {account.loginStatus ? (
               <HeaderAvatar />
@@ -286,83 +267,137 @@ export default function UI(props: any) {
             display: { xs: "none", sm: "flex", md: "flex" },
           }}
         >
-          <DrawerHeader>
-            {uiState.navBarOpen ? (
-              <IconButton
-                onClick={() => dispatch(ui.setNavBar(!uiState.navBarOpen))}
-              >
-                {theme.direction === "rtl" ? <MenuOpen /> : <MenuOpen />}
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={() => {
-                  dispatch(ui.setNavBar(!uiState.navBarOpen));
-                }}
-              >
-                {theme.direction === "rtl" ? (
-                  <ChevronRightIcon />
-                ) : (
-                  <ChevronRightIcon />
-                )}
-              </IconButton>
-            )}
-          </DrawerHeader>
-          <Divider />
-          <List>
-            {linksArray.map((link) => (
-              <ListItem
-                disablePadding
-                key={link.id}
-                sx={{
-                  display: "flex",
-                  justifyContent: "start",
-                  // alignItems: "center",
-                }}
-              >
-                <NavLink
-                  to={link.path}
-                  end
-                  style={({ isActive }) => {
-                    if (isActive) {
-                      return {
-                        ...linkStyle,
-                        borderLeft: `5px solid ${theme.palette.secondary.main}`,
-                        backgroundColor: grey[50],
-                      };
-                    } else {
-                      return {
-                        ...linkStyle,
-                      };
-                    }
+          <Stack
+            sx={{
+              height: "100%",
+            }}
+          >
+            <DrawerHeader>
+              {uiState.navBarOpen ? (
+                <IconButton
+                  onClick={() => dispatch(ui.setNavBar(!uiState.navBarOpen))}
+                >
+                  {theme.direction === "rtl" ? <MenuOpen /> : <MenuOpen />}
+                </IconButton>
+              ) : (
+                <IconButton
+                  onClick={() => {
+                    dispatch(ui.setNavBar(!uiState.navBarOpen));
                   }}
                 >
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      px: uiState.navBarOpen ? 1 : 0,
-                      justifyContent: uiState.navBarOpen ? "initial" : "center",
+                  {theme.direction === "rtl" ? (
+                    <ChevronRightIcon />
+                  ) : (
+                    <ChevronRightIcon />
+                  )}
+                </IconButton>
+              )}
+            </DrawerHeader>
+            <Divider />
+            <List>
+              {linksArray.map((link) => (
+                <ListItem
+                  disablePadding
+                  key={link.id}
+                  sx={{
+                    display: "flex",
+                    "&:hover": {
+                      backgroundColor:
+                        theme.palette.mode === "light"
+                          ? alpha(theme.palette.custom.main, 0.8)
+                          : alpha(theme.palette.custom.dark, 1),
+                    },
+                  }}
+                >
+                  <NavLink
+                    to={link.path}
+                    end
+                    style={({ isActive }) => {
+                      if (isActive) {
+                        return {
+                          ...linkStyle,
+                          borderLeft: `5px solid ${theme.palette.secondary.main}`,
+                          backgroundColor:
+                            theme.palette.mode === "light"
+                              ? alpha(theme.palette.custom.main, 1)
+                              : alpha(theme.palette.custom.dark, 1),
+                        };
+                      } else {
+                        return {
+                          ...linkStyle,
+                        };
+                      }
                     }}
                   >
-                    <ListItemIcon
+                    <ListItemButton
                       sx={{
-                        mr: uiState.navBarOpen ? 1 : "auto",
-                        justifyContent: "center",
+                        minHeight: 48,
+                        px: uiState.navBarOpen ? 1 : 0,
+                        justifyContent: uiState.navBarOpen
+                          ? "initial"
+                          : "center",
+                        backgroundColor: "transparent",
+                        ":hover": {
+                          backgroundColor: "transparent",
+                        },
                       }}
                     >
-                      {link.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={link.name}
-                      sx={{
-                        opacity: uiState.navBarOpen ? 1 : 0,
-                      }}
-                    />
-                  </ListItemButton>
-                </NavLink>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
+                      <ListItemIcon
+                        sx={{
+                          mr: uiState.navBarOpen ? 1 : "auto",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {link.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={link.name}
+                        sx={{
+                          opacity: uiState.navBarOpen ? 1 : 0,
+                        }}
+                      />
+                    </ListItemButton>
+                  </NavLink>
+                </ListItem>
+              ))}
+            </List>
+            <Divider />
+            <Stack
+              sx={{
+                position: "absolute",
+                width: "100%",
+                bottom: 150,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <IconButton
+                sx={{
+                  transition: "all 0.25s ease-out",
+                  border: `2px solid ${alpha(theme.palette.text.primary, 0.2)}`,
+                  "&:hover": {
+                    backgroundColor: alpha(
+                      theme.palette.background.default,
+                      0.9
+                    ),
+                    border: `2px solid ${alpha(
+                      theme.palette.text.primary,
+                      0.3
+                    )}`,
+                  },
+                }}
+                onClick={() => {
+                  dispatch(ui.setTheme(!uiState.light));
+                }}
+              >
+                {theme.palette.mode === "dark" ? (
+                  <LightModeIcon />
+                ) : (
+                  <NightlightIcon />
+                )}
+              </IconButton>
+            </Stack>
+          </Stack>
         </Drawer>
         {/* Page containers rendered here */}
         <animated.div style={pageAnimate}>

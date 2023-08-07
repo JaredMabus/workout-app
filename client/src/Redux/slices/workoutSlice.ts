@@ -79,6 +79,7 @@ export interface SetType {
   datetime: Date | string | null;
   isComplete?: boolean;
 }
+
 export type WeekDayNumberType = "0" | "1" | "2" | "3" | "4" | "5" | "6";
 export type MuscleCategoryType = "Upper Body" | "Lower Body" | "Core" | "";
 export type MuscleGroupType =

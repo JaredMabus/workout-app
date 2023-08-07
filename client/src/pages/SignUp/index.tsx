@@ -153,6 +153,13 @@ const SignUp = () => {
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
+                label: { color: theme.palette.secondary.contrastText },
+                h4: { color: theme.palette.secondary.contrastText },
+                svg: { color: theme.palette.secondary.contrastText },
+                input: {
+                  color: theme.palette.secondary.contrastText,
+                },
+                p: { color: theme.palette.secondary.contrastText },
               }}
             >
               <Box
@@ -200,6 +207,7 @@ const SignUp = () => {
                   error={"email" in errors ? true : false}
                   helperText={"email" in errors ? `${errors.email}` : ""}
                   margin="normal"
+                  sx={{ minWidth: 226, maxWidth: 226 }}
                 />
                 <CustomTextField
                   id="outlined-adornment-password"
@@ -214,6 +222,7 @@ const SignUp = () => {
                   error={"password" in errors ? true : false}
                   helperText={"password" in errors ? `${errors.password}` : ""}
                   margin="normal"
+                  sx={{ minWidth: 226, maxWidth: 226 }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -248,6 +257,7 @@ const SignUp = () => {
                     sx={{
                       minWidth: 165.13,
                       my: 2,
+                      // color: theme.palette.text.primary,
                     }}
                     variant="contained"
                     onClick={handleSubmit}

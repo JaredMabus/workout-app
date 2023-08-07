@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Stack, Button, Typography, Slide } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 import LifterIconWhite from "../../../assets/images/icons/LifterIconWhiteBg.svg";
+import LifterIconBlackBg from "../../../assets/images/icons/LifterIconWhite.svg";
 
 export default function Footer() {
   const [showBottomNav, setShowBottomNav] = useState(true);
+  const theme = useTheme();
 
   useEffect(() => {
     let prevScrollPos = window.pageYOffset;
@@ -30,7 +33,7 @@ export default function Footer() {
           mt: 10,
           mb: showBottomNav ? "57px" : 0,
           p: 5,
-          backgroundColor: "#fff",
+          backgroundColor: theme.palette.background.paper,
           height: 70,
           borderRadius: "20px 20px 0px 0px",
           boxShadow: "rgb(0, 0, 0, 0.15)  0px 1px 4px",
@@ -54,7 +57,11 @@ export default function Footer() {
           >
             Lift
           </Typography>
-          <img src={LifterIconWhite} alt="Lifter Icon" />
+          {theme.palette.mode === "light" ? (
+            <img src={LifterIconWhite} alt="Lifter Icon" />
+          ) : (
+            <img src={LifterIconBlackBg} alt="Lifter Icon" />
+          )}
         </Stack>
       </Stack>
     </>

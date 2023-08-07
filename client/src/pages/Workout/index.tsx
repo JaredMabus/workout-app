@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import UI from "../../components/UI";
-import { Stack, Typography, Button, Link } from "@mui/material";
 // COMPONENTS
 import WorkoutContainer from "./components/WorkoutContainer";
 import WorkoutCardInfo from "./components/WorkoutCardInfo";

@@ -10,6 +10,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  alpha,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { grey } from "@mui/material/colors";
@@ -90,7 +91,7 @@ export default function CardDataTabs({
       spacing={2}
       sx={{
         p: 0,
-        borderLeft: `1px solid ${grey[200]}`,
+        borderLeft: `1px solid ${theme.palette.border.main}`,
         borderRadius: "15px 15px 0px 10px",
       }}
     >
@@ -108,9 +109,9 @@ export default function CardDataTabs({
             flexDirection: "row",
             alignItems: "baseline",
             gap: { xs: 0.7 },
-            borderBottom: `1px solid ${grey[200]}`,
+            borderBottom: `1px solid ${theme.palette.border.main}`,
             borderRadius: "15px 15px 0 0",
-            backgroundColor: grey[50],
+            backgroundColor: theme.palette.surface.light,
             px: 1,
             py: 0.5,
           }}
@@ -290,7 +291,7 @@ export default function CardDataTabs({
           alignItems={"center"}
           sx={{
             justifyContent: "start",
-            borderBottom: `1px solid ${grey[200]}`,
+            borderBottom: `1px solid ${theme.palette.border.main}`,
             borderRadius: "0 15px 0 0",
             px: 1,
             py: 0.5,
@@ -319,7 +320,10 @@ export default function CardDataTabs({
               <List
                 dense={true}
                 disablePadding
-                sx={{ flex: 1, color: grey[500] }}
+                sx={{
+                  flex: 1,
+                  color: alpha(theme.palette.text.secondary, 0.6),
+                }}
               >
                 <ListItem
                   disablePadding

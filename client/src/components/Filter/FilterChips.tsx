@@ -1,5 +1,6 @@
 import React, { useEffect, SetStateAction } from "react";
-import { Chip, Stack, Typography, Box, Divider } from "@mui/material";
+import { Chip, Stack, Typography, Box, Divider, alpha } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import CheckIcon from "@mui/icons-material/Check";
 import {
   MuscleCategoryType,
@@ -21,6 +22,7 @@ const ChipInput = ({
   handleFilterChange,
 }: ChipInputProps) => {
   /** Update chip display  */
+  const theme = useTheme();
   const checkActiveFilters = () => {
     if (Object.values(filters[filterKey]).includes(filter)) {
       return true;
@@ -39,15 +41,19 @@ const ChipInput = ({
   return (
     <Chip
       key={`${filter}-${filterKey}-chip`}
-      color={checkActiveFilters() ? "secondary" : "primary"}
       variant={checkActiveFilters() ? "filled" : "outlined"}
-      sx={{
-        m: 0.5,
-        border: "1px solid lightgrey",
-      }}
       label={filter}
       onClick={() => handleFilterChange(filter, filterKey)}
       disabled={disabledArray.includes(filter)}
+      sx={{
+        color: checkActiveFilters()
+          ? alpha(theme.palette.text.primary, 1)
+          : alpha(theme.palette.text.primary, 0.6),
+        m: 0.5,
+        border: checkActiveFilters()
+          ? `1px solid ${alpha(theme.palette.border.dark, 1)}`
+          : `1px solid ${alpha(theme.palette.border.main, 0.7)}`,
+      }}
     />
   );
 };
@@ -95,6 +101,7 @@ export default function FilterChips({
   setFilterState,
   filterOptions,
 }: FilterChipProps) {
+  const theme = useTheme();
   const handleFilterChange = (
     filter: string,
     filterKey: FilterKey,

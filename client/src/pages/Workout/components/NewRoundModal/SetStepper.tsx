@@ -7,35 +7,26 @@ import StepButton from "@mui/material/StepButton";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import { TextField, Stack, alpha } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 import {
-  Check,
-  DoneAll,
   AddTask,
   Add,
   Remove,
-  FactCheck,
   CheckCircleOutline,
   TimerOutlined,
 } from "@mui/icons-material";
 // REDUX
 import { useSelector, useDispatch } from "react-redux";
-import {
-  WorkoutType,
-  WorkoutMethodType,
-  SetType,
-  RoundType,
-} from "../../../../Redux/slices/workoutSlice";
+import * as wk from "../../../../Redux/slices/workoutSlice";
 import * as ui from "../../../../Redux/slices/uiSlice";
 import { filterData } from "../../../../utils/filterObject";
 import Timer from "./Timer";
 
 export interface Props {
   values: any;
-  setValue: React.Dispatch<React.SetStateAction<Partial<RoundType>>>;
+  setValue: React.Dispatch<React.SetStateAction<Partial<wk.RoundType>>>;
   errors: any;
   handleChange: React.ChangeEvent<HTMLInputElement> | any;
 }
@@ -51,7 +42,7 @@ export default function SetStepper({
   const dispatch = useDispatch();
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
-  const [steps, setSteps] = React.useState<SetType[] | []>([]);
+  const [steps, setSteps] = React.useState<wk.SetType[] | []>([]);
   const [completed, setCompleted] = React.useState<{
     [k: number]: boolean;
   }>({});
@@ -346,18 +337,6 @@ export default function SetStepper({
                 minHeight: 72.5,
               }}
             >
-              {/* <Button
-            color="inherit"
-            disabled={activeStep === 0}
-            onClick={handleBack}
-            sx={{ mr: 1 }}
-          >
-            Back
-          </Button>
-          <Box sx={{ flex: "1 1 auto" }} />
-          <Button onClick={handleNext} sx={{ mr: 1 }}>
-            Next
-          </Button> */}
               {activeStep !== steps.length &&
                 (completed[activeStep] ? (
                   <Typography

@@ -11,7 +11,9 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { grey } from "@mui/material/colors";
+import * as comp from "../../../styles/components";
 import * as api from "./workoutApi";
+import { useTheme, alpha } from "@mui/material/styles";
 // REDUX
 import { useSelector, useDispatch } from "react-redux";
 import { selectUi, setSnackBar } from "../../../Redux/slices/uiSlice";
@@ -21,7 +23,7 @@ import {
   removeWorkout,
   GoalType,
 } from "../../../Redux/slices/workoutSlice";
-import { Warning, KeyboardArrowDown } from "@mui/icons-material";
+import { WarningAmberOutlined, KeyboardArrowDown } from "@mui/icons-material";
 // LOTTIE
 import Lottie from "lottie-react";
 import GoalComplete from "../../../assets/lottie/goal-complete.json";
@@ -48,7 +50,7 @@ export function DeleteWorkoutDialog({
 }: Props) {
   const uiState = useSelector(selectUi);
   const dispatch = useDispatch();
-
+  const theme = useTheme();
   const handleClose = () => {
     setDialogStatus(false);
     setLoading(false);
@@ -103,25 +105,35 @@ export function DeleteWorkoutDialog({
           sx={{ borderBottom: `1px solid ${grey[200]}`, pb: 1, mb: 1 }}
         >
           <Stack direction="row" spacing={1} alignItems={"center"}>
-            <Warning color="error" sx={{ height: 25, width: 25 }} />
-            <Typography variant="h6">Delete Workout</Typography>
+            <WarningAmberOutlined sx={{ height: 25, width: 25 }} />
+            <Typography variant="h6">Delete workout</Typography>
           </Stack>
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <Stack spacing={2}>
-              <Typography variant="body1">
+            <Stack spacing={1} sx={{ mt: 2 }}>
+              <Typography variant="body2">
                 Are you sure you want to delete this workout?
               </Typography>
-              <Typography variant="body1">
-                All data for this workout will be permanently lost.
-              </Typography>
+              <Typography variant="body2">Round data will be lost.</Typography>
             </Stack>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button color="error" onClick={confirmDelete} autoFocus>
+          <comp.OutlinedHoverContrastBtn onClick={handleClose}>
+            Cancel
+          </comp.OutlinedHoverContrastBtn>
+          <Button
+            color="error"
+            autoFocus
+            onClick={confirmDelete}
+            sx={{
+              border: `1px solid transparent`,
+              "&:hover": {
+                border: `1px solid ${alpha(theme.palette.error.main, 0.4)}`,
+              },
+            }}
+          >
             Delete
           </Button>
         </DialogActions>
